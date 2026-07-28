@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import { Fab } from "../components/Fab";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -47,7 +48,7 @@ export const Route = createFileRoute("/")({
 function SalaryPage() {
   const s = useSalary();
   const { settings } = useSettings();
-  const [addingCat, setAddingCat] = useState(false);
+  const [addCatOpen, setAddCatOpen] = useState(false);
   const [newCatName, setNewCatName] = useState("");
 
   const monthTotal = useMemo(
@@ -99,39 +100,46 @@ function SalaryPage() {
         {s.currentMonth.categories.map((c) => (
           <CategoryBlock key={c.id} category={c} currency={settings.currency} api={s} />
         ))}
+      </main>
 
-        {addingCat ? (
-          <div className="flex items-center gap-2 rounded-xl border border-border bg-card p-3">
+      <Fab label="Add category" onClick={() => setAddCatOpen(true)} />
+
+      <Dialog
+        open={addCatOpen}
+        onOpenChange={(v) => {
+          if (!v) setNewCatName("");
+          setAddCatOpen(v);
+        }}
+      >
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>New category</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Label className="text-xs uppercase tracking-widest text-muted-foreground">Name</Label>
             <Input
               autoFocus
               value={newCatName}
               onChange={(e) => setNewCatName(e.target.value)}
-              placeholder="Category name"
-              className="h-9"
+              placeholder="e.g. Groceries"
             />
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setAddCatOpen(false)}>Cancel</Button>
             <Button
-              size="sm"
               onClick={() => {
-                if (newCatName.trim()) s.addCategory(newCatName.trim());
-                setNewCatName("");
-                setAddingCat(false);
+                if (newCatName.trim()) {
+                  s.addCategory(newCatName.trim());
+                  setNewCatName("");
+                  setAddCatOpen(false);
+                }
               }}
             >
-              Add
+              Add category
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => setAddingCat(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setAddingCat(true)}
-            className="w-full rounded-xl border-2 border-dashed border-border py-4 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
-          >
-            + Add New Category
-          </button>
-        )}
-      </main>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

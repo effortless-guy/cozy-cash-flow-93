@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Plus, Trash2, Pencil, Check, X } from "lucide-react";
+import { Trash2, Pencil, Check, X } from "lucide-react";
 import {
   useSubscriptions,
   useSettings,
@@ -18,6 +18,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../components/ui/dialog";
+import { Label } from "../components/ui/label";
+import { Fab } from "../components/Fab";
 
 export const Route = createFileRoute("/subscriptions")({
   head: () => ({
@@ -53,13 +62,10 @@ function SubscriptionsPage() {
   return (
     <div>
       <header className="sticky top-0 z-10 bg-background/85 px-6 pt-10 pb-8 backdrop-blur-md">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8">
           <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Subscriptions
           </span>
-          <Button size="sm" variant="ghost" onClick={() => setAdding(true)}>
-            <Plus className="mr-1 h-4 w-4" /> Add
-          </Button>
         </div>
         {(() => {
           const showWeekly = settings.showWeeklyTotal !== false;
@@ -110,26 +116,20 @@ function SubscriptionsPage() {
               onRemove={() => remove(s.id)}
             />
           ))}
-          {adding && (
-            <NewSubRow
-              currency={settings.currency}
-              onSave={(sub) => {
-                add(sub);
-                setAdding(false);
-              }}
-              onCancel={() => setAdding(false)}
-            />
-          )}
         </ul>
-        {!adding && (
-          <button
-            onClick={() => setAdding(true)}
-            className="mt-4 w-full rounded-xl border-2 border-dashed border-border py-4 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
-          >
-            + Add Subscription
-          </button>
-        )}
       </main>
+
+      <Fab label="Add subscription" onClick={() => setAdding(true)} />
+
+      <NewSubDialog
+        open={adding}
+        onOpenChange={setAdding}
+        currency={settings.currency}
+        onSave={(sub) => {
+          add(sub);
+          setAdding(false);
+        }}
+      />
     </div>
   );
 }
@@ -223,61 +223,88 @@ function SubRow({
   );
 }
 
-function NewSubRow({
+function NewSubDialog({
+  open,
+  onOpenChange,
   currency,
   onSave,
-  onCancel,
 }: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
   currency: string;
   onSave: (s: Omit<Subscription, "id">) => void;
-  onCancel: () => void;
 }) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
+
+  const reset = () => {
+    setName("");
+    setPrice("");
+    setCycle("monthly");
+  };
+
   return (
-    <li className="space-y-2 rounded-2xl border border-border/60 bg-muted/30 p-4">
-      <div className="flex items-center gap-2">
-        <Input
-          autoFocus
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Service name"
-          className="h-8 flex-1"
-        />
-        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onCancel}>
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
-      <div className="flex items-center gap-2">
-        <Input
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          placeholder={`${currency}0.00`}
-          inputMode="decimal"
-          className="h-8 w-24 text-right"
-        />
-        <Select value={cycle} onValueChange={(v) => setCycle(v as BillingCycle)}>
-          <SelectTrigger className="h-8 flex-1"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {(Object.keys(CYCLE_LABEL) as BillingCycle[]).map((c) => (
-              <SelectItem key={c} value={c}>{CYCLE_LABEL[c]}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => {
-            const p = parseFloat(price);
-            if (name.trim() && !Number.isNaN(p)) {
-              onSave({ name: name.trim(), price: p, cycle });
-            }
-          }}
-        >
-          <Check className="h-4 w-4" />
-        </Button>
-      </div>
-    </li>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) reset();
+        onOpenChange(v);
+      }}
+    >
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>New subscription</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label className="text-xs uppercase tracking-widest text-muted-foreground">Name</Label>
+            <Input
+              autoFocus
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Service name"
+            />
+          </div>
+          <div className="flex gap-3">
+            <div className="w-28 space-y-1.5">
+              <Label className="text-xs uppercase tracking-widest text-muted-foreground">Price</Label>
+              <Input
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder={`${currency}0.00`}
+                inputMode="decimal"
+                className="text-right"
+              />
+            </div>
+            <div className="flex-1 space-y-1.5">
+              <Label className="text-xs uppercase tracking-widest text-muted-foreground">Cycle</Label>
+              <Select value={cycle} onValueChange={(v) => setCycle(v as BillingCycle)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(CYCLE_LABEL) as BillingCycle[]).map((c) => (
+                    <SelectItem key={c} value={c}>{CYCLE_LABEL[c]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button
+            onClick={() => {
+              const p = parseFloat(price);
+              if (name.trim() && !Number.isNaN(p)) {
+                onSave({ name: name.trim(), price: p, cycle });
+                reset();
+              }
+            }}
+          >
+            Add subscription
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
