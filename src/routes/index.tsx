@@ -153,8 +153,8 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between border-b border-border/60 pb-3">
+    <section className="space-y-4 rounded-2xl border border-border/60 bg-muted/30 p-5">
+      <div className="flex items-center justify-between">
         <button
           onClick={() => api.toggleCategory(category.id)}
           className="flex flex-1 items-center gap-3 text-left"
@@ -224,7 +224,7 @@ function CategoryBlock({
       </div>
 
       {!category.collapsed && (
-        <div className="space-y-4 pl-11 pt-1">
+        <div className="space-y-4 border-t border-border/50 pl-11 pt-4">
           {category.transactions.map((t) => (
             <TransactionRow
               key={t.id}
