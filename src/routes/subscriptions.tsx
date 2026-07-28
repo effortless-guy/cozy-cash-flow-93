@@ -100,7 +100,7 @@ function SubscriptionsPage() {
       </header>
 
       <main className="px-6 pb-16 pt-4">
-        <ul className="divide-y divide-border/60">
+        <ul className="space-y-3">
           {subs.map((s) => (
             <SubRow
               key={s.id}
