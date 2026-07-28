@@ -24,6 +24,8 @@ export type Settings = {
   theme: "light" | "dark";
   language: string;
   notifications: boolean;
+  showWeeklyTotal?: boolean;
+  showYearlyTotal?: boolean;
 };
 
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -297,6 +299,8 @@ const defaultSettings: Settings = {
   theme: "light",
   language: "en",
   notifications: true,
+  showWeeklyTotal: true,
+  showYearlyTotal: true,
 };
 
 export function useSettings() {
