@@ -64,39 +64,33 @@ function SalaryPage() {
 
   return (
     <div>
-      <header className="sticky top-0 z-10 bg-background/85 backdrop-blur-md px-6 pt-10 pb-8">
-        <div className="mb-8 flex items-center justify-between">
-          <YearPicker
+      <header className="sticky top-0 z-10 bg-background/85 px-6 pt-8 pb-6 backdrop-blur-md">
+        <div className="flex items-start justify-between gap-4">
+          <PeriodPicker
             year={s.year}
+            month={s.month}
             years={s.years}
-            onChange={s.setYear}
+            months={s.months}
+            onMonthChange={(m) => {
+              s.ensureYearMonth(s.year, m);
+              s.setMonth(m);
+            }}
+            onYearChange={s.setYear}
             onAddYear={s.addYear}
           />
           <ImportTemplate onImport={s.importMonthTemplate} data={s.data} currentY={s.year} />
         </div>
-
-        <div className="flex items-end justify-between gap-4">
-          <MonthPicker
-            year={s.year}
-            month={s.month}
-            months={s.months}
-            onChange={(m) => {
-              s.ensureYearMonth(s.year, m);
-              s.setMonth(m);
-            }}
-          />
-          <div className="text-right">
-            <span className="mb-0.5 block text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-              Monthly Spend
-            </span>
-            <span className="num text-xl font-semibold">
-              {formatMoney(monthTotal, settings.currency)}
-            </span>
-          </div>
+        <div className="mt-3 flex items-baseline gap-2">
+          <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+            Monthly Spend
+          </span>
+          <span className="num text-lg font-semibold">
+            {formatMoney(monthTotal, settings.currency)}
+          </span>
         </div>
       </header>
 
-      <main className="space-y-10 px-6 pb-16 pt-2">
+      <main className="space-y-10 px-6 pb-16 pt-4">
         {s.currentMonth.categories.map((c) => (
           <CategoryBlock key={c.id} category={c} currency={settings.currency} api={s} />
         ))}
