@@ -154,17 +154,17 @@ function CategoryBlock({
 
   return (
     <section className="space-y-4 rounded-2xl border border-border/60 bg-muted/30 p-5">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => api.toggleCategory(category.id)}
-          className="flex flex-1 items-center gap-3 text-left"
-        >
+      <button
+        onClick={() => !editing && api.toggleCategory(category.id)}
+        className="group flex w-full items-center justify-between gap-3 text-left"
+      >
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <ChevronDown
-              className={`h-4 w-4 transition-transform ${category.collapsed ? "-rotate-90" : ""}`}
+              className={`h-4 w-4 transition-transform duration-300 ease-out ${category.collapsed ? "-rotate-90" : "rotate-0"}`}
             />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             {editing ? (
               <div className="flex items-center gap-1">
                 <Input
@@ -172,6 +172,7 @@ function CategoryBlock({
                   onChange={(e) => setName(e.target.value)}
                   className="h-7 w-40"
                   autoFocus
+                  onClick={(e) => e.stopPropagation()}
                 />
                 <Button
                   size="icon"
@@ -196,8 +197,8 @@ function CategoryBlock({
               </>
             )}
           </div>
-        </button>
-        <div className="flex items-center gap-1">
+        </div>
+        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
           <span className="num text-base font-semibold">{formatMoney(total, currency)}</span>
           <Popover>
             <PopoverTrigger asChild>
@@ -221,10 +222,15 @@ function CategoryBlock({
             </PopoverContent>
           </Popover>
         </div>
-      </div>
+      </button>
 
-      {!category.collapsed && (
-        <div className="space-y-4 border-t border-border/50 pl-11 pt-4">
+      <div
+        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+          category.collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="space-y-4 border-t border-border/50 pl-11 pt-4">
           {category.transactions.map((t) => (
             <TransactionRow
               key={t.id}
@@ -276,8 +282,9 @@ function CategoryBlock({
               <Plus className="h-3 w-3" /> Add transaction
             </button>
           )}
+          </div>
         </div>
-      )}
+      </div>
     </section>
   );
 }
