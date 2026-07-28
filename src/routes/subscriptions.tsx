@@ -154,7 +154,7 @@ function SubRow({
 
   if (editing) {
     return (
-      <li className="space-y-2 py-3">
+      <li className="space-y-2 rounded-2xl border border-border/60 bg-muted/30 p-4">
         <div className="flex items-center gap-2">
           <Input value={name} onChange={(e) => setName(e.target.value)} className="h-8 flex-1" />
           <Button
@@ -199,7 +199,7 @@ function SubRow({
   }
 
   return (
-    <li className="flex items-center justify-between py-4">
+    <li className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-4 py-4">
       <button onClick={() => setEditing(true)} className="min-w-0 flex-1 text-left">
         <p className="truncate text-base font-semibold tracking-tight">{sub.name}</p>
         <p className="mt-0.5 text-xs text-muted-foreground/80">
@@ -236,7 +236,7 @@ function NewSubRow({
   const [price, setPrice] = useState("");
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
   return (
-    <li className="space-y-2 py-3">
+    <li className="space-y-2 rounded-2xl border border-border/60 bg-muted/30 p-4">
       <div className="flex items-center gap-2">
         <Input
           autoFocus
