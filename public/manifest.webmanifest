@@ -1,0 +1,14 @@
+{
+  "name": "Ledger — Personal Finance Tracker",
+  "short_name": "Ledger",
+  "description": "A calm, precise personal finance tracker for monthly salary, transactions and subscriptions.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fafafa",
+  "theme_color": "#fafafa",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }
+  ]
+}
