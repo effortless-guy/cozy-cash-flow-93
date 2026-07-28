@@ -61,12 +61,10 @@ function SubscriptionsPage() {
 
   return (
     <div>
-      <header className="sticky top-0 z-10 bg-background/85 px-6 pt-10 pb-8 backdrop-blur-md">
-        <div className="mb-8">
-          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Subscriptions
-          </span>
-        </div>
+      <header className="sticky top-0 z-10 bg-background/85 px-6 pt-8 pb-6 backdrop-blur-md">
+        <h1 className="mb-5 text-2xl font-semibold leading-none tracking-tight">
+          Subscriptions
+        </h1>
         {(() => {
           const showWeekly = settings.showWeeklyTotal !== false;
           const showYearly = settings.showYearlyTotal !== false;

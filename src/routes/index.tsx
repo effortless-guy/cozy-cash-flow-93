@@ -64,39 +64,33 @@ function SalaryPage() {
 
   return (
     <div>
-      <header className="sticky top-0 z-10 bg-background/85 backdrop-blur-md px-6 pt-10 pb-8">
-        <div className="mb-8 flex items-center justify-between">
-          <YearPicker
+      <header className="sticky top-0 z-10 bg-background/85 px-6 pt-8 pb-6 backdrop-blur-md">
+        <div className="flex items-start justify-between gap-4">
+          <PeriodPicker
             year={s.year}
+            month={s.month}
             years={s.years}
-            onChange={s.setYear}
+            months={s.months}
+            onMonthChange={(m) => {
+              s.ensureYearMonth(s.year, m);
+              s.setMonth(m);
+            }}
+            onYearChange={s.setYear}
             onAddYear={s.addYear}
           />
           <ImportTemplate onImport={s.importMonthTemplate} data={s.data} currentY={s.year} />
         </div>
-
-        <div className="flex items-end justify-between gap-4">
-          <MonthPicker
-            year={s.year}
-            month={s.month}
-            months={s.months}
-            onChange={(m) => {
-              s.ensureYearMonth(s.year, m);
-              s.setMonth(m);
-            }}
-          />
-          <div className="text-right">
-            <span className="mb-0.5 block text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-              Monthly Spend
-            </span>
-            <span className="num text-xl font-semibold">
-              {formatMoney(monthTotal, settings.currency)}
-            </span>
-          </div>
+        <div className="mt-3 flex items-baseline gap-2">
+          <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+            Monthly Spend
+          </span>
+          <span className="num text-lg font-semibold">
+            {formatMoney(monthTotal, settings.currency)}
+          </span>
         </div>
       </header>
 
-      <main className="space-y-10 px-6 pb-16 pt-2">
+      <main className="space-y-10 px-6 pb-16 pt-4">
         {s.currentMonth.categories.map((c) => (
           <CategoryBlock key={c.id} category={c} currency={settings.currency} api={s} />
         ))}
@@ -358,41 +352,61 @@ function TransactionRow({
   );
 }
 
-function MonthPicker({
+function PeriodPicker({
   year,
   month,
+  years,
   months,
-  onChange,
+  onMonthChange,
+  onYearChange,
+  onAddYear,
 }: {
   year: string;
   month: string;
+  years: string[];
   months: string[];
-  onChange: (m: string) => void;
+  onMonthChange: (m: string) => void;
+  onYearChange: (y: string) => void;
+  onAddYear: (y: string) => void;
 }) {
+  const [newYear, setNewYear] = useState("");
   const idx = parseInt(month, 10) - 1;
-  const label = MONTH_NAMES[idx] ?? month;
+  const monthLabel = MONTH_NAMES[idx] ?? month;
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-2 text-left">
-          <div>
-            <h1 className="text-3xl font-semibold leading-none tracking-tight">{label}</h1>
-          </div>
-          <ChevronDown className="mt-2 h-4 w-4 text-muted-foreground" />
+        <button className="group flex items-center gap-2 text-left">
+          <h1 className="text-2xl font-semibold leading-none tracking-tight">
+            {monthLabel}{" "}
+            <span className="text-muted-foreground/70">{year}</span>
+          </h1>
+          <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-56 p-2">
-        <div className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          {year}
+      <PopoverContent align="start" className="w-64 p-3">
+        <div className="mb-2 flex items-center gap-1 overflow-x-auto">
+          {years.map((y) => (
+            <button
+              key={y}
+              onClick={() => onYearChange(y)}
+              className={`shrink-0 rounded-md px-2 py-1 text-xs font-semibold tracking-wide transition-colors ${
+                y === year
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent"
+              }`}
+            >
+              {y}
+            </button>
+          ))}
         </div>
-        <div className="grid grid-cols-3 gap-1">
+        <div className="mb-3 grid grid-cols-3 gap-1">
           {MONTH_NAMES.map((name, i) => {
             const mkey = String(i + 1).padStart(2, "0");
             const has = months.includes(mkey);
             return (
               <button
                 key={mkey}
-                onClick={() => onChange(mkey)}
+                onClick={() => onMonthChange(mkey)}
                 className={`rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
                   mkey === month
                     ? "bg-primary text-primary-foreground"
@@ -406,48 +420,9 @@ function MonthPicker({
             );
           })}
         </div>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
-function YearPicker({
-  year,
-  years,
-  onChange,
-  onAddYear,
-}: {
-  year: string;
-  years: string[];
-  onChange: (y: string) => void;
-  onAddYear: (y: string) => void;
-}) {
-  const [newYear, setNewYear] = useState("");
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-border">
-          <span>{year}</span>
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-56 p-2">
-        <div className="mb-2 flex flex-col gap-1">
-          {years.map((y) => (
-            <button
-              key={y}
-              onClick={() => onChange(y)}
-              className={`rounded-md px-2 py-1.5 text-left text-sm ${
-                y === year ? "bg-primary text-primary-foreground" : "hover:bg-accent"
-              }`}
-            >
-              {y}
-            </button>
-          ))}
-        </div>
         <div className="flex items-center gap-1 border-t border-border pt-2">
           <Input
-            placeholder="e.g. 2026"
+            placeholder="Add year"
             value={newYear}
             onChange={(e) => setNewYear(e.target.value)}
             className="h-8"
