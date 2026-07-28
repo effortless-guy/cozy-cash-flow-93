@@ -114,6 +114,25 @@ function SettingsPage() {
           </Row>
         </Section>
 
+        <Section title="Subscriptions">
+          <Row label="Show weekly total" description="Display weekly total in Subscriptions header">
+            <Switch
+              checked={settings.showWeeklyTotal !== false}
+              onCheckedChange={(checked) =>
+                setSettings({ ...settings, showWeeklyTotal: checked })
+              }
+            />
+          </Row>
+          <Row label="Show yearly total" description="Display yearly total in Subscriptions header">
+            <Switch
+              checked={settings.showYearlyTotal !== false}
+              onCheckedChange={(checked) =>
+                setSettings({ ...settings, showYearlyTotal: checked })
+              }
+            />
+          </Row>
+        </Section>
+
         <Section title="Data">
           <div className="p-4">
             <button
