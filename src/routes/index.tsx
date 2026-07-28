@@ -309,7 +309,7 @@ function TransactionRow({
 
   if (editing) {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 py-1">
         <Input value={n} onChange={(e) => setN(e.target.value)} className="h-8 flex-1" />
         <Input
           value={a}
@@ -340,10 +340,12 @@ function TransactionRow({
   return (
     <button
       onClick={() => setEditing(true)}
-      className="flex w-full items-center justify-between text-left"
+      className="-mx-2 flex w-[calc(100%+1rem)] items-center justify-between gap-4 rounded-lg px-2 py-2.5 text-left transition-colors hover:bg-accent/60"
     >
-      <span className="truncate text-sm text-muted-foreground/70">{name}</span>
-      <span className="num text-sm text-muted-foreground">{formatMoney(amount, currency)}</span>
+      <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">{name}</span>
+      <span className="num shrink-0 text-sm tabular-nums text-foreground/80">
+        {formatMoney(amount, currency)}
+      </span>
     </button>
   );
 }
