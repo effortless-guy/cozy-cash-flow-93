@@ -154,11 +154,12 @@ function CategoryBlock({
 
   return (
     <section className="space-y-4 rounded-2xl border border-border/60 bg-muted/30 p-5">
-      <button
-        onClick={() => !editing && api.toggleCategory(category.id)}
-        className="group flex w-full items-center justify-between gap-3 text-left"
-      >
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => !editing && api.toggleCategory(category.id)}
+          className="group flex min-w-0 flex-1 items-center gap-3 text-left"
+        >
           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <ChevronDown
               className={`h-4 w-4 transition-transform duration-300 ease-out ${category.collapsed ? "-rotate-90" : "rotate-0"}`}
@@ -197,8 +198,8 @@ function CategoryBlock({
               </>
             )}
           </div>
-        </div>
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+        </button>
+        <div className="flex items-center gap-1">
           <span className="num text-base font-semibold">{formatMoney(total, currency)}</span>
           <Popover>
             <PopoverTrigger asChild>
@@ -222,7 +223,7 @@ function CategoryBlock({
             </PopoverContent>
           </Popover>
         </div>
-      </button>
+      </div>
 
       <div
         className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
