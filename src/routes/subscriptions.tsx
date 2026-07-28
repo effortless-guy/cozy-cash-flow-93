@@ -61,16 +61,29 @@ function SubscriptionsPage() {
             <Plus className="mr-1 h-4 w-4" /> Add
           </Button>
         </div>
-        <div className="flex items-end justify-between">
-          <h1 className="text-3xl font-semibold leading-none tracking-tight">
-            {subs.length} {subs.length === 1 ? "service" : "services"}
-          </h1>
-          <div className="text-right">
+        <div className="grid grid-cols-3 gap-3">
+          <div className="text-left">
             <span className="mb-0.5 block text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-              Monthly total
+              Weekly
+            </span>
+            <span className="num text-lg font-semibold">
+              {formatMoney((total * 12) / 52, settings.currency)}
+            </span>
+          </div>
+          <div className="text-center">
+            <span className="mb-0.5 block text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+              Monthly
             </span>
             <span className="num text-xl font-semibold">
               {formatMoney(total, settings.currency)}
+            </span>
+          </div>
+          <div className="text-right">
+            <span className="mb-0.5 block text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+              Yearly
+            </span>
+            <span className="num text-lg font-semibold">
+              {formatMoney(total * 12, settings.currency)}
             </span>
           </div>
         </div>
