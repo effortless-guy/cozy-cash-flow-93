@@ -52,8 +52,8 @@ function SubscriptionsPage() {
 
   return (
     <div>
-      <header className="sticky top-0 z-10 bg-background/85 px-5 pt-8 pb-6 backdrop-blur-md">
-        <div className="mb-4 flex items-center justify-between">
+      <header className="sticky top-0 z-10 bg-background/85 px-6 pt-10 pb-8 backdrop-blur-md">
+        <div className="mb-8 flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Subscriptions
           </span>
@@ -99,7 +99,7 @@ function SubscriptionsPage() {
         })()}
       </header>
 
-      <main className="px-5 pb-8">
+      <main className="px-6 pb-16 pt-4">
         <ul className="divide-y divide-border/60">
           {subs.map((s) => (
             <SubRow
@@ -201,14 +201,14 @@ function SubRow({
   return (
     <li className="flex items-center justify-between py-4">
       <button onClick={() => setEditing(true)} className="min-w-0 flex-1 text-left">
-        <p className="truncate text-base font-medium">{sub.name}</p>
-        <p className="text-xs text-muted-foreground">
+        <p className="truncate text-base font-semibold tracking-tight">{sub.name}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground/80">
           {formatMoney(sub.price, currency)} · {CYCLE_LABEL[sub.cycle]}
         </p>
       </button>
       <div className="flex items-center gap-2 pl-3">
         <div className="text-right">
-          <span className="num text-base font-semibold">
+          <span className="num text-base font-medium text-muted-foreground">
             {formatMoney(monthly, currency)}
           </span>
           <span className="ml-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">

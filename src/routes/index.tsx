@@ -63,8 +63,8 @@ function SalaryPage() {
 
   return (
     <div>
-      <header className="sticky top-0 z-10 bg-background/85 backdrop-blur-md px-5 pt-8 pb-6">
-        <div className="mb-6 flex items-center justify-between">
+      <header className="sticky top-0 z-10 bg-background/85 backdrop-blur-md px-6 pt-10 pb-8">
+        <div className="mb-8 flex items-center justify-between">
           <YearPicker
             year={s.year}
             years={s.years}
@@ -95,7 +95,7 @@ function SalaryPage() {
         </div>
       </header>
 
-      <main className="space-y-6 px-5 pb-8">
+      <main className="space-y-10 px-6 pb-16 pt-2">
         {s.currentMonth.categories.map((c) => (
           <CategoryBlock key={c.id} category={c} currency={settings.currency} api={s} />
         ))}
@@ -153,8 +153,8 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between border-b border-border/60 py-2">
+    <section className="space-y-4">
+      <div className="flex items-center justify-between border-b border-border/60 pb-3">
         <button
           onClick={() => api.toggleCategory(category.id)}
           className="flex flex-1 items-center gap-3 text-left"
@@ -188,8 +188,8 @@ function CategoryBlock({
               </div>
             ) : (
               <>
-                <h2 className="truncate text-base font-medium">{category.name}</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="truncate text-lg font-semibold tracking-tight">{category.name}</h2>
+                <p className="text-xs text-muted-foreground/80">
                   {category.transactions.length}{" "}
                   {category.transactions.length === 1 ? "transaction" : "transactions"}
                 </p>
@@ -224,7 +224,7 @@ function CategoryBlock({
       </div>
 
       {!category.collapsed && (
-        <div className="space-y-3 pl-11">
+        <div className="space-y-4 pl-11 pt-1">
           {category.transactions.map((t) => (
             <TransactionRow
               key={t.id}
@@ -334,8 +334,8 @@ function TransactionRow({
       onClick={() => setEditing(true)}
       className="flex w-full items-center justify-between text-left"
     >
-      <span className="truncate text-base text-muted-foreground">{name}</span>
-      <span className="num text-base">{formatMoney(amount, currency)}</span>
+      <span className="truncate text-sm text-muted-foreground/70">{name}</span>
+      <span className="num text-sm text-muted-foreground">{formatMoney(amount, currency)}</span>
     </button>
   );
 }

@@ -51,14 +51,14 @@ function SettingsPage() {
 
   return (
     <div>
-      <header className="sticky top-0 z-10 bg-background/85 px-5 pt-8 pb-6 backdrop-blur-md">
+      <header className="sticky top-0 z-10 bg-background/85 px-6 pt-10 pb-8 backdrop-blur-md">
         <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
           Preferences
         </span>
-        <h1 className="mt-1 text-3xl font-semibold leading-none tracking-tight">Settings</h1>
+        <h1 className="mt-2 text-3xl font-semibold leading-none tracking-tight">Settings</h1>
       </header>
 
-      <main className="space-y-8 px-5 pb-8">
+      <main className="space-y-12 px-6 pb-16 pt-4">
         <Section title="Display">
           <Row label="Currency">
             <Select
@@ -159,8 +159,8 @@ function SettingsPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="space-y-3">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+    <section className="space-y-4">
+      <h2 className="px-1 text-[11px] font-semibold uppercase tracking-widest text-foreground/70">
         {title}
       </h2>
       <div className="divide-y divide-border/60 rounded-xl border border-border bg-card">
@@ -180,11 +180,11 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 px-4 py-3">
+    <div className="flex items-center justify-between gap-4 px-4 py-4">
       <div className="min-w-0">
         <Label className="text-sm font-medium">{label}</Label>
         {description && (
-          <p className="text-xs text-muted-foreground">{description}</p>
+          <p className="mt-1 text-xs text-muted-foreground/80">{description}</p>
         )}
       </div>
       <div className="shrink-0">{children}</div>
