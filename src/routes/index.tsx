@@ -81,13 +81,29 @@ function SalaryPage() {
           />
           <ImportTemplate onImport={s.importMonthTemplate} data={s.data} currentY={s.year} />
         </div>
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-            Monthly Spend
-          </span>
-          <span className="num text-lg font-semibold">
-            {formatMoney(monthTotal, settings.currency)}
-          </span>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl border border-border/60 bg-muted/30 px-4 py-3">
+            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+              Spend
+            </p>
+            <p className="num mt-1 text-xl font-semibold tracking-tight">
+              {formatMoney(monthTotal, settings.currency)}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSalaryOpen(true)}
+            className="rounded-2xl border border-border/60 bg-muted/30 px-4 py-3 text-left"
+          >
+            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+              Remaining
+            </p>
+            <p className="num mt-1 text-xl font-semibold tracking-tight">
+              {income === undefined
+                ? "--"
+                : formatMoney(income - monthTotal, settings.currency)}
+            </p>
+          </button>
         </div>
       </header>
 
@@ -98,6 +114,52 @@ function SalaryPage() {
       </main>
 
       <Fab label="Add category" onClick={() => setAddCatOpen(true)} />
+
+      <Dialog
+        open={salaryOpen}
+        onOpenChange={(v) => {
+          if (v) setSalaryInput(income === undefined ? "" : String(income));
+          setSalaryOpen(v);
+        }}
+      >
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Monthly salary</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Label className="text-xs uppercase tracking-widest text-muted-foreground">
+              Amount
+            </Label>
+            <Input
+              autoFocus
+              inputMode="decimal"
+              value={salaryInput}
+              onChange={(e) => setSalaryInput(e.target.value)}
+              placeholder="0.00"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                s.setIncome(undefined);
+                setSalaryOpen(false);
+              }}
+            >
+              Clear
+            </Button>
+            <Button
+              onClick={() => {
+                const v = parseFloat(salaryInput);
+                s.setIncome(Number.isNaN(v) ? undefined : v);
+                setSalaryOpen(false);
+              }}
+            >
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={addCatOpen}
