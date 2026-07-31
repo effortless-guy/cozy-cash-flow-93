@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Fab } from "../components/Fab";
+import { getCategoryIcon } from "../lib/category-icons";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -148,6 +149,7 @@ function CategoryBlock({
   api: ReturnType<typeof useSalary>;
 }) {
   const total = category.transactions.reduce((a, t) => a + t.amount, 0);
+  const Icon = getCategoryIcon(category.name);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(category.name);
   const [addOpen, setAddOpen] = useState(false);
@@ -162,9 +164,12 @@ function CategoryBlock({
           onClick={() => !editing && api.toggleCategory(category.id)}
           className="group flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-card text-foreground">
+            <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
             <ChevronDown
-              className={`h-4 w-4 transition-transform duration-300 ease-out ${category.collapsed ? "-rotate-90" : "rotate-0"}`}
+              className={`absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-background text-muted-foreground transition-transform duration-300 ease-out ${
+                category.collapsed ? "-rotate-90" : "rotate-0"
+              }`}
             />
           </div>
           <div className="min-w-0 flex-1">
