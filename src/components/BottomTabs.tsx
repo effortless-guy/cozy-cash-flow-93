@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { Wallet, Repeat, Settings as SettingsIcon } from "lucide-react";
+import { Wallet, Repeat, BookUser, Settings as SettingsIcon } from "lucide-react";
 
 const tabs = [
   { to: "/", label: "Salary", icon: Wallet, exact: true },
   { to: "/subscriptions", label: "Subs", icon: Repeat, exact: false },
+  { to: "/khatabook", label: "Khatabook", icon: BookUser, exact: false },
   { to: "/settings", label: "Settings", icon: SettingsIcon, exact: false },
 ] as const;
 
