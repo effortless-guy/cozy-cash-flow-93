@@ -201,19 +201,19 @@ function SubRow({
   }
 
   return (
-    <li className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-4 py-4">
-      <button onClick={() => setEditing(true)} className="min-w-0 flex-1 text-left">
-        <p className="truncate text-base font-semibold tracking-tight">{sub.name}</p>
-        <p className="mt-0.5 text-xs text-muted-foreground/80">
+    <li className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/30 px-4 py-2.5">
+      <button onClick={() => setEditing(true)} className="min-h-11 min-w-0 flex-1 text-left">
+        <p className="truncate text-[17px] font-semibold leading-tight tracking-tight">{sub.name}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground/60">
           {formatMoney(sub.price, currency)} · {CYCLE_LABEL[sub.cycle]}
         </p>
       </button>
       <div className="flex items-center gap-2 pl-3">
         <div className="text-right">
-          <span className="num text-base font-medium text-muted-foreground">
+          <span className="num text-base font-semibold">
             {formatMoney(monthly, currency)}
           </span>
-          <span className="ml-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+          <span className="ml-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground/60">
             /mo
           </span>
         </div>
