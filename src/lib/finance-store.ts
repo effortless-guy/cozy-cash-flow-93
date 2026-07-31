@@ -155,21 +155,25 @@ export function useSalary() {
 
   const addCategory = (name: string) =>
     updateMonth((m) => ({
+      ...m,
       categories: [...m.categories, { id: uid(), name, transactions: [] }],
     }));
 
   const renameCategory = (cid: string, name: string) =>
     updateMonth((m) => ({
+      ...m,
       categories: m.categories.map((c) => (c.id === cid ? { ...c, name } : c)),
     }));
 
   const deleteCategory = (cid: string) =>
     updateMonth((m) => ({
+      ...m,
       categories: m.categories.filter((c) => c.id !== cid),
     }));
 
   const toggleCategory = (cid: string) =>
     updateMonth((m) => ({
+      ...m,
       categories: m.categories.map((c) =>
         c.id === cid ? { ...c, collapsed: !c.collapsed } : c,
       ),
@@ -177,6 +181,7 @@ export function useSalary() {
 
   const addTransaction = (cid: string, name: string, amount: number) =>
     updateMonth((m) => ({
+      ...m,
       categories: m.categories.map((c) =>
         c.id === cid
           ? {
@@ -196,6 +201,7 @@ export function useSalary() {
     patch: Partial<Transaction>,
   ) =>
     updateMonth((m) => ({
+      ...m,
       categories: m.categories.map((c) =>
         c.id === cid
           ? {
@@ -210,6 +216,7 @@ export function useSalary() {
 
   const deleteTransaction = (cid: string, tid: string) =>
     updateMonth((m) => ({
+      ...m,
       categories: m.categories.map((c) =>
         c.id === cid
           ? { ...c, transactions: c.transactions.filter((t) => t.id !== tid) }
