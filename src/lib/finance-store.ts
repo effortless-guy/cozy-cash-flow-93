@@ -7,7 +7,7 @@ export type Category = {
   collapsed?: boolean;
   transactions: Transaction[];
 };
-export type MonthData = { categories: Category[] };
+export type MonthData = { categories: Category[]; income?: number };
 export type YearData = { months: Record<string, MonthData> }; // month key: "01".."12"
 export type SalaryData = { years: Record<string, YearData> };
 
@@ -239,6 +239,9 @@ export function useSalary() {
     updateMonth(() => cloned);
   };
 
+  const setIncome = (value: number | undefined) =>
+    updateMonth((m) => ({ ...m, income: value }));
+
   return {
     hydrated,
     year,
@@ -259,6 +262,7 @@ export function useSalary() {
     deleteTransaction,
     addYear,
     importMonthTemplate,
+    setIncome,
   };
 }
 
