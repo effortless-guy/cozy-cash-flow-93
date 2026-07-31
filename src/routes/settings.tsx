@@ -52,10 +52,7 @@ function SettingsPage() {
   return (
     <div>
       <header className="sticky top-0 z-10 bg-background/85 px-6 pt-10 pb-8 backdrop-blur-md">
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Preferences
-        </span>
-        <h1 className="mt-2 text-3xl font-semibold leading-none tracking-tight">Settings</h1>
+        <h1 className="text-3xl font-semibold leading-none tracking-tight">Settings</h1>
       </header>
 
       <main className="space-y-12 px-6 pb-16 pt-4">
