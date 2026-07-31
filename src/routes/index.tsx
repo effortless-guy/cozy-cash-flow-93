@@ -98,7 +98,7 @@ function SalaryPage() {
           <Pencil className="h-3 w-3 text-muted-foreground" />
         </button>
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-border/60 bg-muted/30 px-4 py-3">
+          <div className="rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
             <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
               Spend
             </p>
@@ -109,7 +109,7 @@ function SalaryPage() {
           <button
             type="button"
             onClick={() => setSalaryOpen(true)}
-            className="rounded-2xl border border-border/60 bg-muted/30 px-4 py-3 text-left"
+            className="rounded-2xl border border-border/50 bg-muted/30 px-4 py-3 text-left"
           >
             <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
               Remaining
@@ -235,14 +235,14 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className="space-y-3 rounded-2xl border border-border/60 bg-muted/30 px-4 py-3.5">
+    <section className="space-y-3 rounded-2xl border border-border/50 bg-muted/30 px-4 py-3.5">
       <div className="flex min-h-11 items-center justify-between gap-3">
         <button
           type="button"
           onClick={() => !editing && api.toggleCategory(category.id)}
           className="group flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-card text-foreground">
+          <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/55 bg-card text-foreground">
             <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
             <ChevronDown
               className={`absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-background text-muted-foreground transition-transform duration-300 ease-out ${
@@ -288,7 +288,7 @@ function CategoryBlock({
           <span className="num text-base font-semibold">{formatMoney(total, currency)}</span>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7">
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground/50 transition-colors duration-200 hover:text-foreground">
                 <Pencil className="h-3.5 w-3.5" />
               </Button>
             </PopoverTrigger>
