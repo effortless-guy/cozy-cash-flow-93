@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as KhatabookRouteImport } from './routes/khatabook'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SubscriptionsRoute = SubscriptionsRouteImport.update({
@@ -23,6 +24,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KhatabookRoute = KhatabookRouteImport.update({
+  id: '/khatabook',
+  path: '/khatabook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/khatabook': typeof KhatabookRoute
   '/settings': typeof SettingsRoute
   '/subscriptions': typeof SubscriptionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/khatabook': typeof KhatabookRoute
   '/settings': typeof SettingsRoute
   '/subscriptions': typeof SubscriptionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/khatabook': typeof KhatabookRoute
   '/settings': typeof SettingsRoute
   '/subscriptions': typeof SubscriptionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/settings' | '/subscriptions'
+  fullPaths: '/' | '/khatabook' | '/settings' | '/subscriptions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/settings' | '/subscriptions'
-  id: '__root__' | '/' | '/settings' | '/subscriptions'
+  to: '/' | '/khatabook' | '/settings' | '/subscriptions'
+  id: '__root__' | '/' | '/khatabook' | '/settings' | '/subscriptions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  KhatabookRoute: typeof KhatabookRoute
   SettingsRoute: typeof SettingsRoute
   SubscriptionsRoute: typeof SubscriptionsRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/khatabook': {
+      id: '/khatabook'
+      path: '/khatabook'
+      fullPath: '/khatabook'
+      preLoaderRoute: typeof KhatabookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  KhatabookRoute: KhatabookRoute,
   SettingsRoute: SettingsRoute,
   SubscriptionsRoute: SubscriptionsRoute,
 }
