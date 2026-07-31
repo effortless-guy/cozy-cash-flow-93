@@ -90,7 +90,7 @@ function SalaryPage() {
         </div>
       </header>
 
-      <main className="space-y-10 px-6 pb-16 pt-4">
+      <main className="space-y-7 px-6 pb-16 pt-4">
         {s.currentMonth.categories.map((c) => (
           <CategoryBlock key={c.id} category={c} currency={settings.currency} api={s} />
         ))}
@@ -155,12 +155,12 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className="space-y-4 rounded-2xl border border-border/60 bg-muted/30 p-5">
-      <div className="flex items-center justify-between gap-3">
+    <section className="space-y-3 rounded-2xl border border-border/60 bg-muted/30 px-4 py-3.5">
+      <div className="flex min-h-11 items-center justify-between gap-3">
         <button
           type="button"
           onClick={() => !editing && api.toggleCategory(category.id)}
-          className="group flex min-w-0 flex-1 items-center gap-3 text-left"
+          className="group flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
         >
           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <ChevronDown
@@ -233,7 +233,7 @@ function CategoryBlock({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="space-y-4 border-t border-border/50 pl-11 pt-4">
+          <div className="space-y-1 border-t border-border/50 pl-11 pt-2.5">
           {category.transactions.map((t) => (
             <TransactionRow
               key={t.id}
@@ -246,7 +246,7 @@ function CategoryBlock({
           ))}
 
           {addOpen ? (
-            <div className="flex items-center gap-2">
+            <div className="flex min-h-11 items-center gap-2">
               <Input
                 placeholder="Name"
                 value={txName}
@@ -280,7 +280,7 @@ function CategoryBlock({
           ) : (
             <button
               onClick={() => setAddOpen(true)}
-              className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+              className="flex min-h-11 items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
             >
               <Plus className="h-3 w-3" /> Add transaction
             </button>
@@ -311,7 +311,7 @@ function TransactionRow({
 
   if (editing) {
     return (
-      <div className="flex items-center gap-2 py-1">
+      <div className="flex min-h-11 items-center gap-2">
         <Input value={n} onChange={(e) => setN(e.target.value)} className="h-8 flex-1" />
         <Input
           value={a}
@@ -342,7 +342,7 @@ function TransactionRow({
   return (
     <button
       onClick={() => setEditing(true)}
-      className="-mx-2 flex w-[calc(100%+1rem)] items-center justify-between gap-4 rounded-lg px-2 py-2.5 text-left transition-colors hover:bg-accent/60"
+      className="-mx-2 flex min-h-11 w-[calc(100%+1rem)] items-center justify-between gap-4 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-accent/60"
     >
       <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">{name}</span>
       <span className="num shrink-0 text-sm tabular-nums text-foreground/80">
