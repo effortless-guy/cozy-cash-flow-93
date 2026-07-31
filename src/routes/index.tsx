@@ -84,6 +84,19 @@ function SalaryPage() {
           />
           <ImportTemplate onImport={s.importMonthTemplate} data={s.data} currentY={s.year} />
         </div>
+        <button
+          type="button"
+          onClick={() => setSalaryOpen(true)}
+          className="mt-2 flex items-baseline gap-2 text-left"
+        >
+          <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+            Salary
+          </span>
+          <span className="num text-sm font-medium">
+            {income === undefined ? "Set salary" : formatMoney(income, settings.currency)}
+          </span>
+          <Pencil className="h-3 w-3 text-muted-foreground" />
+        </button>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div className="rounded-2xl border border-border/60 bg-muted/30 px-4 py-3">
             <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
