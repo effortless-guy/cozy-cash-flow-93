@@ -51,6 +51,9 @@ function SalaryPage() {
   const { settings } = useSettings();
   const [addCatOpen, setAddCatOpen] = useState(false);
   const [newCatName, setNewCatName] = useState("");
+  const [salaryOpen, setSalaryOpen] = useState(false);
+  const [salaryInput, setSalaryInput] = useState("");
+  const income = s.currentMonth.income;
 
   const monthTotal = useMemo(
     () =>
