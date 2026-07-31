@@ -108,7 +108,7 @@ function SubscriptionsPage() {
       </header>
 
       <main className="px-6 pb-16 pt-4">
-        <ul className="space-y-3">
+        <ul className="space-y-2">
           {subs.map((s) => (
             <SubRow
               key={s.id}
