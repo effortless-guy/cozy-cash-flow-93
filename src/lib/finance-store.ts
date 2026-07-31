@@ -236,6 +236,7 @@ export function useSalary() {
     if (!src) return;
     // Deep clone with new ids
     const cloned: MonthData = {
+      income: src.income,
       categories: src.categories.map((c) => ({
         ...c,
         id: uid(),
