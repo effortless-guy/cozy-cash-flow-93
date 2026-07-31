@@ -92,6 +92,89 @@ function usePersisted<T>(key: string, initial: () => T) {
 const SALARY_KEY = "pft.salary.v1";
 const SUBS_KEY = "pft.subs.v1";
 const SETTINGS_KEY = "pft.settings.v1";
+const KHATA_KEY = "pft.khatabook.v1";
+
+export type LedgerEntry = {
+  id: string;
+  note: string;
+  amount: number;
+  /** "lent" = they owe you, "borrowed" = you owe them */
+  type: "lent" | "borrowed";
+  date: string;
+};
+export type Person = {
+  id: string;
+  name: string;
+  collapsed?: boolean;
+  entries: LedgerEntry[];
+};
+
+export const personBalance = (p: Person) =>
+  p.entries.reduce((a, e) => a + (e.type === "lent" ? e.amount : -e.amount), 0);
+
+export function useKhatabook() {
+  const [people, setPeople, hydrated] = usePersisted<Person[]>(KHATA_KEY, () => [
+    {
+      id: uid(),
+      name: "Alex Morgan",
+      entries: [
+        { id: uid(), note: "Dinner split", amount: 45, type: "lent", date: new Date().toISOString().slice(0, 10) },
+        { id: uid(), note: "Concert ticket", amount: 120, type: "lent", date: new Date().toISOString().slice(0, 10) },
+      ],
+    },
+    {
+      id: uid(),
+      name: "Priya Sharma",
+      collapsed: true,
+      entries: [
+        { id: uid(), note: "Cab fare", amount: 30, type: "borrowed", date: new Date().toISOString().slice(0, 10) },
+      ],
+    },
+  ]);
+
+  const addPerson = (name: string) =>
+    setPeople((prev) => [...prev, { id: uid(), name, entries: [] }]);
+  const renamePerson = (id: string, name: string) =>
+    setPeople((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
+  const deletePerson = (id: string) =>
+    setPeople((prev) => prev.filter((p) => p.id !== id));
+  const togglePerson = (id: string) =>
+    setPeople((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, collapsed: !p.collapsed } : p)),
+    );
+  const addEntry = (pid: string, entry: Omit<LedgerEntry, "id">) =>
+    setPeople((prev) =>
+      prev.map((p) =>
+        p.id === pid ? { ...p, entries: [...p.entries, { ...entry, id: uid() }] } : p,
+      ),
+    );
+  const updateEntry = (pid: string, eid: string, patch: Partial<LedgerEntry>) =>
+    setPeople((prev) =>
+      prev.map((p) =>
+        p.id === pid
+          ? { ...p, entries: p.entries.map((e) => (e.id === eid ? { ...e, ...patch } : e)) }
+          : p,
+      ),
+    );
+  const deleteEntry = (pid: string, eid: string) =>
+    setPeople((prev) =>
+      prev.map((p) =>
+        p.id === pid ? { ...p, entries: p.entries.filter((e) => e.id !== eid) } : p,
+      ),
+    );
+
+  return {
+    people,
+    hydrated,
+    addPerson,
+    renamePerson,
+    deletePerson,
+    togglePerson,
+    addEntry,
+    updateEntry,
+    deleteEntry,
+  };
+}
 
 export function useSalary() {
   const now = new Date();
