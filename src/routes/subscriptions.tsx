@@ -69,35 +69,39 @@ function SubscriptionsPage() {
           const showWeekly = settings.showWeeklyTotal !== false;
           const showYearly = settings.showYearlyTotal !== false;
           return (
-            <div className="flex items-end justify-between gap-3">
-              {showWeekly && (
-                <div className="text-left">
-                  <span className="mb-0.5 block text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                    Weekly
-                  </span>
-                  <span className="num text-lg font-semibold">
-                    {formatMoney((total * 12) / 52, settings.currency)}
-                  </span>
-                </div>
-              )}
-              <div className={showWeekly || showYearly ? "text-center" : "text-left"}>
+            <div className="grid grid-cols-3 items-end gap-3">
+              <div className="text-left">
+                {showWeekly && (
+                  <>
+                    <span className="mb-0.5 block text-[9px] font-medium uppercase tracking-widest text-muted-foreground/70">
+                      Weekly
+                    </span>
+                    <span className="num text-sm font-medium text-muted-foreground">
+                      {formatMoney((total * 12) / 52, settings.currency)}
+                    </span>
+                  </>
+                )}
+              </div>
+              <div className="text-center">
                 <span className="mb-0.5 block text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
                   Monthly
                 </span>
-                <span className="num text-xl font-semibold">
+                <span className="num text-2xl font-semibold tracking-tight">
                   {formatMoney(total, settings.currency)}
                 </span>
               </div>
-              {showYearly && (
-                <div className="text-right">
-                  <span className="mb-0.5 block text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                    Yearly
-                  </span>
-                  <span className="num text-lg font-semibold">
-                    {formatMoney(total * 12, settings.currency)}
-                  </span>
-                </div>
-              )}
+              <div className="text-right">
+                {showYearly && (
+                  <>
+                    <span className="mb-0.5 block text-[9px] font-medium uppercase tracking-widest text-muted-foreground/70">
+                      Yearly
+                    </span>
+                    <span className="num text-sm font-medium text-muted-foreground">
+                      {formatMoney(total * 12, settings.currency)}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           );
         })()}
