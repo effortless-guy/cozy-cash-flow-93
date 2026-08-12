@@ -185,8 +185,14 @@ export function useNetWorth() {
     setActivity((prev) => [{ id: uid(), action, timestamp: new Date().toISOString() }, ...prev].slice(0, 50));
 
   const addAsset = (asset: Omit<NetWorthAsset, "id" | "entries" | "archived">) => {
-    setAssets((prev) => [...prev, { ...asset, id: uid(), entries: [], archived: false }]);
-    addActivity(`${asset.name} asset added`);
+    setAssets((prev) => {
+      const existing = prev.find(a => a.name === asset.name);
+      if (existing) {
+        return prev.map(a => a.id === existing.id ? { ...a, archived: false, currentValue: a.currentValue + asset.currentValue } : a);
+      }
+      return [...prev, { ...asset, id: uid(), entries: [], archived: false }];
+    });
+    addActivity(`${asset.name} asset updated or added`);
   };
 
   const updateAsset = (id: string, patch: Partial<NetWorthAsset>) => {

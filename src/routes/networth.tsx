@@ -171,7 +171,7 @@ function NetWorthPage() {
       <Fab label="Add asset" onClick={() => setAddOpen(true)} />
 
       {/* Monthly Update Dialog */}
-      <Dialog open={updateOpen} onOpenChange={setAddOpen}>
+      <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
         <DialogContent className="max-w-sm p-0 overflow-hidden rounded-3xl border-none">
           <div className="bg-primary/5 px-6 pt-8 pb-6">
             <DialogHeader>
@@ -234,74 +234,39 @@ function NetWorthPage() {
           
           <div className="p-6 space-y-5">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Identity</Label>
-              <Input 
-                className="h-12 px-4 rounded-2xl bg-muted/20 border-none text-sm font-medium focus-visible:ring-1 focus-visible:ring-primary/20"
-                placeholder="Asset Name (e.g. Stocks Portfolio)" 
-                value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
-              />
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Asset Type</Label>
+                <Select 
+                    value={formData.type} 
+                    onValueChange={(v: AssetType) => setFormData({ ...formData, type: v })}
+                >
+                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none text-sm font-medium px-4">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-border/40">
+                        {ASSET_TYPES.map(t => <SelectItem key={t} value={t} className="text-xs font-medium rounded-xl">{t}</SelectItem>)}
+                    </SelectContent>
+                </Select>
             </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Category</Label>
-                    <Select 
-                        value={formData.type} 
-                        onValueChange={(v: AssetType) => setFormData({ ...formData, type: v })}
-                    >
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none text-sm font-medium px-4">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-border/40">
-                            {ASSET_TYPES.map(t => <SelectItem key={t} value={t} className="text-xs font-medium rounded-xl">{t}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Initial Value</Label>
-                    <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground/40">₹</span>
-                        <Input 
-                            inputMode="decimal" 
-                            className="h-12 pl-7 rounded-2xl bg-muted/20 border-none text-sm font-bold tabular-nums focus-visible:ring-1 focus-visible:ring-primary/20"
-                            placeholder="0.00" 
-                            value={formData.currentValue}
-                            onChange={e => setFormData({ ...formData, currentValue: e.target.value })}
-                        />
-                    </div>
+
+            <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Amount</Label>
+                <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground/40">₹</span>
+                    <Input 
+                        inputMode="decimal" 
+                        className="h-12 pl-7 rounded-2xl bg-muted/20 border-none text-sm font-bold tabular-nums focus-visible:ring-1 focus-visible:ring-primary/20"
+                        placeholder="0.00" 
+                        value={formData.currentValue}
+                        onChange={e => setFormData({ ...formData, currentValue: e.target.value })}
+                    />
                 </div>
             </div>
 
             <div className="pt-2">
                 <div className="flex items-center justify-between mb-4 px-1">
-                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Recurring Monthly</Label>
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Recurring</Label>
                     <Switch checked={!!formData.recurringAmount} onCheckedChange={(checked) => setFormData({...formData, recurringAmount: checked ? "0" : ""})} />
                 </div>
-                
-                {formData.recurringAmount !== "" && (
-                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold text-muted-foreground/40 px-1">Amount (₹)</Label>
-                            <Input 
-                                className="h-11 rounded-2xl bg-muted/20 border-none text-sm font-bold tabular-nums"
-                                placeholder="0.00" 
-                                value={formData.recurringAmount}
-                                onChange={e => setFormData({ ...formData, recurringAmount: e.target.value })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold text-muted-foreground/40 px-1">Day of Month</Label>
-                            <Input 
-                                type="number" 
-                                className="h-11 rounded-2xl bg-muted/20 border-none text-sm font-bold tabular-nums"
-                                min="1" max="31"
-                                value={formData.recurringDay}
-                                onChange={e => setFormData({ ...formData, recurringDay: e.target.value })}
-                            />
-                        </div>
-                    </div>
-                )}
             </div>
           </div>
           
@@ -309,18 +274,23 @@ function NetWorthPage() {
             <Button variant="ghost" className="flex-1 h-12 rounded-2xl font-bold text-muted-foreground" onClick={() => setAddOpen(false)}>Cancel</Button>
             <Button className="flex-1 h-12 rounded-2xl font-bold shadow-lg shadow-primary/10" onClick={() => {
               const val = parseFloat(formData.currentValue);
-              if (formData.name && !isNaN(val)) {
+              if (!isNaN(val)) {
+                // Determine name from type
+                let assetName = formData.type as string;
+                if (formData.type === "Savings") assetName = "Savings Account";
+                else if (formData.type === "Emergency Fund") assetName = "Emergency Fund";
+
                 nw.addAsset({
-                  name: formData.name,
+                  name: assetName,
                   type: formData.type,
                   currentValue: val,
                   recurringAmount: formData.recurringAmount ? parseFloat(formData.recurringAmount) : undefined,
-                  recurringDay: formData.recurringDay ? parseInt(formData.recurringDay) : undefined,
+                  recurringDay: 1, // Default to 1st
                 });
                 setAddOpen(false);
                 setFormData({ name: "", type: "Savings", currentValue: "", recurringAmount: "", recurringDay: "1" });
               }
-            }}>Create Asset</Button>
+            }}>Save</Button>
           </div>
         </DialogContent>
       </Dialog>
