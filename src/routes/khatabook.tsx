@@ -235,10 +235,10 @@ function PersonBlock({
               </div>
             ) : (
               <div className="flex flex-col">
-                <h2 className="truncate text-[15px] font-semibold tracking-tight text-foreground/90">
+                <h2 className="truncate text-[15px] font-bold tracking-tight text-foreground/90">
                   {person.name}
                 </h2>
-                <p className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-tight">
+                <p className="text-[10px] font-bold text-muted-foreground/45 uppercase tracking-wider">
                   {balance === 0
                     ? "Settled up"
                     : balance > 0
@@ -246,6 +246,7 @@ function PersonBlock({
                       : "You owe"}
                 </p>
               </div>
+
             )}
           </div>
         </button>
