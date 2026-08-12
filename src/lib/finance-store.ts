@@ -28,6 +28,7 @@ export type Settings = {
   showWeeklyTotal?: boolean;
   showYearlyTotal?: boolean;
   nwColumns?: number;
+  hideNWBalances?: boolean;
 };
 
 
