@@ -64,9 +64,9 @@
 :root {
   --radius: 0.75rem;
   /* Light "Serious Fiscal" palette — soft off-white, not pure B/W */
-  --background: oklch(0.985 0 0);            /* #FAFAFA */
+  --background: oklch(0.96 0 0);            /* Darker bg: #F2F2F2ish */
   --foreground: oklch(0.182 0 0);            /* #111111 */
-  --card: oklch(1 0 0);                      /* #FFFFFF */
+  --card: oklch(0.99 0 0);                      /* Lighter cards: #FDFDFDish */
   --card-foreground: oklch(0.182 0 0);       /* #111111 */
   --popover: oklch(1 0 0);                  /* #FFFFFF */
   --popover-foreground: oklch(0.182 0 0);    /* #111111 */
