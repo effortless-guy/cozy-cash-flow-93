@@ -22,17 +22,24 @@ export const Route = createFileRoute("/networth")({
 
 const ASSET_TYPES: AssetType[] = [
   "PPF", "EPF", "EPS", "NPS", "Mutual Funds", "Stocks", "Foreign Stocks", 
-  "Gold", "FD", "RD", "Savings", "Cash", "Crypto", "Property", "Other"
+  "Gold", "FD", "RD", "Emergency Fund", "Savings", "Cash", "Crypto", "Property", "Other"
 ];
 
 const TYPE_ICONS: Record<string, any> = {
   "PPF": Landmark,
   "EPF": Briefcase,
+  "NPS": Landmark,
   "Mutual Funds": PieChart,
   "Stocks": TrendingUp,
+  "Foreign Stocks": TrendingUp,
   "Gold": Coins,
   "Property": Home,
   "Savings": WalletIcon,
+  "Emergency Fund": WalletIcon,
+  "Cash": WalletIcon,
+  "Crypto": Coins,
+  "FD": Landmark,
+  "RD": Landmark,
   "Other": HelpCircle,
 };
 
