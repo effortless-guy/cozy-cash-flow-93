@@ -550,6 +550,44 @@ export function useSettings() {
   return { settings, setSettings, hydrated };
 }
 
+export function useDataManagement() {
+  const exportData = () => {
+    const data = {
+      salary: loadJSON(SALARY_KEY, null),
+      subscriptions: loadJSON(SUBS_KEY, null),
+      khatabook: loadJSON(KHATA_KEY, null),
+      networth: loadJSON(NW_KEY, null),
+      nw_activity: loadJSON(NW_ACTIVITY_KEY, null),
+      settings: loadJSON(SETTINGS_KEY, null),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ledger_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importData = async (file: File) => {
+    const text = await file.text();
+    try {
+      const data = JSON.parse(text);
+      if (data.salary) saveJSON(SALARY_KEY, data.salary);
+      if (data.subscriptions) saveJSON(SUBS_KEY, data.subscriptions);
+      if (data.khatabook) saveJSON(KHATA_KEY, data.khatabook);
+      if (data.networth) saveJSON(NW_KEY, data.networth);
+      if (data.nw_activity) saveJSON(NW_ACTIVITY_KEY, data.nw_activity);
+      if (data.settings) saveJSON(SETTINGS_KEY, data.settings);
+      location.reload();
+    } catch (e) {
+      alert("Invalid backup file");
+    }
+  };
+
+  return { exportData, importData };
+}
+
 export function formatMoney(amount: number, currency = "₹") {
   const sign = amount < 0 ? "-" : "";
   const abs = Math.abs(amount);
