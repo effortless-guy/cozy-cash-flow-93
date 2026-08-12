@@ -68,7 +68,7 @@ function SalaryPage() {
 
   return (
     <div>
-      <header className="sticky top-0 z-10 bg-background/85 px-6 pt-8 pb-6 backdrop-blur-md">
+      <header className="sticky top-0 z-10 bg-white px-6 pt-8 pb-6 border-b border-border/30">
         <div className="flex items-start justify-between gap-4">
           <PeriodPicker
             year={s.year}
@@ -235,15 +235,15 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className="space-y-3 rounded-2xl border border-border/50 bg-muted/30 px-4 py-3.5">
-      <div className="flex min-h-11 items-center justify-between gap-3">
+    <section className="space-y-0 rounded-2xl border border-border/40 bg-white overflow-hidden">
+      <div className="flex min-h-12 items-center justify-between gap-3 px-4 py-2 border-b border-border/30 bg-muted/5">
         <button
           type="button"
           onClick={() => !editing && api.toggleCategory(category.id)}
           className="group flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/55 bg-card text-foreground">
-            <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+          <div className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/40 bg-white text-foreground">
+            <Icon className="h-4 w-4" strokeWidth={1.5} />
             <ChevronDown
               className={`absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-background text-muted-foreground transition-transform duration-300 ease-out ${
                 category.collapsed ? "-rotate-90" : "rotate-0"
@@ -275,20 +275,22 @@ function CategoryBlock({
               </div>
             ) : (
               <>
-                <h2 className="truncate text-lg font-semibold tracking-tight">{category.name}</h2>
-                <p className="text-xs text-muted-foreground/80">
+                <h2 className={`truncate text-base font-semibold tracking-tight transition-colors ${total === 0 ? 'text-muted-foreground' : 'text-foreground/90'}`}>
+                  {category.name}
+                </h2>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-medium">
                   {category.transactions.length}{" "}
-                  {category.transactions.length === 1 ? "transaction" : "transactions"}
+                  {category.transactions.length === 1 ? "item" : "items"}
                 </p>
               </>
             )}
           </div>
         </button>
         <div className="flex items-center gap-1">
-          <span className="num text-base font-semibold">{formatMoney(total, currency)}</span>
+          <span className="num text-sm font-semibold text-foreground/90">{formatMoney(total, currency)}</span>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground/50 transition-colors duration-200 hover:text-foreground">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/40 transition-colors duration-200 hover:text-foreground">
                 <Pencil className="h-3.5 w-3.5" />
               </Button>
             </PopoverTrigger>
@@ -315,15 +317,17 @@ function CategoryBlock({
           category.collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
         }`}
       >
-        <div className="overflow-hidden">
-          <div className="space-y-1 border-t border-border/50 pl-11 pt-2.5">
+        <div className="overflow-hidden px-4 pb-3 pt-1">
+          <div className="space-y-0.5">
           {category.transactions.map((t) => (
             <TransactionRow
               key={t.id}
               currency={currency}
               name={t.name}
               amount={t.amount}
+              completed={t.completed}
               onSave={(name, amount) => api.updateTransaction(category.id, t.id, { name, amount })}
+              onToggle={() => api.updateTransaction(category.id, t.id, { completed: !t.completed })}
               onDelete={() => api.deleteTransaction(category.id, t.id)}
             />
           ))}
@@ -379,13 +383,17 @@ function TransactionRow({
   name,
   amount,
   currency,
+  completed,
   onSave,
+  onToggle,
   onDelete,
 }: {
   name: string;
   amount: number;
   currency: string;
+  completed?: boolean;
   onSave: (name: string, amount: number) => void;
+  onToggle: () => void;
   onDelete: () => void;
 }) {
   const [editing, setEditing] = useState(false);
@@ -423,15 +431,36 @@ function TransactionRow({
     );
   }
   return (
-    <button
-      onClick={() => setEditing(true)}
-      className="-mx-2 flex min-h-11 w-[calc(100%+1rem)] items-center justify-between gap-4 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-accent/60"
-    >
-      <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">{name}</span>
-      <span className="num shrink-0 text-sm tabular-nums text-foreground/80">
-        {formatMoney(amount, currency)}
-      </span>
-    </button>
+    <div className="flex items-center gap-2">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle();
+        }}
+        className={`flex size-5 shrink-0 items-center justify-center rounded border transition-colors ${
+          completed 
+            ? "bg-emerald-500 border-emerald-500 text-white" 
+            : "border-border/60 hover:border-border"
+        }`}
+      >
+        {completed && <Check className="h-3 w-3" strokeWidth={3} />}
+      </button>
+      <button
+        onClick={() => setEditing(true)}
+        className="flex min-h-10 flex-1 items-center justify-between gap-4 rounded-lg py-1 text-left transition-colors hover:bg-accent/40"
+      >
+        <span className={`min-w-0 flex-1 truncate text-sm transition-colors ${
+          completed ? "text-emerald-600/70 line-through" : "text-muted-foreground"
+        }`}>
+          {name}
+        </span>
+        <span className={`num shrink-0 text-sm tabular-nums transition-colors ${
+          completed ? "text-emerald-600 font-medium" : "text-foreground/70"
+        }`}>
+          {formatMoney(amount, currency)}
+        </span>
+      </button>
+    </div>
   );
 }
 

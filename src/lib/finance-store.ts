@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-export type Transaction = { id: string; name: string; amount: number };
+export type Transaction = { id: string; name: string; amount: number; completed?: boolean };
 export type Category = {
   id: string;
   name: string;
