@@ -155,6 +155,22 @@ function SubRow({
 
   const monthly = monthlyEquivalent(sub);
 
+  const nextRenewal = useMemo(() => {
+    const start = sub.startDate ? new Date(sub.startDate) : new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    let next = new Date(start);
+    while (next < today) {
+      if (sub.cycle === "monthly") next.setMonth(next.getMonth() + 1);
+      else if (sub.cycle === "quarterly") next.setMonth(next.getMonth() + 3);
+      else if (sub.cycle === "semiannual") next.setMonth(next.getMonth() + 6);
+      else if (sub.cycle === "yearly") next.setFullYear(next.getFullYear() + 1);
+    }
+    
+    return next.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }, [sub.startDate, sub.cycle]);
+
   if (editing) {
     return (
       <li className="space-y-2 rounded-2xl border border-border/50 bg-muted/30 p-4">
@@ -207,21 +223,6 @@ function SubRow({
     );
   }
 
-  const nextRenewal = useMemo(() => {
-    const start = sub.startDate ? new Date(sub.startDate) : new Date();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    let next = new Date(start);
-    while (next < today) {
-      if (sub.cycle === "monthly") next.setMonth(next.getMonth() + 1);
-      else if (sub.cycle === "quarterly") next.setMonth(next.getMonth() + 3);
-      else if (sub.cycle === "semiannual") next.setMonth(next.getMonth() + 6);
-      else if (sub.cycle === "yearly") next.setFullYear(next.getFullYear() + 1);
-    }
-    
-    return next.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-  }, [sub.startDate, sub.cycle]);
 
   return (
     <li className="flex items-center justify-between rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
