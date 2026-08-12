@@ -269,13 +269,14 @@ function CategoryBlock({
                 </Button>
               </div>
             ) : (
+              <>
                 <h2 className={`truncate text-base font-semibold tracking-tight transition-colors ${total === 0 ? 'text-muted-foreground' : 'text-foreground/90'}`}>
                   {category.name}
                 </h2>
                 <span className="num text-sm font-semibold text-foreground/90 ml-auto">
                   {formatMoney(total, currency)}
                 </span>
-
+              </>
             )}
           </div>
         </button>
