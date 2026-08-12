@@ -177,20 +177,15 @@ function PersonBlock({
   const [type, setType] = useState<LedgerEntry["type"]>("lent");
 
   return (
-    <section className="space-y-3 rounded-2xl border border-border/50 bg-muted/30 px-4 py-3.5">
+    <section className="space-y-3 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-none transition-all">
       <div className="flex min-h-11 items-center justify-between gap-3">
         <button
           type="button"
           onClick={() => !editing && api.togglePerson(person.id)}
           className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/55 bg-card text-foreground">
-            <User className="h-[18px] w-[18px]" strokeWidth={1.75} />
-            <ChevronDown
-              className={`absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-background text-muted-foreground transition-transform duration-300 ease-out ${
-                person.collapsed ? "-rotate-90" : "rotate-0"
-              }`}
-            />
+          <div className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-border/30 bg-background text-foreground shadow-sm">
+            <User className="h-[18px] w-[18px] opacity-70" strokeWidth={1.5} />
           </div>
           <div className="min-w-0 flex-1">
             {editing ? (
@@ -216,33 +211,34 @@ function PersonBlock({
                 </Button>
               </div>
             ) : (
-              <>
-                <h2 className="truncate text-lg font-semibold tracking-tight">
+              <div className="flex flex-col">
+                <h2 className="truncate text-[15px] font-semibold tracking-tight text-foreground/90">
                   {person.name}
                 </h2>
-                <p className="text-xs text-muted-foreground/70">
+                <p className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-tight">
                   {balance === 0
                     ? "Settled up"
                     : balance > 0
                       ? "Will receive"
                       : "You owe"}
                 </p>
-              </>
+              </div>
             )}
           </div>
         </button>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <span
-            className={`num text-base font-semibold ${
+            className={`num text-base font-bold tabular-nums tracking-tight ${
               balance > 0
                 ? "text-emerald-600 dark:text-emerald-400"
                 : balance < 0
                   ? "text-rose-600 dark:text-rose-400"
-                  : ""
+                  : "text-muted-foreground/40"
             }`}
           >
             {formatMoney(Math.abs(balance), currency)}
           </span>
+
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground/50 transition-colors duration-200 hover:text-foreground">
