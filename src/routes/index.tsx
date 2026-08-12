@@ -67,7 +67,7 @@ function SalaryPage() {
   if (!s.hydrated) return <div className="p-6 text-muted-foreground">Loading…</div>;
 
   return (
-    <div>
+    <div className="bg-white min-h-screen">
       <header className="sticky top-0 z-10 bg-white px-6 pt-8 pb-6 border-b border-border/30">
         <div className="flex items-start justify-between gap-4">
           <PeriodPicker
@@ -82,39 +82,40 @@ function SalaryPage() {
             onYearChange={s.setYear}
             onAddYear={s.addYear}
           />
-          <ImportTemplate onImport={s.importMonthTemplate} data={s.data} currentY={s.year} />
+          <div className="flex flex-col items-end gap-2">
+            <ImportTemplate onImport={s.importMonthTemplate} data={s.data} currentY={s.year} />
+            <button
+              type="button"
+              onClick={() => setSalaryOpen(true)}
+              className="flex items-center gap-1.5 text-right"
+            >
+              <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                Set Salary
+              </span>
+              <Pencil className="h-3 w-3 text-muted-foreground/50" />
+            </button>
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={() => setSalaryOpen(true)}
-          className="mt-2 flex items-baseline gap-2 text-left"
-        >
-          <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-            Salary
-          </span>
-          <span className="num text-sm font-medium">
-            {income === undefined ? "Set salary" : formatMoney(income, settings.currency)}
-          </span>
-          <Pencil className="h-3 w-3 text-muted-foreground" />
-        </button>
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+
+        <div className="mt-6 flex items-center gap-4 rounded-xl border border-border/50 bg-[#F5F5F5] p-2">
+          <div className="flex-1 px-3 py-1">
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/80">
               Spend
             </p>
-            <p className="num mt-1 text-xl font-semibold tracking-tight">
+            <p className="num text-lg font-bold tracking-tight">
               {formatMoney(monthTotal, settings.currency)}
             </p>
           </div>
+          <div className="h-8 w-px bg-border/40" />
           <button
             type="button"
             onClick={() => setSalaryOpen(true)}
-            className="rounded-2xl border border-border/50 bg-muted/30 px-4 py-3 text-left"
+            className="flex-1 px-3 py-1 text-left hover:bg-black/5 rounded-lg transition-colors"
           >
-            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/80">
               Remaining
             </p>
-            <p className="num mt-1 text-xl font-semibold tracking-tight">
+            <p className="num text-lg font-bold tracking-tight">
               {income === undefined
                 ? "--"
                 : formatMoney(income - monthTotal, settings.currency)}
@@ -123,7 +124,7 @@ function SalaryPage() {
         </div>
       </header>
 
-      <main className="space-y-7 px-6 pb-16 pt-4">
+      <main className="space-y-3 px-6 pb-16 pt-4">
         {s.currentMonth.categories.map((c) => (
           <CategoryBlock key={c.id} category={c} currency={settings.currency} api={s} />
         ))}
@@ -235,14 +236,14 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className="space-y-0 rounded-2xl border border-border/40 bg-white overflow-hidden">
-      <div className="flex min-h-12 items-center justify-between gap-3 px-4 py-2 border-b border-border/30 bg-muted/5">
+    <section className="space-y-0 rounded-2xl border border-border/40 bg-[#F5F5F5] overflow-hidden">
+      <div className="flex min-h-12 items-center justify-between gap-3 px-4 py-2 border-b border-border/20 bg-transparent">
         <button
           type="button"
           onClick={() => !editing && api.toggleCategory(category.id)}
           className="group flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <div className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/40 bg-white text-foreground">
+          <div className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/20 bg-white text-foreground shadow-sm">
             <Icon className="h-4 w-4" strokeWidth={1.5} />
           </div>
           <div className="min-w-0 flex-1 flex items-baseline gap-2">
