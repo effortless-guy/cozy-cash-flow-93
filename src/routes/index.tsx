@@ -244,13 +244,8 @@ function CategoryBlock({
         >
           <div className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/40 bg-white text-foreground">
             <Icon className="h-4 w-4" strokeWidth={1.5} />
-            <ChevronDown
-              className={`absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-background text-muted-foreground transition-transform duration-300 ease-out ${
-                category.collapsed ? "-rotate-90" : "rotate-0"
-              }`}
-            />
           </div>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 flex items-baseline gap-2">
             {editing ? (
               <div className="flex items-center gap-1">
                 <Input
@@ -278,16 +273,14 @@ function CategoryBlock({
                 <h2 className={`truncate text-base font-semibold tracking-tight transition-colors ${total === 0 ? 'text-muted-foreground' : 'text-foreground/90'}`}>
                   {category.name}
                 </h2>
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-medium">
-                  {category.transactions.length}{" "}
-                  {category.transactions.length === 1 ? "item" : "items"}
-                </p>
+                <span className="num text-sm font-semibold text-foreground/90 ml-auto">
+                  {formatMoney(total, currency)}
+                </span>
               </>
             )}
           </div>
         </button>
         <div className="flex items-center gap-1">
-          <span className="num text-sm font-semibold text-foreground/90">{formatMoney(total, currency)}</span>
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/40 transition-colors duration-200 hover:text-foreground">
