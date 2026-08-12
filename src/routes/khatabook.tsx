@@ -203,8 +203,13 @@ function PersonBlock({
           className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
         >
           <div className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-border/30 bg-background text-foreground shadow-sm">
-            <User className="h-[18px] w-[18px] opacity-70" strokeWidth={1.5} />
+            {iconType === "female" ? (
+              <UserRound className="h-[18px] w-[18px] opacity-70" strokeWidth={1.5} />
+            ) : (
+              <User className="h-[18px] w-[18px] opacity-70" strokeWidth={1.5} />
+            )}
           </div>
+
           <div className="min-w-0 flex-1">
             {editing ? (
               <div className="flex items-center gap-1">
