@@ -275,10 +275,12 @@ function CategoryBlock({
               </div>
             ) : (
               <>
-                <h2 className="truncate text-lg font-semibold tracking-tight">{category.name}</h2>
-                <p className="text-xs text-muted-foreground/80">
+                <h2 className={`truncate text-base font-semibold tracking-tight transition-colors ${total === 0 ? 'text-muted-foreground' : 'text-foreground/90'}`}>
+                  {category.name}
+                </h2>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-medium">
                   {category.transactions.length}{" "}
-                  {category.transactions.length === 1 ? "transaction" : "transactions"}
+                  {category.transactions.length === 1 ? "item" : "items"}
                 </p>
               </>
             )}
