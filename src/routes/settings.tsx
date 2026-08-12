@@ -144,9 +144,10 @@ function SettingsPage() {
               ))}
             </div>
           </Row>
-
+        </Section>
 
         <Section title="Data">
+
           <div className="p-4">
             <button
               onClick={() => {
