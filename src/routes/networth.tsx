@@ -208,68 +208,90 @@ function NetWorthPage() {
 
       {/* Add Asset Dialog */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Add Asset</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-widest text-muted-foreground">Name</Label>
+        <DialogContent className="max-w-sm p-0 overflow-hidden rounded-3xl border-none">
+          <div className="bg-muted/30 px-6 pt-8 pb-6">
+            <DialogHeader>
+                <DialogTitle className="text-xl font-bold">New Asset</DialogTitle>
+                <DialogDescription className="text-[10px] font-bold uppercase tracking-widest opacity-40 mt-1">Classification & Initial Value</DialogDescription>
+            </DialogHeader>
+          </div>
+          
+          <div className="p-6 space-y-5">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Identity</Label>
               <Input 
-                placeholder="e.g. HDFC Savings" 
+                className="h-12 px-4 rounded-2xl bg-muted/20 border-none text-sm font-medium focus-visible:ring-1 focus-visible:ring-primary/20"
+                placeholder="Asset Name (e.g. Stocks Portfolio)" 
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
+            
             <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                    <Label className="text-xs uppercase tracking-widest text-muted-foreground">Type</Label>
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Category</Label>
                     <Select 
                         value={formData.type} 
                         onValueChange={(v: AssetType) => setFormData({ ...formData, type: v })}
                     >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                        {ASSET_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none text-sm font-medium px-4">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-border/40">
+                            {ASSET_TYPES.map(t => <SelectItem key={t} value={t} className="text-xs font-medium rounded-xl">{t}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="space-y-1.5">
-                    <Label className="text-xs uppercase tracking-widest text-muted-foreground">Value</Label>
-                    <Input 
-                        inputMode="decimal" 
-                        placeholder="0.00" 
-                        value={formData.currentValue}
-                        onChange={e => setFormData({ ...formData, currentValue: e.target.value })}
-                    />
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Initial Value</Label>
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground/40">₹</span>
+                        <Input 
+                            inputMode="decimal" 
+                            className="h-12 pl-7 rounded-2xl bg-muted/20 border-none text-sm font-bold tabular-nums focus-visible:ring-1 focus-visible:ring-primary/20"
+                            placeholder="0.00" 
+                            value={formData.currentValue}
+                            onChange={e => setFormData({ ...formData, currentValue: e.target.value })}
+                        />
+                    </div>
                 </div>
             </div>
+
             <div className="pt-2">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-3">Recurring Contribution</p>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                        <Label className="text-xs text-muted-foreground">Amount (₹)</Label>
-                        <Input 
-                            placeholder="Optional" 
-                            value={formData.recurringAmount}
-                            onChange={e => setFormData({ ...formData, recurringAmount: e.target.value })}
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <Label className="text-xs text-muted-foreground">Day of Month</Label>
-                        <Input 
-                            type="number" 
-                            min="1" max="31"
-                            value={formData.recurringDay}
-                            onChange={e => setFormData({ ...formData, recurringDay: e.target.value })}
-                        />
-                    </div>
+                <div className="flex items-center justify-between mb-4 px-1">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Recurring Monthly</Label>
+                    <Switch checked={!!formData.recurringAmount} onCheckedChange={(checked) => setFormData({...formData, recurringAmount: checked ? "0" : ""})} />
                 </div>
+                
+                {formData.recurringAmount !== "" && (
+                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold text-muted-foreground/40 px-1">Amount (₹)</Label>
+                            <Input 
+                                className="h-11 rounded-2xl bg-muted/20 border-none text-sm font-bold tabular-nums"
+                                placeholder="0.00" 
+                                value={formData.recurringAmount}
+                                onChange={e => setFormData({ ...formData, recurringAmount: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold text-muted-foreground/40 px-1">Day of Month</Label>
+                            <Input 
+                                type="number" 
+                                className="h-11 rounded-2xl bg-muted/20 border-none text-sm font-bold tabular-nums"
+                                min="1" max="31"
+                                value={formData.recurringDay}
+                                onChange={e => setFormData({ ...formData, recurringDay: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
           </div>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="ghost" onClick={() => setAddOpen(false)}>Cancel</Button>
-            <Button onClick={() => {
+          
+          <div className="p-6 pt-0 flex gap-3">
+            <Button variant="ghost" className="flex-1 h-12 rounded-2xl font-bold text-muted-foreground" onClick={() => setAddOpen(false)}>Cancel</Button>
+            <Button className="flex-1 h-12 rounded-2xl font-bold shadow-lg shadow-primary/10" onClick={() => {
               const val = parseFloat(formData.currentValue);
               if (formData.name && !isNaN(val)) {
                 nw.addAsset({
@@ -282,8 +304,8 @@ function NetWorthPage() {
                 setAddOpen(false);
                 setFormData({ name: "", type: "Savings", currentValue: "", recurringAmount: "", recurringDay: "1" });
               }
-            }}>Save Asset</Button>
-          </DialogFooter>
+            }}>Create Asset</Button>
+          </div>
         </DialogContent>
       </Dialog>
 
