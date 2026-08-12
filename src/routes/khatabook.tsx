@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ChevronDown, Pencil, Check, Trash2, User } from "lucide-react";
+import { ChevronDown, Pencil, Check, Trash2, User, UserRound } from "lucide-react";
+
 import {
   useKhatabook,
   useSettings,
