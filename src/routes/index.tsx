@@ -67,8 +67,8 @@ function SalaryPage() {
   if (!s.hydrated) return <div className="p-6 text-muted-foreground">Loading…</div>;
 
   return (
-    <div className="bg-white min-h-screen">
-      <header className="sticky top-0 z-10 bg-white px-6 pt-8 pb-6 border-b border-border/30">
+    <div className="bg-background min-h-screen">
+      <header className="sticky top-0 z-10 bg-card px-6 pt-8 pb-6 border-b border-border/30">
         <div className="flex items-start justify-between gap-4">
           <PeriodPicker
             year={s.year}
@@ -90,37 +90,35 @@ function SalaryPage() {
               className="flex items-center gap-1.5 text-right"
             >
               <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                Set Salary
+                {income === undefined ? "Set Salary" : formatMoney(income, settings.currency)}
               </span>
               <Pencil className="h-3 w-3 text-muted-foreground/50" />
             </button>
           </div>
         </div>
 
-        <div className="mt-6 flex items-center gap-4 rounded-xl border border-border/50 bg-[#F5F5F5] p-2">
+        <div className="mt-6 flex items-center gap-4 rounded-xl border border-border/50 bg-background/50 p-2">
           <div className="flex-1 px-3 py-1">
             <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/80">
               Spend
             </p>
-            <p className="num text-lg font-bold tracking-tight">
+            <p className="num text-lg font-bold tracking-tight text-blue-600/90">
               {formatMoney(monthTotal, settings.currency)}
             </p>
           </div>
           <div className="h-8 w-px bg-border/40" />
-          <button
-            type="button"
-            onClick={() => setSalaryOpen(true)}
-            className="flex-1 px-3 py-1 text-left hover:bg-black/5 rounded-lg transition-colors"
-          >
+          <div className="flex-1 px-3 py-1 text-left">
             <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/80">
               Remaining
             </p>
-            <p className="num text-lg font-bold tracking-tight">
+            <p className={`num text-lg font-bold tracking-tight ${
+              income === undefined ? "text-muted-foreground/50" : "text-emerald-600/90"
+            }`}>
               {income === undefined
                 ? "--"
                 : formatMoney(income - monthTotal, settings.currency)}
             </p>
-          </button>
+          </div>
         </div>
       </header>
 
@@ -236,7 +234,7 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className="space-y-0 rounded-2xl border border-border/40 bg-[#F5F5F5] overflow-hidden">
+    <section className="space-y-0 rounded-2xl border border-border/40 bg-card overflow-hidden">
       <div className="flex min-h-12 items-center justify-between gap-3 px-4 py-2 border-b border-border/20 bg-transparent">
         <button
           type="button"

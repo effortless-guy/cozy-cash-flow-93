@@ -390,7 +390,7 @@ export const monthlyEquivalent = (s: Subscription) => {
 };
 
 const defaultSettings: Settings = {
-  currency: "$",
+  currency: "₹",
   theme: "light",
   language: "en",
   notifications: true,
