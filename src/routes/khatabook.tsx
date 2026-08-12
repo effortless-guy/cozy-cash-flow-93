@@ -177,6 +177,22 @@ function PersonBlock({
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<LedgerEntry["type"]>("lent");
 
+  // Determine gender/icon based on name (very simple heuristic as requested)
+  const isFemale =
+    person.name.toLowerCase().includes("priya") ||
+    person.name.toLowerCase().includes("sharma") ||
+    person.name.toLowerCase().endsWith("a") ||
+    person.name.toLowerCase().includes("morgan") === false && person.name.toLowerCase().includes("alex") === false;
+  // Actually, let's just use a simple map for the demo names and a default
+  const getIcon = () => {
+    const n = person.name.toLowerCase();
+    if (n.includes("priya")) return "female";
+    if (n.includes("alex")) return "male";
+    return "male"; // default
+  };
+  const iconType = getIcon();
+
+
   return (
     <section className="space-y-3 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-none transition-all">
       <div className="flex min-h-11 items-center justify-between gap-3">
