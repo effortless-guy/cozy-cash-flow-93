@@ -99,17 +99,17 @@ function NetWorthPage() {
               const Icon = TYPE_ICONS[a.type] || TYPE_ICONS["Other"];
               const hasPending = a.entries.some(e => e.isPending);
               return (
-                <div key={a.id} onClick={() => setManageOpen(a)} className="group relative flex flex-col justify-between rounded-2xl border border-border/40 bg-card p-4 transition-all active:scale-[0.98] active:bg-accent/50 cursor-pointer">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex size-8 items-center justify-center rounded-xl bg-background border border-border/20 shadow-sm relative">
-                      <Icon className="h-4 w-4 opacity-70" strokeWidth={2} />
+                <div key={a.id} onClick={() => setManageOpen(a)} className="group relative flex flex-col justify-between rounded-2xl border border-border/40 bg-card p-4 transition-all active:scale-[0.98] hover:bg-muted/30 cursor-pointer">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-background border border-border/20 shadow-sm relative">
+                      <Icon className="h-4 w-4 opacity-70" strokeWidth={2.5} />
                       {hasPending && <div className="absolute -top-1 -right-1 size-2 rounded-full bg-primary" />}
                     </div>
                   </div>
                   <div>
-                    <p className="truncate text-[11px] font-semibold text-muted-foreground/90 leading-tight">{a.name}</p>
-                    <p className="mt-0.5 text-[14px] font-bold tabular-nums tracking-tight">
-                        {settings.hideNWBalances ? "•••" : formatMoney(a.currentValue, settings.currency)}
+                    <p className="truncate text-[11px] font-bold uppercase tracking-widest text-muted-foreground/50 leading-tight mb-1">{a.name}</p>
+                    <p className="text-[16px] font-bold tabular-nums tracking-tight">
+                        {settings.hideNWBalances ? "••••" : formatMoney(a.currentValue, settings.currency)}
                     </p>
                   </div>
                 </div>
