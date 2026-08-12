@@ -110,6 +110,47 @@ export type Person = {
   entries: LedgerEntry[];
 };
 
+export type AssetEntry = {
+  id: string;
+  amount: number;
+  date: string;
+  note?: string;
+  isPending?: boolean;
+};
+
+export type AssetType =
+  | "PPF" | "EPF" | "EPS" | "NPS" | "Mutual Funds" | "Stocks" | "Foreign Stocks" 
+  | "Gold" | "FD" | "RD" | "Savings" | "Cash" | "Crypto" | "Property" | "Other";
+
+export type NetWorthAsset = {
+  id: string;
+  name: string;
+  type: AssetType;
+  currentValue: number;
+  entries: AssetEntry[];
+  recurringAmount?: number;
+  recurringDay?: number;
+};
+
+const NW_KEY = "pft.networth.v1";
+
+export function useNetWorth() {
+  const [assets, setAssets, hydrated] = usePersisted<NetWorthAsset[]>(NW_KEY, () => []);
+  
+  const addAsset = (asset: Omit<NetWorthAsset, "id" | "entries">) =>
+    setAssets((prev) => [...prev, { ...asset, id: uid(), entries: [] }]);
+
+  const updateAsset = (id: string, patch: Partial<NetWorthAsset>) =>
+    setAssets((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+
+  const addEntry = (aid: string, entry: Omit<AssetEntry, "id">) =>
+    setAssets((prev) => prev.map((a) => 
+      a.id === aid ? { ...a, entries: [...a.entries, { ...entry, id: uid() }] } : a
+    ));
+
+  return { assets, addAsset, updateAsset, addEntry, hydrated };
+}
+
 export const personBalance = (p: Person) =>
   p.entries.reduce((a, e) => a + (e.type === "lent" ? e.amount : -e.amount), 0);
 
