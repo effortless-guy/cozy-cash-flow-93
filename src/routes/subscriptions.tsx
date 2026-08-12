@@ -151,6 +151,7 @@ function SubRow({
   const [name, setName] = useState(sub.name);
   const [price, setPrice] = useState(String(sub.price));
   const [cycle, setCycle] = useState<BillingCycle>(sub.cycle);
+  const [startDate, setStartDate] = useState(sub.startDate || new Date().toISOString().split("T")[0]);
 
   const monthly = monthlyEquivalent(sub);
 
@@ -166,7 +167,7 @@ function SubRow({
             onClick={() => {
               const p = parseFloat(price);
               if (name.trim() && !Number.isNaN(p)) {
-                onUpdate({ name: name.trim(), price: p, cycle });
+                onUpdate({ name: name.trim(), price: p, cycle, startDate });
                 setEditing(false);
               }
             }}
@@ -195,29 +196,57 @@ function SubRow({
               ))}
             </SelectContent>
           </Select>
+          <Input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="h-8 w-auto flex-1 text-xs"
+          />
         </div>
       </li>
     );
   }
 
   return (
-    <li className="flex items-center justify-between rounded-2xl border border-border/50 bg-muted/30 px-4 py-2.5">
+  const nextRenewal = useMemo(() => {
+    const start = sub.startDate ? new Date(sub.startDate) : new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    let next = new Date(start);
+    while (next < today) {
+      if (sub.cycle === "monthly") next.setMonth(next.getMonth() + 1);
+      else if (sub.cycle === "quarterly") next.setMonth(next.getMonth() + 3);
+      else if (sub.cycle === "semiannual") next.setMonth(next.getMonth() + 6);
+      else if (sub.cycle === "yearly") next.setFullYear(next.getFullYear() + 1);
+    }
+    
+    return next.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }, [sub.startDate, sub.cycle]);
+
+  return (
+    <li className="flex items-center justify-between rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
       <button onClick={() => setEditing(true)} className="min-h-11 min-w-0 flex-1 text-left">
         <p className="truncate text-[17px] font-semibold leading-tight tracking-tight">{sub.name}</p>
-        <p className="mt-0.5 text-xs text-muted-foreground/60">
+        <p className="mt-1 text-xs text-muted-foreground/60">
           {formatMoney(sub.price, currency)} · {CYCLE_LABEL[sub.cycle]}
         </p>
       </button>
       <div className="flex items-center gap-2 pl-3">
         <div className="text-right">
-          <span className="num text-base font-semibold">
-            {formatMoney(monthly, currency)}
-          </span>
-          <span className="ml-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground/60">
-            /mo
-          </span>
+          <div className="flex items-baseline justify-end">
+            <span className="num text-base font-semibold">
+              {formatMoney(monthly, currency)}
+            </span>
+            <span className="ml-0.5 text-[9px] font-medium uppercase tracking-widest text-muted-foreground/50">
+              /mo
+            </span>
+          </div>
+          <p className="mt-0.5 text-[11px] font-medium text-muted-foreground/80">
+            Renews {nextRenewal}
+          </p>
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/50 transition-colors duration-200 hover:text-foreground" onClick={() => setEditing(true)}>
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/40 transition-colors duration-200 hover:text-foreground" onClick={() => setEditing(true)}>
           <Pencil className="h-3.5 w-3.5" />
         </Button>
       </div>
@@ -239,11 +268,13 @@ function NewSubDialog({
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
+  const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
 
   const reset = () => {
     setName("");
     setPrice("");
     setCycle("monthly");
+    setStartDate(new Date().toISOString().split("T")[0]);
   };
 
   return (
@@ -291,6 +322,14 @@ function NewSubDialog({
               </Select>
             </div>
           </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs uppercase tracking-widest text-muted-foreground">Start Date / Last Billing</Label>
+            <Input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
@@ -298,7 +337,7 @@ function NewSubDialog({
             onClick={() => {
               const p = parseFloat(price);
               if (name.trim() && !Number.isNaN(p)) {
-                onSave({ name: name.trim(), price: p, cycle });
+                onSave({ name: name.trim(), price: p, cycle, startDate });
                 reset();
               }
             }}
