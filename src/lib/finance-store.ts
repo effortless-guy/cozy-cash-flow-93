@@ -27,7 +27,9 @@ export type Settings = {
   notifications: boolean;
   showWeeklyTotal?: boolean;
   showYearlyTotal?: boolean;
+  nwColumns?: number;
 };
+
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -109,6 +111,75 @@ export type Person = {
   collapsed?: boolean;
   entries: LedgerEntry[];
 };
+
+export type AssetEntry = {
+  id: string;
+  amount: number;
+  date: string;
+  note?: string;
+  isPending?: boolean;
+};
+
+export type AssetType =
+  | "PPF" | "EPF" | "EPS" | "NPS" | "Mutual Funds" | "Stocks" | "Foreign Stocks" 
+  | "Gold" | "FD" | "RD" | "Savings" | "Cash" | "Crypto" | "Property" | "Other";
+
+export type NetWorthAsset = {
+  id: string;
+  name: string;
+  type: AssetType;
+  currentValue: number;
+  entries: AssetEntry[];
+  recurringAmount?: number;
+  recurringDay?: number;
+};
+
+const NW_KEY = "pft.networth.v1";
+
+export function useNetWorth() {
+  const [assets, setAssets, hydrated] = usePersisted<NetWorthAsset[]>(NW_KEY, () => []);
+  
+  const addAsset = (asset: Omit<NetWorthAsset, "id" | "entries">) =>
+    setAssets((prev) => [...prev, { ...asset, id: uid(), entries: [] }]);
+
+  const updateAsset = (id: string, patch: Partial<NetWorthAsset>) =>
+    setAssets((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+
+  const addEntry = (aid: string, entry: Omit<AssetEntry, "id">) =>
+    setAssets((prev) => prev.map((a) => 
+      a.id === aid ? { ...a, entries: [...a.entries, { ...entry, id: uid() }] } : a
+    ));
+
+  return { assets, addAsset, updateAsset, addEntry, hydrated };
+}
+
+/**
+ * Checks for recurring assets and creates pending entries if needed at start of month
+ */
+export function useNetWorthRecurring(nw: ReturnType<typeof useNetWorth>) {
+  useEffect(() => {
+    if (!nw.hydrated || nw.assets.length === 0) return;
+
+    const now = new Date();
+    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    
+    nw.assets.forEach(asset => {
+      if (asset.recurringAmount && asset.recurringDay) {
+        // Check if we already have an entry for this month
+        const hasEntry = asset.entries.some(e => e.date.startsWith(monthKey));
+        if (!hasEntry && now.getDate() >= asset.recurringDay) {
+          nw.addEntry(asset.id, {
+            amount: asset.recurringAmount,
+            date: `${monthKey}-${String(asset.recurringDay).padStart(2, "0")}`,
+            note: "Recurring contribution",
+            isPending: true
+          });
+        }
+      }
+    });
+  }, [nw.hydrated, nw.assets.length]); // Simple check on mount/asset count change
+}
+
 
 export const personBalance = (p: Person) =>
   p.entries.reduce((a, e) => a + (e.type === "lent" ? e.amount : -e.amount), 0);
@@ -420,7 +491,9 @@ const defaultSettings: Settings = {
   notifications: true,
   showWeeklyTotal: true,
   showYearlyTotal: true,
+  nwColumns: 2,
 };
+
 
 export function useSettings() {
   const [settings, setSettings, hydrated] = usePersisted<Settings>(

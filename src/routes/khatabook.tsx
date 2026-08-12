@@ -99,7 +99,7 @@ function KhatabookPage() {
 
       </header>
 
-      <main className="space-y-3 px-6 pb-16 pt-4">
+      <main className="space-y-3 px-6 pb-16 pt-1">
         {k.people.length === 0 && (
           <p className="py-10 text-center text-sm text-muted-foreground/70">
             No people yet. Add someone to start tracking.

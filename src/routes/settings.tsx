@@ -130,7 +130,24 @@ function SettingsPage() {
           </Row>
         </Section>
 
+        <Section title="Net Worth">
+          <Row label="Grid Columns" description="Number of columns for asset cards">
+            <div className="flex gap-2">
+              {[2, 3].map(cols => (
+                <button
+                  key={cols}
+                  onClick={() => setSettings({ ...settings, nwColumns: cols })}
+                  className={`h-8 w-8 rounded-lg text-xs font-bold transition-all ${settings.nwColumns === cols ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}
+                >
+                  {cols}
+                </button>
+              ))}
+            </div>
+          </Row>
+        </Section>
+
         <Section title="Data">
+
           <div className="p-4">
             <button
               onClick={() => {

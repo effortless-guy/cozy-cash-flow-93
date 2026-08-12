@@ -5,7 +5,9 @@ const tabs = [
   { to: "/", label: "Salary", icon: Wallet, exact: true },
   { to: "/subscriptions", label: "Subs", icon: Repeat, exact: false },
   { to: "/khatabook", label: "Khatabook", icon: BookUser, exact: false },
+  { to: "/networth", label: "Net Worth", icon: Wallet, exact: false },
   { to: "/settings", label: "Settings", icon: SettingsIcon, exact: false },
+
 ] as const;
 
 export function BottomTabs() {
