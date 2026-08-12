@@ -28,6 +28,7 @@ export type Settings = {
   showWeeklyTotal?: boolean;
   showYearlyTotal?: boolean;
   nwColumns?: number;
+  hideNWBalances?: boolean;
 };
 
 
@@ -132,25 +133,65 @@ export type NetWorthAsset = {
   entries: AssetEntry[];
   recurringAmount?: number;
   recurringDay?: number;
+  archived?: boolean;
+};
+
+export type NWActivity = {
+  id: string;
+  action: string;
+  timestamp: string;
 };
 
 const NW_KEY = "pft.networth.v1";
+const NW_ACTIVITY_KEY = "pft.nw_activity.v1";
 
 export function useNetWorth() {
   const [assets, setAssets, hydrated] = usePersisted<NetWorthAsset[]>(NW_KEY, () => []);
-  
-  const addAsset = (asset: Omit<NetWorthAsset, "id" | "entries">) =>
-    setAssets((prev) => [...prev, { ...asset, id: uid(), entries: [] }]);
+  const [activity, setActivity] = usePersisted<NWActivity[]>(NW_ACTIVITY_KEY, () => []);
 
-  const updateAsset = (id: string, patch: Partial<NetWorthAsset>) =>
+  const addActivity = (action: string) =>
+    setActivity((prev) => [{ id: uid(), action, timestamp: new Date().toISOString() }, ...prev].slice(0, 50));
+
+  const addAsset = (asset: Omit<NetWorthAsset, "id" | "entries" | "archived">) => {
+    setAssets((prev) => [...prev, { ...asset, id: uid(), entries: [], archived: false }]);
+    addActivity(`${asset.name} asset added`);
+  };
+
+  const updateAsset = (id: string, patch: Partial<NetWorthAsset>) => {
     setAssets((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+    addActivity(`Asset ${patch.name ? patch.name : "details"} updated`);
+  };
 
-  const addEntry = (aid: string, entry: Omit<AssetEntry, "id">) =>
+  const archiveAsset = (id: string) => {
+    setAssets((prev) => prev.map(a => a.id === id ? { ...a, archived: true } : a));
+    addActivity(`Asset archived`);
+  }
+
+  const addEntry = (aid: string, entry: Omit<AssetEntry, "id">) => {
     setAssets((prev) => prev.map((a) => 
       a.id === aid ? { ...a, entries: [...a.entries, { ...entry, id: uid() }] } : a
     ));
+  }
 
-  return { assets, addAsset, updateAsset, addEntry, hydrated };
+  const confirmRecurring = (aid: string, eid: string, amount: number) => {
+    setAssets((prev) => prev.map(a => {
+        if (a.id !== aid) return a;
+        const newEntries = a.entries.map(e => e.id === eid ? { ...e, isPending: false, amount } : e);
+        return { ...a, entries: newEntries, currentValue: a.currentValue + amount };
+    }));
+    addActivity(`Monthly contribution confirmed`);
+  }
+
+  const skipRecurring = (aid: string, eid: string) => {
+      setAssets((prev) => prev.map(a => {
+          if (a.id !== aid) return a;
+          const newEntries = a.entries.map(e => e.id === eid ? { ...e, isPending: false, amount: 0 } : e);
+          return { ...a, entries: newEntries };
+      }));
+      addActivity(`Monthly contribution skipped`);
+  }
+
+  return { assets, activity, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, archiveAsset, addActivity, hydrated };
 }
 
 /**
@@ -507,6 +548,44 @@ export function useSettings() {
   }, [settings.theme]);
 
   return { settings, setSettings, hydrated };
+}
+
+export function useDataManagement() {
+  const exportData = () => {
+    const data = {
+      salary: loadJSON(SALARY_KEY, null),
+      subscriptions: loadJSON(SUBS_KEY, null),
+      khatabook: loadJSON(KHATA_KEY, null),
+      networth: loadJSON(NW_KEY, null),
+      nw_activity: loadJSON(NW_ACTIVITY_KEY, null),
+      settings: loadJSON(SETTINGS_KEY, null),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ledger_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importData = async (file: File) => {
+    const text = await file.text();
+    try {
+      const data = JSON.parse(text);
+      if (data.salary) saveJSON(SALARY_KEY, data.salary);
+      if (data.subscriptions) saveJSON(SUBS_KEY, data.subscriptions);
+      if (data.khatabook) saveJSON(KHATA_KEY, data.khatabook);
+      if (data.networth) saveJSON(NW_KEY, data.networth);
+      if (data.nw_activity) saveJSON(NW_ACTIVITY_KEY, data.nw_activity);
+      if (data.settings) saveJSON(SETTINGS_KEY, data.settings);
+      location.reload();
+    } catch (e) {
+      alert("Invalid backup file");
+    }
+  };
+
+  return { exportData, importData };
 }
 
 export function formatMoney(amount: number, currency = "₹") {
