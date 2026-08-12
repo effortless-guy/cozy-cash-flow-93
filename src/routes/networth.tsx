@@ -53,6 +53,15 @@ function NetWorthPage() {
     recurringDay: "1"
   });
 
+  // Sync manageOpen with latest data from store
+  useEffect(() => {
+    if (manageOpen) {
+      const updated = nw.assets.find(a => a.id === manageOpen.id);
+      if (updated) setManageOpen(updated);
+      else setManageOpen(null);
+    }
+  }, [nw.assets]);
+
   const visibleAssets = nw.assets.filter(a => !a.archived).sort((a, b) => a.name.localeCompare(b.name));
   const total = visibleAssets.reduce((sum, a) => sum + a.currentValue, 0);
 
