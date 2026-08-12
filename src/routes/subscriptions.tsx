@@ -207,7 +207,6 @@ function SubRow({
     );
   }
 
-  return (
   const nextRenewal = useMemo(() => {
     const start = sub.startDate ? new Date(sub.startDate) : new Date();
     const today = new Date();
