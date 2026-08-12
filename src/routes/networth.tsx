@@ -155,47 +155,54 @@ function NetWorthPage() {
       <Fab label="Add asset" onClick={() => setAddOpen(true)} />
 
       {/* Monthly Update Dialog */}
-      <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
-        <DialogContent className="max-w-sm max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Monthly Update</DialogTitle>
-            <DialogDescription>Review and confirm recurring contributions for {new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
+      <Dialog open={updateOpen} onOpenChange={setAddOpen}>
+        <DialogContent className="max-w-sm p-0 overflow-hidden rounded-3xl border-none">
+          <div className="bg-primary/5 px-6 pt-8 pb-6">
+            <DialogHeader>
+                <DialogTitle className="text-xl font-bold">Monthly Update</DialogTitle>
+                <DialogDescription className="text-xs font-semibold uppercase tracking-widest text-primary/60 mt-1">
+                    {new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+                </DialogDescription>
+            </DialogHeader>
+          </div>
+          
+          <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
             {pendingEntries.map(({ asset, entry }) => (
-                <div key={entry.id} className="rounded-xl border border-border/40 bg-muted/20 p-3">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{asset.name}</span>
-                        <span className="text-[10px] text-muted-foreground/60">{entry.date}</span>
+                <div key={entry.id} className="group relative rounded-2xl border border-border/40 bg-card p-4 transition-all">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">{asset.name}</span>
+                        <span className="text-[10px] font-bold tabular-nums text-muted-foreground/40">{entry.date}</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                         <div className="relative flex-1">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">₹</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground/40">₹</span>
                             <Input 
-                                className="h-9 pl-6 text-sm tabular-nums" 
+                                className="h-11 pl-7 text-sm font-bold tabular-nums rounded-xl bg-muted/20 border-none focus-visible:ring-1 focus-visible:ring-primary/20" 
                                 defaultValue={entry.amount}
-                                onChange={(e) => {
-                                    // Local state handling could be better but for confirmation we'll just read from ref or use confirmRecurring
-                                }}
                                 id={`pending-${entry.id}`}
                             />
                         </div>
-                        <Button size="icon" variant="ghost" className="h-9 w-9 text-destructive" onClick={() => nw.skipRecurring(asset.id, entry.id)}>
-                            <X className="h-4 w-4" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-9 w-9 text-emerald-600" onClick={() => {
-                            const val = parseFloat((document.getElementById(`pending-${entry.id}`) as HTMLInputElement).value);
-                            if (!isNaN(val)) nw.confirmRecurring(asset.id, entry.id, val);
-                        }}>
-                            <Check className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-destructive hover:bg-destructive/5" onClick={() => nw.skipRecurring(asset.id, entry.id)}>
+                                <X className="h-5 w-5 opacity-40" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-emerald-600 hover:bg-emerald-50/50" onClick={() => {
+                                const val = parseFloat((document.getElementById(`pending-${entry.id}`) as HTMLInputElement).value);
+                                if (!isNaN(val)) nw.confirmRecurring(asset.id, entry.id, val);
+                            }}>
+                                <Check className="h-5 w-5" />
+                            </Button>
+                        </div>
                     </div>
                 </div>
             ))}
           </div>
-          <DialogFooter>
-            <Button variant="outline" className="w-full" onClick={() => setUpdateOpen(false)}>Done</Button>
-          </DialogFooter>
+          
+          <div className="p-6 pt-2">
+            <Button className="w-full h-12 rounded-2xl font-bold tracking-tight shadow-lg shadow-primary/10" onClick={() => setUpdateOpen(false)}>
+              Done for {new Date().toLocaleDateString(undefined, { month: 'short' })}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
