@@ -302,13 +302,14 @@ function PersonBlock({
           <ul className="space-y-1">
             {person.entries.map((e) => (
               <li key={e.id}>
-                <div className="flex min-h-11 items-center justify-between gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-accent/60">
+                <div className="flex min-h-11 items-center justify-between gap-3 rounded-xl px-2 py-1 transition-colors hover:bg-accent/40">
                   <div className="min-w-0">
-                    <p className="truncate text-sm text-muted-foreground">
+                    <p className="truncate text-[13px] font-medium text-muted-foreground/80">
                       {e.note || (e.type === "lent" ? "Lent" : "Borrowed")}
                     </p>
-                    <p className="text-[11px] text-muted-foreground/60">{e.date}</p>
+                    <p className="text-[10px] text-muted-foreground/40 font-medium">{e.date}</p>
                   </div>
+
                   <div className="flex items-center gap-1">
                     <span
                       className={`num text-sm font-semibold ${
