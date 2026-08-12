@@ -68,8 +68,8 @@ function SalaryPage() {
 
   return (
     <div className="bg-background min-h-screen">
-      <div className="mx-6 pt-8 pb-6">
-        <header className="rounded-2xl border border-border/40 bg-card px-5 py-6 shadow-sm">
+      <div className="mx-6 pt-6 pb-2">
+        <header className="rounded-2xl border border-border/40 bg-card px-5 py-4 shadow-sm">
           <div className="flex items-start justify-between gap-4">
             <PeriodPicker
               year={s.year}
@@ -83,14 +83,14 @@ function SalaryPage() {
               onYearChange={s.setYear}
               onAddYear={s.addYear}
             />
-            <div className="flex flex-col items-end gap-2 shrink-0">
+            <div className="flex flex-col items-end gap-1.5 shrink-0">
               <ImportTemplate onImport={s.importMonthTemplate} data={s.data} currentY={s.year} />
               <button
                 type="button"
                 onClick={() => setSalaryOpen(true)}
-                className="flex items-center gap-1.5 text-right"
+                className="flex items-center gap-1.5 text-right transition-opacity hover:opacity-70"
               >
-                <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {income === undefined ? "Set Salary" : formatMoney(income, settings.currency)}
                 </span>
                 <Pencil className="h-3 w-3 text-muted-foreground/50" />
@@ -98,18 +98,18 @@ function SalaryPage() {
             </div>
           </div>
 
-          <div className="mt-8 flex items-center gap-4 rounded-xl border border-border/50 bg-background/30 p-2">
-            <div className="flex-1 px-3 py-1">
-              <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/80">
+          <div className="mt-4 flex items-center gap-4 rounded-xl border border-border/50 bg-background/30 p-1.5">
+            <div className="flex-1 px-3 py-0.5">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/80">
                 Spend
               </p>
               <p className="num text-lg font-bold tracking-tight text-blue-600/90">
                 {formatMoney(monthTotal, settings.currency)}
               </p>
             </div>
-            <div className="h-8 w-px bg-border/40" />
-            <div className="flex-1 px-3 py-1 text-right">
-              <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground/80">
+            <div className="h-6 w-px bg-border/40" />
+            <div className="flex-1 px-3 py-0.5 text-right">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/80">
                 Remaining
               </p>
               <p className={`num text-lg font-bold tracking-tight ${
@@ -124,7 +124,7 @@ function SalaryPage() {
         </header>
       </div>
 
-      <main className="space-y-3 px-6 pb-16 pt-4">
+      <main className="space-y-2 px-6 pb-16 pt-2">
         {s.currentMonth.categories.map((c) => (
           <CategoryBlock key={c.id} category={c} currency={settings.currency} api={s} />
         ))}
@@ -228,6 +228,7 @@ function CategoryBlock({
   api: ReturnType<typeof useSalary>;
 }) {
   const total = category.transactions.reduce((a, t) => a + (t.completed ? t.amount : 0), 0);
+  const isCompleted = category.transactions.length > 0 && category.transactions.every(t => t.completed);
   const Icon = getCategoryIcon(category.name);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(category.name);
@@ -236,8 +237,14 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className="space-y-0 rounded-2xl border border-border/40 bg-card overflow-hidden">
-      <div className="flex min-h-12 items-center justify-between gap-3 px-4 py-2 border-b border-border/20 bg-transparent">
+    <section className={`space-y-0 rounded-2xl border transition-all duration-300 ${
+      isCompleted 
+        ? "border-emerald-200/60 bg-emerald-50/30" 
+        : "border-border/40 bg-card"
+    } overflow-hidden`}>
+      <div className={`flex min-h-12 items-center justify-between gap-3 px-4 py-2 border-b transition-colors duration-300 ${
+        isCompleted ? "border-emerald-100/50 bg-emerald-100/10" : "border-border/20 bg-transparent"
+      }`}>
         <button
           type="button"
           onClick={() => !editing && api.toggleCategory(category.id)}

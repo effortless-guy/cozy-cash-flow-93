@@ -223,11 +223,23 @@ export function useSalary() {
       setData((prev) => {
         const yr = prev.years[year] ?? { months: {} };
         const cur = yr.months[month] ?? emptyMonth();
+        const updated = updater(cur);
+        
+        // Restore collapse state from localStorage if it exists
+        if (updated.categories) {
+          updated.categories = updated.categories.map(c => {
+            const stored = localStorage.getItem(`cat_collapsed_${c.id}`);
+            if (stored === "true") return { ...c, collapsed: true };
+            if (stored === "false") return { ...c, collapsed: false };
+            return c;
+          });
+        }
+
         return {
           years: {
             ...prev.years,
             [year]: {
-              months: { ...yr.months, [month]: updater(cur) },
+              months: { ...yr.months, [month]: updated },
             },
           },
         };
@@ -255,12 +267,21 @@ export function useSalary() {
     }));
 
   const toggleCategory = (cid: string) =>
-    updateMonth((m) => ({
-      ...m,
-      categories: m.categories.map((c) =>
-        c.id === cid ? { ...c, collapsed: !c.collapsed } : c,
-      ),
-    }));
+    updateMonth((m) => {
+      const isCollapsed = m.categories.find(c => c.id === cid)?.collapsed;
+      const key = `cat_collapsed_${cid}`;
+      if (isCollapsed) {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, "true");
+      }
+      return {
+        ...m,
+        categories: m.categories.map((c) =>
+          c.id === cid ? { ...c, collapsed: !c.collapsed } : c,
+        ),
+      };
+    });
 
   const addTransaction = (cid: string, name: string, amount: number) =>
     updateMonth((m) => ({
