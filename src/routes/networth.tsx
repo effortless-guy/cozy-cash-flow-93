@@ -91,10 +91,15 @@ function NetWorthPage() {
       
       <main className="px-6 space-y-8 pt-2">
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Assets</h2>
+          <div className="flex items-center justify-between mb-4 px-1">
+            <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">Portfolio</h2>
+            <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="size-8 rounded-full opacity-40 hover:opacity-100">
+                    <List className="h-3.5 w-3.5" />
+                </Button>
+            </div>
           </div>
-          <div className={`grid gap-3 ${settings.nwColumns === 4 ? 'grid-cols-4' : settings.nwColumns === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+          <div className={`grid gap-4 ${settings.nwColumns === 4 ? 'grid-cols-4' : settings.nwColumns === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
             {visibleAssets.map(a => {
               const Icon = TYPE_ICONS[a.type] || TYPE_ICONS["Other"];
               const hasPending = a.entries.some(e => e.isPending);
