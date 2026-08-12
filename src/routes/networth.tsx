@@ -275,92 +275,114 @@ function NetWorthPage() {
       {/* Manage Asset Dialog */}
       <Dialog open={!!manageOpen} onOpenChange={(open) => !open && setManageOpen(null)}>
         {manageOpen && (
-            <DialogContent className="max-w-sm">
-                <DialogHeader>
-                    <div className="flex items-center gap-3">
-                        <div className="flex size-10 items-center justify-center rounded-2xl bg-muted/30 border border-border/20">
+            <DialogContent className="max-w-sm p-0 overflow-hidden rounded-3xl border-none">
+                <div className="bg-muted/30 px-6 pt-8 pb-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex size-12 items-center justify-center rounded-2xl bg-background border border-border/20 shadow-sm">
                             {(() => {
                                 const Icon = TYPE_ICONS[manageOpen.type] || TYPE_ICONS["Other"];
-                                return <Icon className="h-5 w-5 opacity-70" />;
+                                return <Icon className="h-6 w-6 opacity-80" />;
                             })()}
                         </div>
-                        <div>
-                            <DialogTitle>{manageOpen.name}</DialogTitle>
-                            <DialogDescription>{manageOpen.type}</DialogDescription>
-                        </div>
+                        <Button size="icon" variant="ghost" className="rounded-full" onClick={() => setManageOpen(null)}>
+                            <X className="h-5 w-5 opacity-40" />
+                        </Button>
                     </div>
-                </DialogHeader>
-                <div className="space-y-6 py-4">
-                    <div className="space-y-2">
-                        <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Current Value</Label>
-                        <div className="flex items-center gap-2">
-                            <Input 
-                                className="h-12 text-xl font-bold tabular-nums" 
-                                value={manageOpen.currentValue}
-                                readOnly
-                            />
-                            <Button size="icon" variant="outline" className="h-12 w-12 rounded-xl" onClick={() => {
-                                const newVal = prompt("Enter new current value:", manageOpen.currentValue.toString());
-                                if (newVal !== null) {
-                                    const val = parseFloat(newVal);
-                                    if (!isNaN(val)) {
-                                        nw.updateAsset(manageOpen.id, { currentValue: val });
-                                        nw.addActivity(`${manageOpen.name} value updated`);
-                                        setManageOpen(prev => prev ? { ...prev, currentValue: val } : null);
-                                    }
+                    <div>
+                        <DialogTitle className="text-xl font-bold">{manageOpen.name}</DialogTitle>
+                        <DialogDescription className="text-xs font-medium uppercase tracking-widest opacity-60 mt-0.5">{manageOpen.type}</DialogDescription>
+                    </div>
+                    
+                    <div className="mt-6 flex items-baseline gap-2">
+                        <span className="text-3xl font-bold tabular-nums tracking-tight">
+                            {settings.hideNWBalances ? "••••••" : formatMoney(manageOpen.currentValue, settings.currency)}
+                        </span>
+                        <Button variant="ghost" size="icon" className="size-8 rounded-full opacity-40 hover:opacity-100" onClick={() => {
+                            const newVal = prompt("Update current value:", manageOpen.currentValue.toString());
+                            if (newVal !== null) {
+                                const val = parseFloat(newVal);
+                                if (!isNaN(val)) {
+                                    nw.updateAsset(manageOpen.id, { currentValue: val });
+                                    nw.addActivity(`${manageOpen.name} value updated`);
+                                    setManageOpen(prev => prev ? { ...prev, currentValue: val } : null);
                                 }
-                            }}>
-                                <Edit2 className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <button className="flex w-full items-center justify-between rounded-xl border border-border/40 bg-card p-3.5 text-left transition-all active:bg-muted/50" onClick={() => {
-                            const newName = prompt("Rename asset:", manageOpen.name);
-                            if (newName) nw.updateAsset(manageOpen.id, { name: newName });
-                        }}>
-                            <div className="flex items-center gap-3">
-                                <Pencil className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm font-medium">Rename</span>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-muted-foreground/30" />
-                        </button>
-                        
-                        <button className="flex w-full items-center justify-between rounded-xl border border-border/40 bg-card p-3.5 text-left transition-all active:bg-muted/50" onClick={() => {
-                            const amt = prompt("Recurring amount (₹):", manageOpen.recurringAmount?.toString() || "");
-                            if (amt !== null) {
-                                nw.updateAsset(manageOpen.id, { 
-                                    recurringAmount: amt === "" ? undefined : parseFloat(amt),
-                                    recurringDay: manageOpen.recurringDay || 1
-                                });
                             }
                         }}>
-                            <div className="flex items-center gap-3">
-                                <History className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm font-medium">Recurring Contribution</span>
-                            </div>
-                            <span className="text-xs text-muted-foreground font-medium">
-                                {manageOpen.recurringAmount ? formatMoney(manageOpen.recurringAmount, settings.currency) : "None"}
-                            </span>
-                        </button>
+                            <Edit2 className="h-3.5 w-3.5" />
+                        </Button>
+                    </div>
+                </div>
 
-                        <button className="flex w-full items-center justify-between rounded-xl border border-border/40 bg-card p-3.5 text-left transition-all active:bg-muted/50 text-destructive" onClick={() => {
+                <div className="p-6 space-y-3">
+                    <button className="flex w-full items-center justify-between rounded-2xl bg-muted/20 p-4 transition-all active:scale-[0.98] active:bg-muted/40" onClick={() => {
+                        const newName = prompt("Rename asset:", manageOpen.name);
+                        if (newName) nw.updateAsset(manageOpen.id, { name: newName });
+                    }}>
+                        <div className="flex items-center gap-3">
+                            <Pencil className="h-4 w-4 opacity-60" />
+                            <span className="text-sm font-semibold">Rename Asset</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4 opacity-20" />
+                    </button>
+                    
+                    <button className="flex w-full items-center justify-between rounded-2xl bg-muted/20 p-4 transition-all active:scale-[0.98] active:bg-muted/40" onClick={() => {
+                        const amt = prompt("Recurring amount (₹):", manageOpen.recurringAmount?.toString() || "");
+                        if (amt !== null) {
+                            nw.updateAsset(manageOpen.id, { 
+                                recurringAmount: amt === "" ? undefined : parseFloat(amt),
+                                recurringDay: manageOpen.recurringDay || 1
+                            });
+                        }
+                    }}>
+                        <div className="flex items-center gap-3">
+                            <History className="h-4 w-4 opacity-60" />
+                            <span className="text-sm font-semibold">Recurring</span>
+                        </div>
+                        <span className="text-xs font-bold text-muted-foreground">
+                            {manageOpen.recurringAmount ? formatMoney(manageOpen.recurringAmount, settings.currency) : "Off"}
+                        </span>
+                    </button>
+
+                    <div className="pt-2">
+                        <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-3 px-1">History</h3>
+                        <div className="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                            {manageOpen.entries.length > 0 ? (
+                                manageOpen.entries.slice().reverse().map(e => (
+                                    <div key={e.id} className="flex items-center justify-between rounded-xl border border-border/20 px-3 py-2 text-xs">
+                                        <div className="flex flex-col">
+                                            <span className="font-semibold">{formatMoney(e.amount, settings.currency)}</span>
+                                            <span className="text-[10px] opacity-40">{e.date}</span>
+                                        </div>
+                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button variant="ghost" size="icon" className="size-6 rounded-lg" onClick={() => {
+                                                const newAmt = prompt("Edit amount:", e.amount.toString());
+                                                if (newAmt !== null) nw.updateEntry(manageOpen.id, e.id, { amount: parseFloat(newAmt) });
+                                            }}>
+                                                <Pencil className="size-3 opacity-40" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-[10px] italic opacity-40 px-1">No contribution history yet.</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="pt-4 flex gap-3">
+                        <Button variant="outline" className="flex-1 rounded-2xl border-border/40 text-xs font-bold text-destructive hover:bg-destructive/5" onClick={() => {
                             if (confirm(`Archive ${manageOpen.name}? Historical data will be preserved.`)) {
                                 nw.archiveAsset(manageOpen.id);
                                 setManageOpen(null);
                             }
                         }}>
-                            <div className="flex items-center gap-3">
-                                <Archive className="h-4 w-4" />
-                                <span className="text-sm font-medium">Archive Asset</span>
-                            </div>
-                        </button>
+                            Archive
+                        </Button>
+                        <Button variant="outline" className="flex-1 rounded-2xl border-border/40 text-xs font-bold" onClick={() => setManageOpen(null)}>
+                            Done
+                        </Button>
                     </div>
                 </div>
-                <DialogFooter>
-                    <Button variant="ghost" className="w-full" onClick={() => setManageOpen(null)}>Close</Button>
-                </DialogFooter>
             </DialogContent>
         )}
       </Dialog>
