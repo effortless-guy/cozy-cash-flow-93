@@ -27,7 +27,9 @@ export type Settings = {
   notifications: boolean;
   showWeeklyTotal?: boolean;
   showYearlyTotal?: boolean;
+  nwColumns?: number;
 };
+
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -461,7 +463,9 @@ const defaultSettings: Settings = {
   notifications: true,
   showWeeklyTotal: true,
   showYearlyTotal: true,
+  nwColumns: 2,
 };
+
 
 export function useSettings() {
   const [settings, setSettings, hydrated] = usePersisted<Settings>(
