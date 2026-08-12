@@ -78,23 +78,24 @@ function KhatabookPage() {
           Khatabook
         </h1>
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+          <div className="rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-sm">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
               You will receive
             </p>
-            <p className="num mt-1 text-xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">
+            <p className="num mt-1 text-xl font-bold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
               {formatMoney(receive, settings.currency)}
             </p>
           </div>
-          <div className="rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+          <div className="rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-sm flex flex-col items-end text-right">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
               You owe
             </p>
-            <p className="num mt-1 text-xl font-semibold tracking-tight text-rose-600 dark:text-rose-400">
+            <p className="num mt-1 text-xl font-bold tabular-nums tracking-tight text-rose-600 dark:text-rose-400">
               {formatMoney(owe, settings.currency)}
             </p>
           </div>
         </div>
+
       </header>
 
       <main className="space-y-3 px-6 pb-16 pt-4">
