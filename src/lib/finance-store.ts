@@ -123,7 +123,7 @@ export type AssetEntry = {
 
 export type AssetType =
   | "PPF" | "EPF" | "EPS" | "NPS" | "Mutual Funds" | "Stocks" | "Foreign Stocks" 
-  | "Gold" | "FD" | "RD" | "Savings" | "Cash" | "Crypto" | "Property" | "Other";
+  | "Gold" | "FD" | "RD" | "Emergency Fund" | "Savings" | "Cash" | "Crypto" | "Property" | "Other";
 
 export type NetWorthAsset = {
   id: string;
@@ -145,9 +145,41 @@ export type NWActivity = {
 const NW_KEY = "pft.networth.v1";
 const NW_ACTIVITY_KEY = "pft.nw_activity.v1";
 
+const DEFAULT_ASSETS: Omit<NetWorthAsset, "id" | "entries" | "archived">[] = [
+  { name: "PPF", type: "PPF", currentValue: 0 },
+  { name: "EPF", type: "EPF", currentValue: 0 },
+  { name: "NPS", type: "NPS", currentValue: 0 },
+  { name: "Stocks", type: "Stocks", currentValue: 0 },
+  { name: "Mutual Funds", type: "Mutual Funds", currentValue: 0 },
+  { name: "Foreign Stocks", type: "Foreign Stocks", currentValue: 0 },
+  { name: "Gold", type: "Gold", currentValue: 0 },
+  { name: "FD", type: "FD", currentValue: 0 },
+  { name: "RD", type: "RD", currentValue: 0 },
+  { name: "Emergency Fund", type: "Emergency Fund", currentValue: 0 },
+  { name: "Savings Account", type: "Savings", currentValue: 0 },
+  { name: "Cash", type: "Cash", currentValue: 0 },
+  { name: "Crypto", type: "Crypto", currentValue: 0 },
+  { name: "Property", type: "Property", currentValue: 0 },
+  { name: "Other", type: "Other", currentValue: 0 },
+];
+
 export function useNetWorth() {
   const [assets, setAssets, hydrated] = usePersisted<NetWorthAsset[]>(NW_KEY, () => []);
   const [activity, setActivity] = usePersisted<NWActivity[]>(NW_ACTIVITY_KEY, () => []);
+
+  // Initialize default assets for new users or add missing ones for existing users
+  useEffect(() => {
+    if (hydrated) {
+      setAssets((prev) => {
+        const existingNames = new Set(prev.map(a => a.name));
+        const missing = DEFAULT_ASSETS.filter(d => !existingNames.has(d.name));
+        if (missing.length > 0) {
+          return [...prev, ...missing.map(m => ({ ...m, id: uid(), entries: [], archived: false }))];
+        }
+        return prev;
+      });
+    }
+  }, [hydrated, setAssets]);
 
   const addActivity = (action: string) =>
     setActivity((prev) => [{ id: uid(), action, timestamp: new Date().toISOString() }, ...prev].slice(0, 50));
