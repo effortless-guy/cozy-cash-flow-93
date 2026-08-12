@@ -132,25 +132,65 @@ export type NetWorthAsset = {
   entries: AssetEntry[];
   recurringAmount?: number;
   recurringDay?: number;
+  archived?: boolean;
+};
+
+export type NWActivity = {
+  id: string;
+  action: string;
+  timestamp: string;
 };
 
 const NW_KEY = "pft.networth.v1";
+const NW_ACTIVITY_KEY = "pft.nw_activity.v1";
 
 export function useNetWorth() {
   const [assets, setAssets, hydrated] = usePersisted<NetWorthAsset[]>(NW_KEY, () => []);
-  
-  const addAsset = (asset: Omit<NetWorthAsset, "id" | "entries">) =>
-    setAssets((prev) => [...prev, { ...asset, id: uid(), entries: [] }]);
+  const [activity, setActivity] = usePersisted<NWActivity[]>(NW_ACTIVITY_KEY, () => []);
 
-  const updateAsset = (id: string, patch: Partial<NetWorthAsset>) =>
+  const addActivity = (action: string) =>
+    setActivity((prev) => [{ id: uid(), action, timestamp: new Date().toISOString() }, ...prev].slice(0, 50));
+
+  const addAsset = (asset: Omit<NetWorthAsset, "id" | "entries" | "archived">) => {
+    setAssets((prev) => [...prev, { ...asset, id: uid(), entries: [], archived: false }]);
+    addActivity(`${asset.name} asset added`);
+  };
+
+  const updateAsset = (id: string, patch: Partial<NetWorthAsset>) => {
     setAssets((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+    addActivity(`Asset ${patch.name ? patch.name : "details"} updated`);
+  };
 
-  const addEntry = (aid: string, entry: Omit<AssetEntry, "id">) =>
+  const archiveAsset = (id: string) => {
+    setAssets((prev) => prev.map(a => a.id === id ? { ...a, archived: true } : a));
+    addActivity(`Asset archived`);
+  }
+
+  const addEntry = (aid: string, entry: Omit<AssetEntry, "id">) => {
     setAssets((prev) => prev.map((a) => 
       a.id === aid ? { ...a, entries: [...a.entries, { ...entry, id: uid() }] } : a
     ));
+  }
 
-  return { assets, addAsset, updateAsset, addEntry, hydrated };
+  const confirmRecurring = (aid: string, eid: string, amount: number) => {
+    setAssets((prev) => prev.map(a => {
+        if (a.id !== aid) return a;
+        const newEntries = a.entries.map(e => e.id === eid ? { ...e, isPending: false, amount } : e);
+        return { ...a, entries: newEntries, currentValue: a.currentValue + amount };
+    }));
+    addActivity(`Monthly contribution confirmed`);
+  }
+
+  const skipRecurring = (aid: string, eid: string) => {
+      setAssets((prev) => prev.map(a => {
+          if (a.id !== aid) return a;
+          const newEntries = a.entries.map(e => e.id === eid ? { ...e, isPending: false, amount: 0 } : e);
+          return { ...a, entries: newEntries };
+      }));
+      addActivity(`Monthly contribution skipped`);
+  }
+
+  return { assets, activity, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, archiveAsset, addActivity, hydrated };
 }
 
 /**
