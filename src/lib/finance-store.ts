@@ -191,7 +191,21 @@ export function useNetWorth() {
       addActivity(`Monthly contribution skipped`);
   }
 
-  return { assets, activity, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, archiveAsset, addActivity, hydrated };
+  const deleteEntry = (aid: string, eid: string) => {
+    setAssets((prev) => prev.map((a) => 
+      a.id === aid ? { ...a, entries: a.entries.filter(e => e.id !== eid) } : a
+    ));
+    addActivity(`History entry deleted`);
+  };
+
+  const updateEntry = (aid: string, eid: string, patch: Partial<AssetEntry>) => {
+    setAssets((prev) => prev.map((a) => 
+      a.id === aid ? { ...a, entries: a.entries.map(e => e.id === eid ? { ...e, ...patch } : e) } : a
+    ));
+    addActivity(`History entry updated`);
+  };
+
+  return { assets, activity, addAsset, updateAsset, addEntry, deleteEntry, updateEntry, confirmRecurring, skipRecurring, archiveAsset, addActivity, hydrated };
 }
 
 /**
