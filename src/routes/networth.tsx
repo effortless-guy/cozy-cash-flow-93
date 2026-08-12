@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { Plus, ChevronRight, TrendingUp, TrendingDown, Landmark, PieChart, Coins, Briefcase, Home, Wallet as WalletIcon, HelpCircle } from "lucide-react";
-import { useNetWorth, formatMoney, useSettings, type AssetType } from "../lib/finance-store";
+import { useNetWorth, formatMoney, useSettings, type AssetType, useNetWorthRecurring } from "../lib/finance-store";
 import { Fab } from "../components/Fab";
 import { Button } from "../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../components/ui/dialog";
@@ -37,6 +37,8 @@ const TYPE_ICONS: Record<string, any> = {
 
 function NetWorthPage() {
   const nw = useNetWorth();
+  useNetWorthRecurring(nw);
+
   const { settings } = useSettings();
   const [addOpen, setAddOpen] = useState(false);
   const [formData, setFormData] = useState({

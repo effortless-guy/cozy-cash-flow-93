@@ -153,6 +153,34 @@ export function useNetWorth() {
   return { assets, addAsset, updateAsset, addEntry, hydrated };
 }
 
+/**
+ * Checks for recurring assets and creates pending entries if needed at start of month
+ */
+export function useNetWorthRecurring(nw: ReturnType<typeof useNetWorth>) {
+  useEffect(() => {
+    if (!nw.hydrated || nw.assets.length === 0) return;
+
+    const now = new Date();
+    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    
+    nw.assets.forEach(asset => {
+      if (asset.recurringAmount && asset.recurringDay) {
+        // Check if we already have an entry for this month
+        const hasEntry = asset.entries.some(e => e.date.startsWith(monthKey));
+        if (!hasEntry && now.getDate() >= asset.recurringDay) {
+          nw.addEntry(asset.id, {
+            amount: asset.recurringAmount,
+            date: `${monthKey}-${String(asset.recurringDay).padStart(2, "0")}`,
+            note: "Recurring contribution",
+            isPending: true
+          });
+        }
+      }
+    });
+  }, [nw.hydrated, nw.assets.length]); // Simple check on mount/asset count change
+}
+
+
 export const personBalance = (p: Person) =>
   p.entries.reduce((a, e) => a + (e.type === "lent" ? e.amount : -e.amount), 0);
 
