@@ -130,20 +130,23 @@ function NetWorthPage() {
           </div>
         </section>
 
-        <section>
-          <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 mb-4">Activity</h2>
-          <div className="space-y-3">
+        <section className="bg-muted/20 -mx-6 px-6 py-8">
+          <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">Recent Activity</h2>
+          <div className="space-y-4">
             {nw.activity.length > 0 ? (
                 nw.activity.slice(0, 5).map(act => (
-                    <div key={act.id} className="flex items-center justify-between text-xs px-1">
-                        <span className="text-foreground/80">{act.action}</span>
-                        <span className="text-muted-foreground/50 tabular-nums">
-                            {new Date(act.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </span>
+                    <div key={act.id} className="flex items-start justify-between gap-4 group">
+                        <div className="flex flex-col">
+                            <span className="text-sm font-medium text-foreground/80">{act.action}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/40 mt-1">
+                                {new Date(act.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                        </div>
+                        <div className="h-px flex-1 bg-border/20 mt-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                 ))
             ) : (
-                <p className="text-xs text-muted-foreground/50 px-1">No recent activity.</p>
+                <p className="text-sm italic text-muted-foreground/30 text-center py-4">No recent activity logged.</p>
             )}
           </div>
         </section>
