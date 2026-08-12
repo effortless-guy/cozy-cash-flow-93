@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ChevronDown, Pencil, Check, Trash2, User } from "lucide-react";
+import { ChevronDown, Pencil, Check, Trash2, User, UserRound } from "lucide-react";
+
 import {
   useKhatabook,
   useSettings,
@@ -78,23 +79,24 @@ function KhatabookPage() {
           Khatabook
         </h1>
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+          <div className="rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-sm">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
               You will receive
             </p>
-            <p className="num mt-1 text-xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">
+            <p className="num mt-1 text-xl font-bold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
               {formatMoney(receive, settings.currency)}
             </p>
           </div>
-          <div className="rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+          <div className="rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-sm flex flex-col items-end text-right">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
               You owe
             </p>
-            <p className="num mt-1 text-xl font-semibold tracking-tight text-rose-600 dark:text-rose-400">
+            <p className="num mt-1 text-xl font-bold tabular-nums tracking-tight text-rose-600 dark:text-rose-400">
               {formatMoney(owe, settings.currency)}
             </p>
           </div>
         </div>
+
       </header>
 
       <main className="space-y-3 px-6 pb-16 pt-4">
@@ -176,22 +178,38 @@ function PersonBlock({
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<LedgerEntry["type"]>("lent");
 
+  // Determine gender/icon based on name (very simple heuristic as requested)
+  const isFemale =
+    person.name.toLowerCase().includes("priya") ||
+    person.name.toLowerCase().includes("sharma") ||
+    person.name.toLowerCase().endsWith("a") ||
+    person.name.toLowerCase().includes("morgan") === false && person.name.toLowerCase().includes("alex") === false;
+  // Actually, let's just use a simple map for the demo names and a default
+  const getIcon = () => {
+    const n = person.name.toLowerCase();
+    if (n.includes("priya")) return "female";
+    if (n.includes("alex")) return "male";
+    return "male"; // default
+  };
+  const iconType = getIcon();
+
+
   return (
-    <section className="space-y-3 rounded-2xl border border-border/50 bg-muted/30 px-4 py-3.5">
+    <section className="space-y-3 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-none transition-all">
       <div className="flex min-h-11 items-center justify-between gap-3">
         <button
           type="button"
           onClick={() => !editing && api.togglePerson(person.id)}
           className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/55 bg-card text-foreground">
-            <User className="h-[18px] w-[18px]" strokeWidth={1.75} />
-            <ChevronDown
-              className={`absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-background text-muted-foreground transition-transform duration-300 ease-out ${
-                person.collapsed ? "-rotate-90" : "rotate-0"
-              }`}
-            />
+          <div className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-border/30 bg-background text-foreground shadow-sm">
+            {iconType === "female" ? (
+              <UserRound className="h-[18px] w-[18px] opacity-70" strokeWidth={1.5} />
+            ) : (
+              <User className="h-[18px] w-[18px] opacity-70" strokeWidth={1.5} />
+            )}
           </div>
+
           <div className="min-w-0 flex-1">
             {editing ? (
               <div className="flex items-center gap-1">
@@ -216,33 +234,35 @@ function PersonBlock({
                 </Button>
               </div>
             ) : (
-              <>
-                <h2 className="truncate text-lg font-semibold tracking-tight">
+              <div className="flex flex-col">
+                <h2 className="truncate text-[15px] font-bold tracking-tight text-foreground/90">
                   {person.name}
                 </h2>
-                <p className="text-xs text-muted-foreground/70">
+                <p className="text-[10px] font-bold text-muted-foreground/45 uppercase tracking-wider">
                   {balance === 0
                     ? "Settled up"
                     : balance > 0
                       ? "Will receive"
                       : "You owe"}
                 </p>
-              </>
+              </div>
+
             )}
           </div>
         </button>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <span
-            className={`num text-base font-semibold ${
+            className={`num text-base font-bold tabular-nums tracking-tight ${
               balance > 0
                 ? "text-emerald-600 dark:text-emerald-400"
                 : balance < 0
                   ? "text-rose-600 dark:text-rose-400"
-                  : ""
+                  : "text-muted-foreground/40"
             }`}
           >
             {formatMoney(Math.abs(balance), currency)}
           </span>
+
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground/50 transition-colors duration-200 hover:text-foreground">
@@ -282,13 +302,14 @@ function PersonBlock({
           <ul className="space-y-1">
             {person.entries.map((e) => (
               <li key={e.id}>
-                <div className="flex min-h-11 items-center justify-between gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-accent/60">
+                <div className="flex min-h-11 items-center justify-between gap-3 rounded-xl px-2 py-1 transition-colors hover:bg-accent/40">
                   <div className="min-w-0">
-                    <p className="truncate text-sm text-muted-foreground">
+                    <p className="truncate text-[13px] font-medium text-muted-foreground/80">
                       {e.note || (e.type === "lent" ? "Lent" : "Borrowed")}
                     </p>
-                    <p className="text-[11px] text-muted-foreground/60">{e.date}</p>
+                    <p className="text-[10px] text-muted-foreground/40 font-medium">{e.date}</p>
                   </div>
+
                   <div className="flex items-center gap-1">
                     <span
                       className={`num text-sm font-semibold ${
@@ -315,11 +336,12 @@ function PersonBlock({
           </ul>
           <Button
             variant="ghost"
-            className="mt-1 h-11 w-full justify-start px-2 text-sm text-muted-foreground"
+            className="mt-2 h-10 w-full justify-start rounded-xl px-2 text-[13px] font-medium text-muted-foreground/50 hover:text-muted-foreground hover:bg-accent/40 transition-all"
             onClick={() => setEntryOpen(true)}
           >
-            Add entry
+            + Add entry
           </Button>
+
         </div>
       </div>
 
