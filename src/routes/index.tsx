@@ -235,14 +235,14 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className="space-y-0 rounded-2xl border border-border/40 bg-white overflow-hidden">
-      <div className="flex min-h-12 items-center justify-between gap-3 px-4 py-2 border-b border-border/30 bg-muted/5">
+    <section className="space-y-0 rounded-2xl border border-border/40 bg-[#F5F5F5] overflow-hidden">
+      <div className="flex min-h-12 items-center justify-between gap-3 px-4 py-2 border-b border-border/20 bg-transparent">
         <button
           type="button"
           onClick={() => !editing && api.toggleCategory(category.id)}
           className="group flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <div className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/40 bg-white text-foreground">
+          <div className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/20 bg-white text-foreground shadow-sm">
             <Icon className="h-4 w-4" strokeWidth={1.5} />
           </div>
           <div className="min-w-0 flex-1 flex items-baseline gap-2">
