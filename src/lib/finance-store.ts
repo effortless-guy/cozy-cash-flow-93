@@ -412,7 +412,7 @@ export function useSettings() {
   return { settings, setSettings, hydrated };
 }
 
-export function formatMoney(amount: number, currency = "$") {
+export function formatMoney(amount: number, currency = "₹") {
   const sign = amount < 0 ? "-" : "";
   const abs = Math.abs(amount);
   return `${sign}${currency}${abs.toLocaleString(undefined, {
