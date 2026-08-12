@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useSettings } from "../lib/finance-store";
+import { useSettings, useDataManagement } from "../lib/finance-store";
 import { Label } from "../components/ui/label";
 import { Switch } from "../components/ui/switch";
 import {
@@ -9,7 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Download, Upload } from "lucide-react";
+import { Button } from "../components/ui/button";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -47,6 +48,7 @@ const LANGUAGES = [
 
 function SettingsPage() {
   const { settings, setSettings, hydrated } = useSettings();
+  const { exportData, importData } = useDataManagement();
   if (!hydrated) return <div className="p-6 text-muted-foreground">Loading…</div>;
 
   return (
@@ -133,7 +135,7 @@ function SettingsPage() {
         <Section title="Net Worth">
           <Row label="Grid Columns" description="Number of columns for asset cards">
             <div className="flex gap-2">
-              {[2, 3].map(cols => (
+              {[2, 3, 4].map(cols => (
                 <button
                   key={cols}
                   onClick={() => setSettings({ ...settings, nwColumns: cols })}
@@ -144,11 +146,38 @@ function SettingsPage() {
               ))}
             </div>
           </Row>
+          <Row label="Hide Balance" description="Mask balances on Net Worth dashboard">
+            <Switch
+              checked={!!settings.hideNWBalances}
+              onCheckedChange={(checked) =>
+                setSettings({ ...settings, hideNWBalances: checked })
+              }
+            />
+          </Row>
         </Section>
 
         <Section title="Data">
+          <div className="flex items-center gap-4 px-4 py-4">
+             <Button variant="outline" size="sm" className="flex-1 gap-2" onClick={exportData}>
+                <Download className="h-4 w-4" /> Export
+             </Button>
+             <div className="relative flex-1">
+                <input 
+                    type="file" 
+                    className="absolute inset-0 opacity-0 cursor-pointer" 
+                    accept=".json"
+                    onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) importData(file);
+                    }}
+                />
+                <Button variant="outline" size="sm" className="w-full gap-2 pointer-events-none">
+                    <Upload className="h-4 w-4" /> Import
+                </Button>
+             </div>
+          </div>
 
-          <div className="p-4">
+          <div className="p-4 border-t border-border/60">
             <button
               onClick={() => {
                 if (confirm("Reset all data? This cannot be undone.")) {
