@@ -336,11 +336,12 @@ function PersonBlock({
           </ul>
           <Button
             variant="ghost"
-            className="mt-1 h-11 w-full justify-start px-2 text-sm text-muted-foreground"
+            className="mt-2 h-10 w-full justify-start rounded-xl px-2 text-[13px] font-medium text-muted-foreground/50 hover:text-muted-foreground hover:bg-accent/40 transition-all"
             onClick={() => setEntryOpen(true)}
           >
-            Add entry
+            + Add entry
           </Button>
+
         </div>
       </div>
 
