@@ -133,6 +133,21 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      registerSW({
+        onNeedRefresh() {
+          if (confirm('New content available. Reload?')) {
+            window.location.reload();
+          }
+        },
+        onOfflineReady() {
+          console.log('App ready for offline use');
+        },
+      });
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AppShell />
