@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ChevronDown, Plus, Trash2, Pencil, Check, X, FolderPlus, Copy } from "lucide-react";
+import { ChevronDown, Plus, Trash2, Pencil, Check, X, FolderPlus, Copy, Download } from "lucide-react";
 import {
   useSalary,
   useSettings,
@@ -128,6 +128,45 @@ function SalaryPage() {
       </main>
 
       <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-5 z-40 flex flex-col items-center gap-3">
+        <button 
+          onClick={() => {
+            const idx = parseInt(s.month, 10) - 1;
+            const monthName = MONTH_NAMES[idx] ?? s.month;
+            const income = s.currentMonth.income;
+            
+            let text = `Ledger - Salary Export\n`;
+            text += `Period: ${monthName} ${s.year}\n`;
+            text += `--------------------------------\n`;
+            text += `Income: ${income !== undefined ? formatMoney(income, settings.currency) : "Not set"}\n`;
+            text += `Total Spend: ${formatMoney(monthTotal, settings.currency)}\n`;
+            if (income !== undefined) {
+              text += `Remaining: ${formatMoney(income - monthTotal, settings.currency)}\n`;
+            }
+            text += `--------------------------------\n\n`;
+            
+            s.currentMonth.categories.forEach(cat => {
+              const catTotal = cat.transactions.reduce((a, t) => a + (t.completed ? t.amount : 0), 0);
+              text += `[${cat.name}] - ${formatMoney(catTotal, settings.currency)}\n`;
+              cat.transactions.forEach(t => {
+                const status = t.completed ? "[x]" : "[ ]";
+                text += `  ${status} ${t.name.padEnd(20)} ${formatMoney(t.amount, settings.currency).padStart(10)}\n`;
+              });
+              text += `\n`;
+            });
+            
+            const blob = new Blob([text], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${monthName}_${s.year}_salary.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          title="Export current month as text"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-muted border border-border/50 text-muted-foreground shadow-md transition-all hover:scale-105 active:scale-95"
+        >
+          <Download className="h-4 w-4" />
+        </button>
         <ImportTemplate onImport={s.importMonthTemplate} data={s.data} currentY={s.year} isFab />
         <Fab label="Add category" onClick={() => setAddCatOpen(true)} />
       </div>
