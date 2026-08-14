@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import { getDBItem, setDBItem, migrateFromLocalStorage, STORE_MAP } from "./db";
 
 export type Transaction = { id: string; name: string; amount: number; completed?: boolean };
