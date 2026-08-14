@@ -57,10 +57,10 @@ function SalaryPage() {
 
   const monthTotal = useMemo(
     () =>
-      s.currentMonth.categories.reduce(
-        (sum, c) => sum + c.transactions.reduce((a, t) => a + (t.completed ? t.amount : 0), 0),
+      s.currentMonth.categories?.reduce(
+        (sum, c) => sum + (c.transactions?.reduce((a, t) => a + (t.completed ? t.amount : 0), 0) || 0),
         0,
-      ),
+      ) || 0,
     [s.currentMonth],
   );
 
@@ -122,7 +122,7 @@ function SalaryPage() {
       </div>
 
       <main className="space-y-2 px-4 pb-16 pt-2">
-        {s.currentMonth.categories.map((c) => (
+        {s.currentMonth.categories?.map((c) => (
           <CategoryBlock key={c.id} category={c} currency={settings.currency} api={s} />
         ))}
       </main>
@@ -144,7 +144,7 @@ function SalaryPage() {
             }
             text += `--------------------------------\n\n`;
             
-            s.currentMonth.categories.forEach(cat => {
+            s.currentMonth.categories?.forEach(cat => {
               const catTotal = cat.transactions.reduce((a, t) => a + (t.completed ? t.amount : 0), 0);
               text += `[${cat.name}] - ${formatMoney(catTotal, settings.currency)}\n`;
               cat.transactions.forEach(t => {
