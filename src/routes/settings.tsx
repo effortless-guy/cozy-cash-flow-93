@@ -9,8 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Moon, Sun, Download, Upload } from "lucide-react";
+import { Moon, Sun, Download, Upload, Lock, Shield, Key } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { useAuth } from "../lib/auth-store";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "../components/ui/dialog";
+import { useState } from "react";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -49,7 +53,11 @@ const LANGUAGES = [
 function SettingsPage() {
   const { settings, setSettings, hydrated } = useSettings();
   const { exportData, importData } = useDataManagement();
-  if (!hydrated) return <div className="p-6 text-muted-foreground">Loading…</div>;
+  const { auth, enableLock, disableLock, changePin } = useAuth();
+  const [pinInput, setPinInput] = useState("");
+  const [isChangingPin, setIsChangingPin] = useState(false);
+  
+  if (!hydrated || !auth) return <div className="p-6 text-muted-foreground">Loading…</div>;
 
   return (
     <div>
@@ -111,6 +119,104 @@ function SettingsPage() {
               }
             />
           </Row>
+        </Section>
+
+        <Section title="Security">
+          <Row label="App Lock" description="Require PIN to open the app">
+            <Switch
+              checked={auth.isEnabled}
+              onCheckedChange={(checked) => {
+                if (!checked) {
+                  disableLock();
+                }
+              }}
+            />
+          </Row>
+          
+          {!auth.isEnabled && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="px-4 py-2">
+                  <Button variant="outline" size="sm" className="w-full gap-2">
+                    <Lock className="h-4 w-4" /> Set PIN & Enable Lock
+                  </Button>
+                </div>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Set App Lock PIN</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <p className="text-sm text-muted-foreground">
+                    Choose a numeric PIN to protect your financial data.
+                  </p>
+                  <Input
+                    type="password"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    placeholder="Enter new PIN"
+                    value={pinInput}
+                    onChange={(e) => setPinInput(e.target.value)}
+                    className="text-center text-lg tracking-[0.5em]"
+                  />
+                </div>
+                <DialogFooter>
+                  <Button 
+                    onClick={() => {
+                      if (pinInput.length >= 4) {
+                        enableLock(pinInput);
+                        setPinInput("");
+                      }
+                    }}
+                    disabled={pinInput.length < 4}
+                  >
+                    Enable App Lock
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {auth.isEnabled && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="px-4 py-2">
+                  <Button variant="ghost" size="sm" className="w-full gap-2 text-muted-foreground">
+                    <Key className="h-4 w-4" /> Change PIN
+                  </Button>
+                </div>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Change PIN</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <Input
+                    type="password"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    placeholder="Enter new PIN"
+                    value={pinInput}
+                    onChange={(e) => setPinInput(e.target.value)}
+                    className="text-center text-lg tracking-[0.5em]"
+                  />
+                </div>
+                <DialogFooter>
+                  <Button 
+                    onClick={() => {
+                      if (pinInput.length >= 4) {
+                        changePin(pinInput);
+                        setPinInput("");
+                      }
+                    }}
+                    disabled={pinInput.length < 4}
+                  >
+                    Update PIN
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </Section>
 
         <Section title="Subscriptions">
