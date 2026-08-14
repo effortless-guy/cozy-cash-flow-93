@@ -68,7 +68,7 @@ function SalaryPage() {
 
   return (
     <div className="bg-background min-h-screen">
-      <div className="mx-6 pt-6 pb-2">
+      <div className="mx-4 pt-6 pb-2">
         <header className="rounded-2xl border border-border/40 bg-card px-5 py-4 shadow-sm">
           <div className="flex items-start justify-between gap-4">
             <PeriodPicker
