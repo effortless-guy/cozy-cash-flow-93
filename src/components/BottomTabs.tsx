@@ -23,8 +23,9 @@ export function BottomTabs() {
               key={t.to}
               to={t.to}
               activeOptions={{ exact: t.exact }}
-              className="group flex flex-1 flex-col items-center gap-1.5 text-muted-foreground data-[status=active]:text-foreground"
+              className="group relative flex flex-1 flex-col items-center gap-1.5 text-muted-foreground data-[status=active]:text-foreground"
             >
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-foreground scale-x-0 group-data-[status=active]:scale-x-100 transition-transform duration-200" />
               <Icon className="h-5 w-5" strokeWidth={2} />
               <span className="text-[10px] font-semibold uppercase tracking-widest">
                 {t.label}
