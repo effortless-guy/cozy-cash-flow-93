@@ -4,7 +4,7 @@
 
 const DB_NAME = "LedgerDB";
 const DB_VERSION = 1;
-const STORES = ["salary", "subscriptions", "khatabook", "networth", "nw_activity", "settings", "metadata"];
+const STORES = ["salary", "subscriptions", "khatabook", "networth", "nw_activity", "settings", "metadata", "auth"];
 
 export async function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {

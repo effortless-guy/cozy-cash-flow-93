@@ -30,6 +30,7 @@ export type Settings = {
   showYearlyTotal?: boolean;
   nwColumns?: number;
   hideNWBalances?: boolean;
+  appLockEnabled?: boolean;
 };
 
 
