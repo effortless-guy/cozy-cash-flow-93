@@ -156,7 +156,7 @@ function SettingsPage() {
           </Row>
         </Section>
 
-        <Section title="Data">
+        <Section title="Data Management" description="Local-first storage: all data stays on your device.">
           <div className="flex items-center gap-4 px-4 py-4">
              <Button variant="outline" size="sm" className="flex-1 gap-2" onClick={exportData}>
                 <Download className="h-4 w-4" /> Export
