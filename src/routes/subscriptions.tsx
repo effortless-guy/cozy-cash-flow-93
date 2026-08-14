@@ -154,10 +154,12 @@ function SubRow({
   const [price, setPrice] = useState(String(sub.price));
   const [cycle, setCycle] = useState<BillingCycle>(sub.cycle);
   const [startDate, setStartDate] = useState(sub.startDate || new Date().toISOString().split("T")[0]);
+  const [customIcon, setCustomIcon] = useState(sub.customIcon || "");
 
   const monthly = monthlyEquivalent(sub);
   
-  const getIcon = (name: string) => {
+  const getIcon = (name: string, custom?: string) => {
+    if (custom && custom.startsWith("http")) return custom;
     const n = name.toLowerCase();
     if (n.includes("netflix")) return "https://www.google.com/s2/favicons?domain=netflix.com&sz=128";
     if (n.includes("spotify")) return "https://www.google.com/s2/favicons?domain=spotify.com&sz=128";
@@ -166,15 +168,29 @@ function SubRow({
     if (n.includes("google") || n.includes("drive") || n.includes("one")) return "https://www.google.com/s2/favicons?domain=google.com&sz=128";
     if (n.includes("amazon") || n.includes("prime")) return "https://www.google.com/s2/favicons?domain=amazon.com&sz=128";
     if (n.includes("disney")) return "https://www.google.com/s2/favicons?domain=disneyplus.com&sz=128";
+    if (n.includes("hulu")) return "https://www.google.com/s2/favicons?domain=hulu.com&sz=128";
+    if (n.includes("hbo") || n.includes("max")) return "https://www.google.com/s2/favicons?domain=max.com&sz=128";
     if (n.includes("microsoft") || n.includes("office") || n.includes("365")) return "https://www.google.com/s2/favicons?domain=microsoft.com&sz=128";
     if (n.includes("adobe") || n.includes("creative")) return "https://www.google.com/s2/favicons?domain=adobe.com&sz=128";
     if (n.includes("figma")) return "https://www.google.com/s2/favicons?domain=figma.com&sz=128";
     if (n.includes("chatgpt") || n.includes("openai")) return "https://www.google.com/s2/favicons?domain=openai.com&sz=128";
     if (n.includes("claude") || n.includes("anthropic")) return "https://www.google.com/s2/favicons?domain=anthropic.com&sz=128";
+    if (n.includes("github")) return "https://www.google.com/s2/favicons?domain=github.com&sz=128";
+    if (n.includes("slack")) return "https://www.google.com/s2/favicons?domain=slack.com&sz=128";
+    if (n.includes("zoom")) return "https://www.google.com/s2/favicons?domain=zoom.us&sz=128";
+    if (n.includes("notion")) return "https://www.google.com/s2/favicons?domain=notion.so&sz=128";
+    if (n.includes("canva")) return "https://www.google.com/s2/favicons?domain=canva.com&sz=128";
+    if (n.includes("playstation") || n.includes("psn")) return "https://www.google.com/s2/favicons?domain=playstation.com&sz=128";
+    if (n.includes("xbox") || n.includes("game pass")) return "https://www.google.com/s2/favicons?domain=xbox.com&sz=128";
+    if (n.includes("steam")) return "https://www.google.com/s2/favicons?domain=steampowered.com&sz=128";
+    if (n.includes("uber") || n.includes("uber pass")) return "https://www.google.com/s2/favicons?domain=uber.com&sz=128";
+    if (n.includes("lyft")) return "https://www.google.com/s2/favicons?domain=lyft.com&sz=128";
+    if (n.includes("swiggy")) return "https://www.google.com/s2/favicons?domain=swiggy.com&sz=128";
+    if (n.includes("zomato")) return "https://www.google.com/s2/favicons?domain=zomato.com&sz=128";
     return null;
   };
 
-  const iconUrl = getIcon(sub.name);
+  const iconUrl = getIcon(sub.name, sub.customIcon);
 
   const nextRenewal = useMemo(() => {
     const start = sub.startDate ? new Date(sub.startDate) : new Date();
