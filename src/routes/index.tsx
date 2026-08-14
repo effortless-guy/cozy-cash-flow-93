@@ -243,7 +243,7 @@ function CategoryBlock({
         : "border-border/40 bg-card"
     } overflow-hidden`}>
       <div className={`flex items-center justify-between gap-3 px-4 transition-all duration-300 ${
-        category.collapsed ? "h-11 border-b-0" : "h-14 border-b"
+        category.collapsed ? "h-10 border-b-0" : "h-14 border-b"
       } ${
         isCompleted ? "border-emerald-100/50 bg-emerald-100/10" : "border-border/20 bg-transparent"
       }`}>
