@@ -121,7 +121,9 @@ function SubscriptionsPage() {
         </ul>
       </main>
 
-      <Fab label="Add subscription" onClick={() => setAdding(true)} />
+      <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-5 z-40">
+        <Fab label="Add subscription" onClick={() => setAdding(true)} />
+      </div>
 
       <NewSubDialog
         open={adding}
