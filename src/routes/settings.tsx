@@ -180,8 +180,9 @@ function SettingsPage() {
           <div className="p-4 border-t border-border/60">
             <button
               onClick={() => {
-                if (confirm("Reset all data? This cannot be undone.")) {
+                if (confirm("Reset all data? This will clear everything in IndexedDB and localStorage. This cannot be undone.")) {
                   localStorage.clear();
+                  indexedDB.deleteDatabase("LedgerDB");
                   location.reload();
                 }
               }}
