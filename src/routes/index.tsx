@@ -281,17 +281,17 @@ function CategoryBlock({
         ? "border-emerald-200/60 bg-emerald-50/30" 
         : "border-border/40 bg-card"
     } overflow-hidden`}>
-      <div className={`flex items-center justify-between gap-3 px-4 transition-all duration-300 ${
-        category.collapsed ? "h-[46px] border-b-0" : "h-14 border-b"
-      } ${
-        isCompleted ? "border-emerald-100/50 bg-emerald-100/10" : "border-border/20 bg-transparent"
-      }`}>
-        <div
-          onClick={(e) => {
-            if (!editing) api.toggleCategory(category.id);
-          }}
-          className="group flex h-full min-w-0 flex-1 cursor-pointer items-center gap-3 text-left"
-        >
+      <div 
+        onClick={(e) => {
+          if (!editing) api.toggleCategory(category.id);
+        }}
+        className={`flex cursor-pointer items-center justify-between gap-3 px-4 transition-all duration-300 ${
+          category.collapsed ? "h-[46px] border-b-0" : "h-14 border-b"
+        } ${
+          isCompleted ? "border-emerald-100/50 bg-emerald-100/10" : "border-border/20 bg-transparent"
+        }`}
+      >
+        <div className="group flex h-full min-w-0 flex-1 items-center gap-3 text-left">
           <div className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/20 bg-white text-foreground shadow-sm">
             <Icon className="h-4 w-4" strokeWidth={1.5} />
           </div>
@@ -330,7 +330,7 @@ function CategoryBlock({
             )}
           </div>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/40 transition-colors duration-200 hover:text-foreground">
