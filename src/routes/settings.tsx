@@ -130,12 +130,6 @@ function SettingsPage() {
                   disableLock();
                 }
               }}
-              // If enabling, we need to show a dialog to set PIN
-              onClick={() => {
-                if (!auth.isEnabled) {
-                  // Handled by Dialog below
-                }
-              }}
             />
           </Row>
           
