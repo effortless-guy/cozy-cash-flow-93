@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Wallet, Repeat, BookUser, Settings as SettingsIcon } from "lucide-react";
+import { Wallet, Repeat, BookUser, Settings as SettingsIcon, LogOut } from "lucide-react";
+import { useAuth } from "../lib/auth-store";
 
 const tabs = [
   { to: "/", label: "Salary", icon: Wallet, exact: true },
@@ -7,13 +8,14 @@ const tabs = [
   { to: "/khatabook", label: "Khatabook", icon: BookUser, exact: false },
   { to: "/networth", label: "Net Worth", icon: Wallet, exact: false },
   { to: "/settings", label: "Settings", icon: SettingsIcon, exact: false },
-
 ] as const;
 
 export function BottomTabs() {
+  const { auth, logout } = useAuth();
+  
   return (
     <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-md items-center justify-between px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="mx-auto flex max-w-md items-center justify-between px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {tabs.map((t) => {
           const Icon = t.icon;
           return (
@@ -30,6 +32,17 @@ export function BottomTabs() {
             </Link>
           );
         })}
+        {auth?.isEnabled && (
+          <button
+            onClick={logout}
+            className="group flex flex-1 flex-col items-center gap-1.5 text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="h-5 w-5" strokeWidth={2} />
+            <span className="text-[10px] font-semibold uppercase tracking-widest">
+              Lock
+            </span>
+          </button>
+        )}
       </div>
     </nav>
   );
