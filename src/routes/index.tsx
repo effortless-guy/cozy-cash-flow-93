@@ -83,19 +83,16 @@ function SalaryPage() {
               onYearChange={s.setYear}
               onAddYear={s.addYear}
             />
-            <div className="flex flex-col items-end gap-1.5 shrink-0">
-              <ImportTemplate onImport={s.importMonthTemplate} data={s.data} currentY={s.year} />
-              <button
-                type="button"
-                onClick={() => setSalaryOpen(true)}
-                className="flex items-center gap-1.5 text-right transition-opacity hover:opacity-70"
-              >
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {income === undefined ? "Set Salary" : formatMoney(income, settings.currency)}
-                </span>
-                <Pencil className="h-3 w-3 text-muted-foreground/50" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setSalaryOpen(true)}
+              className="flex items-center gap-1.5 text-right transition-opacity hover:opacity-70 shrink-0 mt-1"
+            >
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {income === undefined ? "Set Salary" : formatMoney(income, settings.currency)}
+              </span>
+              <Pencil className="h-3 w-3 text-muted-foreground/50" />
+            </button>
           </div>
 
           <div className="mt-4 flex items-center gap-4 rounded-xl border border-border/50 bg-background/30 p-1.5">
@@ -130,7 +127,10 @@ function SalaryPage() {
         ))}
       </main>
 
-      <Fab label="Add category" onClick={() => setAddCatOpen(true)} />
+      <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-5 z-40 flex flex-col items-center gap-3">
+        <ImportTemplate onImport={s.importMonthTemplate} data={s.data} currentY={s.year} isFab />
+        <Fab label="Add category" onClick={() => setAddCatOpen(true)} />
+      </div>
 
       <Dialog
         open={salaryOpen}
@@ -564,10 +564,12 @@ function ImportTemplate({
   onImport,
   data,
   currentY,
+  isFab,
 }: {
   onImport: (y: string, m: string) => void;
   data: ReturnType<typeof useSalary>["data"];
   currentY: string;
+  isFab?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [y, setY] = useState(currentY);
@@ -578,10 +580,16 @@ function ImportTemplate({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
-          <Copy className="h-3.5 w-3.5" />
-          Import
-        </button>
+        {isFab ? (
+          <button className="flex h-10 w-10 items-center justify-center rounded-full bg-muted border border-border/50 text-muted-foreground shadow-md transition-all hover:scale-105 active:scale-95">
+            <Copy className="h-4 w-4" />
+          </button>
+        ) : (
+          <button className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
+            <Copy className="h-3.5 w-3.5" />
+            Import
+          </button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>
