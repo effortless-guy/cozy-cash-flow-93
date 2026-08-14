@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
+import { getDBItem, setDBItem, migrateFromLocalStorage, STORE_MAP } from "./db";
 
 export type Transaction = { id: string; name: string; amount: number; completed?: boolean };
 export type Category = {
@@ -64,32 +65,41 @@ const defaultMonth = (): MonthData => ({
 
 const emptyMonth = (): MonthData => ({ categories: [] });
 
-function loadJSON<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function saveJSON(key: string, value: unknown) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
 function usePersisted<T>(key: string, initial: () => T) {
   const [hydrated, setHydrated] = useState(false);
   const [state, setState] = useState<T>(initial);
+  const storeName = STORE_MAP[key];
+  const isInitialMount = useRef(true);
+
   useEffect(() => {
-    setState(loadJSON<T>(key, initial()));
-    setHydrated(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+    async function init() {
+      if (typeof window === "undefined") return;
+      
+      await migrateFromLocalStorage();
+      const val = await getDBItem<T>(storeName, "data");
+      
+      if (val !== null) {
+        setState(val);
+      } else {
+        // Fallback to initial and save it if not found
+        const initVal = initial();
+        await setDBItem(storeName, "data", initVal);
+        setState(initVal);
+      }
+      setHydrated(true);
+    }
+    init();
+  }, [storeName, initial]);
+
   useEffect(() => {
-    if (hydrated) saveJSON(key, state);
-  }, [key, state, hydrated]);
+    if (hydrated && !isInitialMount.current) {
+      setDBItem(storeName, "data", state).catch(console.error);
+    }
+    if (hydrated) {
+      isInitialMount.current = false;
+    }
+  }, [state, hydrated, storeName]);
+
   return [state, setState, hydrated] as const;
 }
 
