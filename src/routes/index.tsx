@@ -316,7 +316,7 @@ function CategoryBlock({
       </div>
 
       <div
-        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+        className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-out ${
           category.collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
         }`}
       >
