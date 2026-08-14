@@ -199,10 +199,11 @@ function PersonBlock({
   return (
     <section className="space-y-3 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-none transition-all">
       <div className="flex min-h-11 items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={() => !editing && api.togglePerson(person.id)}
-          className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
+        <div
+          onClick={(e) => {
+            if (!editing) api.togglePerson(person.id);
+          }}
+          className="flex min-h-11 min-w-0 flex-1 cursor-pointer items-center gap-3 text-left"
         >
           <div className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-border/30 bg-background text-foreground shadow-sm">
             {iconType === "female" ? (
@@ -251,7 +252,7 @@ function PersonBlock({
 
             )}
           </div>
-        </button>
+        </div>
         <div className="flex items-center gap-2">
           <span
             className={`num text-base font-bold tabular-nums tracking-tight ${

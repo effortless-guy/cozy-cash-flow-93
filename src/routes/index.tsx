@@ -286,10 +286,11 @@ function CategoryBlock({
       } ${
         isCompleted ? "border-emerald-100/50 bg-emerald-100/10" : "border-border/20 bg-transparent"
       }`}>
-        <button
-          type="button"
-          onClick={() => !editing && api.toggleCategory(category.id)}
-          className="group flex h-full min-w-0 flex-1 items-center gap-3 text-left"
+        <div
+          onClick={(e) => {
+            if (!editing) api.toggleCategory(category.id);
+          }}
+          className="group flex h-full min-w-0 flex-1 cursor-pointer items-center gap-3 text-left"
         >
           <div className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/20 bg-white text-foreground shadow-sm">
             <Icon className="h-4 w-4" strokeWidth={1.5} />
@@ -328,7 +329,7 @@ function CategoryBlock({
               </>
             )}
           </div>
-        </button>
+        </div>
         <div className="flex items-center gap-1">
           <Popover>
             <PopoverTrigger asChild>
