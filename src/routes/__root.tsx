@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BottomTabs } from "../components/BottomTabs";
 import { useSettings } from "../lib/finance-store";
+import { AppLockOverlay } from "../components/AppLockOverlay";
 
 function NotFoundComponent() {
   return (
@@ -144,6 +145,7 @@ function AppShell() {
         <Outlet />
       </div>
       <BottomTabs />
+      <AppLockOverlay />
     </div>
   );
 }
