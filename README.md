@@ -1,5 +1,9 @@
 # Ledger — Personal Finance Tracker
 
+'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+
+Lets make sure that we can installit as offline PWA so that once isntalle din user mobile then noneed for inTeret
+
 A minimalist, mobile-first personal finance tracker designed for clarity and speed. Track your salary, subscriptions, debts (Khatabook), and total net worth in one secure, offline-first application.
 
 ## Offline-First PWA Guide
