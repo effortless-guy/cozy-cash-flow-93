@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import { getDBItem, setDBItem, migrateFromLocalStorage, STORE_MAP } from "./db";
 
 export type Transaction = { id: string; name: string; amount: number; completed?: boolean };
@@ -382,8 +382,16 @@ export function useSalary() {
   const years = Object.keys(data.years).sort();
   const currentYear = data.years[year];
   const months = currentYear ? Object.keys(currentYear.months).sort() : [];
-  const currentMonth: MonthData =
-    currentYear?.months[month] ?? emptyMonth();
+  const currentMonth: MonthData = useMemo(() => {
+    const raw = currentYear?.months[month] ?? emptyMonth();
+    return {
+      ...raw,
+      categories: raw.categories?.map(c => ({
+        ...c,
+        collapsed: localStorage.getItem(`cat_collapsed_${c.id}`) === "true"
+      }))
+    };
+  }, [currentYear, month]);
 
   const ensureYearMonth = useCallback(
     (y: string, m: string, seed?: MonthData) => {
@@ -407,21 +415,13 @@ export function useSalary() {
         const cur = yr.months[month] ?? emptyMonth();
         const updated = updater(cur);
         
-        // Apply persistent collapse state
-        const categoriesWithPersistence = updated.categories?.map(c => {
-          // Collapse state remains in localStorage as it is UI-only and volatile
-          const stored = localStorage.getItem(`cat_collapsed_${c.id}`);
-          if (stored === "true") return { ...c, collapsed: true };
-          return c;
-        });
-
         return {
           years: {
             ...prev.years,
             [year]: {
               months: { 
                 ...yr.months, 
-                [month]: { ...updated, categories: categoriesWithPersistence } 
+                [month]: updated
               },
             },
           },
