@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
+import { getDBItem, setDBItem, migrateFromLocalStorage, STORE_MAP } from "./db";
 
 export type Transaction = { id: string; name: string; amount: number; completed?: boolean };
 export type Category = {
@@ -64,32 +65,41 @@ const defaultMonth = (): MonthData => ({
 
 const emptyMonth = (): MonthData => ({ categories: [] });
 
-function loadJSON<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function saveJSON(key: string, value: unknown) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
 function usePersisted<T>(key: string, initial: () => T) {
   const [hydrated, setHydrated] = useState(false);
   const [state, setState] = useState<T>(initial);
+  const storeName = STORE_MAP[key];
+  const isInitialMount = useRef(true);
+
   useEffect(() => {
-    setState(loadJSON<T>(key, initial()));
-    setHydrated(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+    async function init() {
+      if (typeof window === "undefined") return;
+      
+      await migrateFromLocalStorage();
+      const val = await getDBItem<T>(storeName, "data");
+      
+      if (val !== null) {
+        setState(val);
+      } else {
+        // Fallback to initial and save it if not found
+        const initVal = initial();
+        await setDBItem(storeName, "data", initVal);
+        setState(initVal);
+      }
+      setHydrated(true);
+    }
+    init();
+  }, [storeName, initial]);
+
   useEffect(() => {
-    if (hydrated) saveJSON(key, state);
-  }, [key, state, hydrated]);
+    if (hydrated && !isInitialMount.current) {
+      setDBItem(storeName, "data", state).catch(console.error);
+    }
+    if (hydrated) {
+      isInitialMount.current = false;
+    }
+  }, [state, hydrated, storeName]);
+
   return [state, setState, hydrated] as const;
 }
 
@@ -392,6 +402,7 @@ export function useSalary() {
         
         // Apply persistent collapse state
         const categoriesWithPersistence = updated.categories.map(c => {
+          // Collapse state remains in localStorage as it is UI-only and volatile
           const stored = localStorage.getItem(`cat_collapsed_${c.id}`);
           if (stored === "true") return { ...c, collapsed: true };
           return c;
@@ -603,14 +614,14 @@ export function useSettings() {
 }
 
 export function useDataManagement() {
-  const exportData = () => {
+  const exportData = async () => {
     const data = {
-      salary: loadJSON(SALARY_KEY, null),
-      subscriptions: loadJSON(SUBS_KEY, null),
-      khatabook: loadJSON(KHATA_KEY, null),
-      networth: loadJSON(NW_KEY, null),
-      nw_activity: loadJSON(NW_ACTIVITY_KEY, null),
-      settings: loadJSON(SETTINGS_KEY, null),
+      salary: await getDBItem(STORE_MAP[SALARY_KEY], "data"),
+      subscriptions: await getDBItem(STORE_MAP[SUBS_KEY], "data"),
+      khatabook: await getDBItem(STORE_MAP[KHATA_KEY], "data"),
+      networth: await getDBItem(STORE_MAP[NW_KEY], "data"),
+      nw_activity: await getDBItem(STORE_MAP[NW_ACTIVITY_KEY], "data"),
+      settings: await getDBItem(STORE_MAP[SETTINGS_KEY], "data"),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -625,12 +636,12 @@ export function useDataManagement() {
     const text = await file.text();
     try {
       const data = JSON.parse(text);
-      if (data.salary) saveJSON(SALARY_KEY, data.salary);
-      if (data.subscriptions) saveJSON(SUBS_KEY, data.subscriptions);
-      if (data.khatabook) saveJSON(KHATA_KEY, data.khatabook);
-      if (data.networth) saveJSON(NW_KEY, data.networth);
-      if (data.nw_activity) saveJSON(NW_ACTIVITY_KEY, data.nw_activity);
-      if (data.settings) saveJSON(SETTINGS_KEY, data.settings);
+      if (data.salary) await setDBItem(STORE_MAP[SALARY_KEY], "data", data.salary);
+      if (data.subscriptions) await setDBItem(STORE_MAP[SUBS_KEY], "data", data.subscriptions);
+      if (data.khatabook) await setDBItem(STORE_MAP[KHATA_KEY], "data", data.khatabook);
+      if (data.networth) await setDBItem(STORE_MAP[NW_KEY], "data", data.networth);
+      if (data.nw_activity) await setDBItem(STORE_MAP[NW_ACTIVITY_KEY], "data", data.nw_activity);
+      if (data.settings) await setDBItem(STORE_MAP[SETTINGS_KEY], "data", data.settings);
       location.reload();
     } catch (e) {
       alert("Invalid backup file");

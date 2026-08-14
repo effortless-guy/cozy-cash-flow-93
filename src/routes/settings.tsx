@@ -156,7 +156,7 @@ function SettingsPage() {
           </Row>
         </Section>
 
-        <Section title="Data">
+        <Section title="Data Management" description="Local-first storage: all data stays on your device.">
           <div className="flex items-center gap-4 px-4 py-4">
              <Button variant="outline" size="sm" className="flex-1 gap-2" onClick={exportData}>
                 <Download className="h-4 w-4" /> Export
@@ -180,8 +180,9 @@ function SettingsPage() {
           <div className="p-4 border-t border-border/60">
             <button
               onClick={() => {
-                if (confirm("Reset all data? This cannot be undone.")) {
+                if (confirm("Reset all data? This will clear everything in IndexedDB and localStorage. This cannot be undone.")) {
                   localStorage.clear();
+                  indexedDB.deleteDatabase("LedgerDB");
                   location.reload();
                 }
               }}
@@ -200,12 +201,17 @@ function SettingsPage() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
     <section className="space-y-4">
-      <h2 className="px-1 text-[11px] font-semibold uppercase tracking-widest text-foreground/70">
-        {title}
-      </h2>
+      <div className="px-1 flex items-baseline justify-between">
+        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-foreground/70">
+          {title}
+        </h2>
+        {description && (
+          <span className="text-[10px] text-muted-foreground/60 italic">{description}</span>
+        )}
+      </div>
       <div className="divide-y divide-border/60 rounded-xl border border-border bg-card">
         {children}
       </div>
