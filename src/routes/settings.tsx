@@ -200,12 +200,17 @@ function SettingsPage() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
     <section className="space-y-4">
-      <h2 className="px-1 text-[11px] font-semibold uppercase tracking-widest text-foreground/70">
-        {title}
-      </h2>
+      <div className="px-1 flex items-baseline justify-between">
+        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-foreground/70">
+          {title}
+        </h2>
+        {description && (
+          <span className="text-[10px] text-muted-foreground/60 italic">{description}</span>
+        )}
+      </div>
       <div className="divide-y divide-border/60 rounded-xl border border-border bg-card">
         {children}
       </div>
