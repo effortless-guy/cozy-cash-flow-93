@@ -156,6 +156,25 @@ function SubRow({
   const [startDate, setStartDate] = useState(sub.startDate || new Date().toISOString().split("T")[0]);
 
   const monthly = monthlyEquivalent(sub);
+  
+  const getIcon = (name: string) => {
+    const n = name.toLowerCase();
+    if (n.includes("netflix")) return "https://www.google.com/s2/favicons?domain=netflix.com&sz=128";
+    if (n.includes("spotify")) return "https://www.google.com/s2/favicons?domain=spotify.com&sz=128";
+    if (n.includes("youtube") || n.includes("premium")) return "https://www.google.com/s2/favicons?domain=youtube.com&sz=128";
+    if (n.includes("apple") || n.includes("icloud") || n.includes("music")) return "https://www.google.com/s2/favicons?domain=apple.com&sz=128";
+    if (n.includes("google") || n.includes("drive") || n.includes("one")) return "https://www.google.com/s2/favicons?domain=google.com&sz=128";
+    if (n.includes("amazon") || n.includes("prime")) return "https://www.google.com/s2/favicons?domain=amazon.com&sz=128";
+    if (n.includes("disney")) return "https://www.google.com/s2/favicons?domain=disneyplus.com&sz=128";
+    if (n.includes("microsoft") || n.includes("office") || n.includes("365")) return "https://www.google.com/s2/favicons?domain=microsoft.com&sz=128";
+    if (n.includes("adobe") || n.includes("creative")) return "https://www.google.com/s2/favicons?domain=adobe.com&sz=128";
+    if (n.includes("figma")) return "https://www.google.com/s2/favicons?domain=figma.com&sz=128";
+    if (n.includes("chatgpt") || n.includes("openai")) return "https://www.google.com/s2/favicons?domain=openai.com&sz=128";
+    if (n.includes("claude") || n.includes("anthropic")) return "https://www.google.com/s2/favicons?domain=anthropic.com&sz=128";
+    return null;
+  };
+
+  const iconUrl = getIcon(sub.name);
 
   const nextRenewal = useMemo(() => {
     const start = sub.startDate ? new Date(sub.startDate) : new Date();
@@ -176,7 +195,14 @@ function SubRow({
   if (editing) {
     return (
       <li className="space-y-2 rounded-2xl border border-border/50 bg-muted/30 p-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-background/50 border border-border/40">
+            {iconUrl ? (
+              <img src={iconUrl} alt={sub.name} className="h-6 w-6 object-contain grayscale-[0.3]" />
+            ) : (
+              <CreditCard className="h-5 w-5 text-muted-foreground/50" />
+            )}
+          </div>
           <Input value={name} onChange={(e) => setName(e.target.value)} className="h-8 flex-1" />
           <Button
             size="icon"
@@ -227,10 +253,17 @@ function SubRow({
 
 
   return (
-    <li className="flex items-center justify-between rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
+    <li className="flex items-center gap-3 rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-background/50 border border-border/40">
+        {iconUrl ? (
+          <img src={iconUrl} alt={sub.name} className="h-6 w-6 object-contain grayscale-[0.3]" />
+        ) : (
+          <CreditCard className="h-5 w-5 text-muted-foreground/50" />
+        )}
+      </div>
       <button onClick={() => setEditing(true)} className="min-h-11 min-w-0 flex-1 text-left">
-        <p className="truncate text-[17px] font-semibold leading-tight tracking-tight">{sub.name}</p>
-        <p className="mt-1 text-xs text-muted-foreground/60">
+        <p className="truncate text-[16px] font-semibold leading-tight tracking-tight">{sub.name}</p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground/60">
           {formatMoney(sub.price, currency)} · {CYCLE_LABEL[sub.cycle]}
         </p>
       </button>
@@ -244,8 +277,8 @@ function SubRow({
               /mo
             </span>
           </div>
-          <p className="mt-0.5 text-[11px] font-medium text-muted-foreground/80">
-            Renews {nextRenewal}
+          <p className="mt-0.5 text-[10px] font-medium text-muted-foreground/70">
+            {nextRenewal}
           </p>
         </div>
         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/40 transition-colors duration-200 hover:text-foreground" onClick={() => setEditing(true)}>
