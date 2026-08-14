@@ -57,10 +57,10 @@ function SalaryPage() {
 
   const monthTotal = useMemo(
     () =>
-      s.currentMonth.categories.reduce(
-        (sum, c) => sum + c.transactions.reduce((a, t) => a + (t.completed ? t.amount : 0), 0),
+      s.currentMonth.categories?.reduce(
+        (sum, c) => sum + (c.transactions?.reduce((a, t) => a + (t.completed ? t.amount : 0), 0) || 0),
         0,
-      ),
+      ) || 0,
     [s.currentMonth],
   );
 

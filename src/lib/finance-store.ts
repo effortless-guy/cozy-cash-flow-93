@@ -83,10 +83,10 @@ function usePersisted<T>(key: string, initial: () => T) {
       if (val !== null) {
         setState(val);
       } else {
-        // Fallback to initial and save it if not found
         const initVal = initial();
-        await setDBItem(storeName, "data", initVal);
         setState(initVal);
+        // Save initial values to DB if it's the first time
+        await setDBItem(storeName, "data", initVal);
       }
       setHydrated(true);
     }
@@ -95,7 +95,10 @@ function usePersisted<T>(key: string, initial: () => T) {
 
   useEffect(() => {
     if (hydrated && !isInitialMount.current) {
-      setDBItem(storeName, "data", state).catch(console.error);
+      const timeoutId = setTimeout(() => {
+        setDBItem(storeName, "data", state).catch(console.error);
+      }, 50);
+      return () => clearTimeout(timeoutId);
     }
     if (hydrated) {
       isInitialMount.current = false;
@@ -385,9 +388,10 @@ export function useSalary() {
   const ensureYearMonth = useCallback(
     (y: string, m: string, seed?: MonthData) => {
       setData((prev) => {
+        if (prev.years[y]?.months[m]) return prev;
         const next: SalaryData = { years: { ...prev.years } };
         const yr = next.years[y] ?? { months: {} };
-        if (!yr.months[m]) yr.months[m] = seed ?? emptyMonth();
+        yr.months[m] = seed ?? emptyMonth();
         next.years[y] = { ...yr, months: { ...yr.months } };
         return next;
       });
@@ -398,7 +402,8 @@ export function useSalary() {
   const updateMonth = useCallback(
     (updater: (m: MonthData) => MonthData) => {
       setData((prev) => {
-        const yr = prev.years[year] ?? { months: {} };
+        const yr = prev.years[year];
+        if (!yr) return prev;
         const cur = yr.months[month] ?? emptyMonth();
         const updated = updater(cur);
         
