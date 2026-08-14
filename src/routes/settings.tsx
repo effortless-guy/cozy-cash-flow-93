@@ -57,7 +57,7 @@ function SettingsPage() {
         <h1 className="text-3xl font-semibold leading-none tracking-tight">Settings</h1>
       </header>
 
-      <main className="space-y-12 px-6 pb-16 pt-4">
+      <main className="space-y-6 px-6 pb-16 pt-0">
         <Section title="Display">
           <Row label="Currency">
             <Select
