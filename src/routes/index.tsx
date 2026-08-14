@@ -242,13 +242,15 @@ function CategoryBlock({
         ? "border-emerald-200/60 bg-emerald-50/30" 
         : "border-border/40 bg-card"
     } overflow-hidden`}>
-      <div className={`flex min-h-12 items-center justify-between gap-3 px-4 py-2 border-b transition-colors duration-300 ${
+      <div className={`flex items-center justify-between gap-3 px-4 transition-all duration-300 ${
+        category.collapsed ? "h-11 border-b-0" : "h-14 border-b"
+      } ${
         isCompleted ? "border-emerald-100/50 bg-emerald-100/10" : "border-border/20 bg-transparent"
       }`}>
         <button
           type="button"
           onClick={() => !editing && api.toggleCategory(category.id)}
-          className="group flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
+          className="group flex h-full min-w-0 flex-1 items-center gap-3 text-left"
         >
           <div className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/20 bg-white text-foreground shadow-sm">
             <Icon className="h-4 w-4" strokeWidth={1.5} />
