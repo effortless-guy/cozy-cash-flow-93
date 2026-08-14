@@ -124,7 +124,7 @@ function SalaryPage() {
         </header>
       </div>
 
-      <main className="space-y-2 px-6 pb-16 pt-2">
+      <main className="space-y-2 px-4 pb-16 pt-2">
         {s.currentMonth.categories.map((c) => (
           <CategoryBlock key={c.id} category={c} currency={settings.currency} api={s} />
         ))}
