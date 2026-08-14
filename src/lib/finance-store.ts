@@ -408,7 +408,7 @@ export function useSalary() {
         const updated = updater(cur);
         
         // Apply persistent collapse state
-        const categoriesWithPersistence = updated.categories.map(c => {
+        const categoriesWithPersistence = updated.categories?.map(c => {
           // Collapse state remains in localStorage as it is UI-only and volatile
           const stored = localStorage.getItem(`cat_collapsed_${c.id}`);
           if (stored === "true") return { ...c, collapsed: true };
