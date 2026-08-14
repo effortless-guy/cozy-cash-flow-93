@@ -115,7 +115,9 @@ function KhatabookPage() {
         ))}
       </main>
 
-      <Fab label="Add person" onClick={() => setAddOpen(true)} />
+      <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-5 z-40">
+        <Fab label="Add person" onClick={() => setAddOpen(true)} />
+      </div>
 
       <Dialog
         open={addOpen}
