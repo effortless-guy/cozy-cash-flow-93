@@ -613,14 +613,14 @@ export function useSettings() {
 }
 
 export function useDataManagement() {
-  const exportData = () => {
+  const exportData = async () => {
     const data = {
-      salary: loadJSON(SALARY_KEY, null),
-      subscriptions: loadJSON(SUBS_KEY, null),
-      khatabook: loadJSON(KHATA_KEY, null),
-      networth: loadJSON(NW_KEY, null),
-      nw_activity: loadJSON(NW_ACTIVITY_KEY, null),
-      settings: loadJSON(SETTINGS_KEY, null),
+      salary: await getDBItem(STORE_MAP[SALARY_KEY], "data"),
+      subscriptions: await getDBItem(STORE_MAP[SUBS_KEY], "data"),
+      khatabook: await getDBItem(STORE_MAP[KHATA_KEY], "data"),
+      networth: await getDBItem(STORE_MAP[NW_KEY], "data"),
+      nw_activity: await getDBItem(STORE_MAP[NW_ACTIVITY_KEY], "data"),
+      settings: await getDBItem(STORE_MAP[SETTINGS_KEY], "data"),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -635,12 +635,12 @@ export function useDataManagement() {
     const text = await file.text();
     try {
       const data = JSON.parse(text);
-      if (data.salary) saveJSON(SALARY_KEY, data.salary);
-      if (data.subscriptions) saveJSON(SUBS_KEY, data.subscriptions);
-      if (data.khatabook) saveJSON(KHATA_KEY, data.khatabook);
-      if (data.networth) saveJSON(NW_KEY, data.networth);
-      if (data.nw_activity) saveJSON(NW_ACTIVITY_KEY, data.nw_activity);
-      if (data.settings) saveJSON(SETTINGS_KEY, data.settings);
+      if (data.salary) await setDBItem(STORE_MAP[SALARY_KEY], "data", data.salary);
+      if (data.subscriptions) await setDBItem(STORE_MAP[SUBS_KEY], "data", data.subscriptions);
+      if (data.khatabook) await setDBItem(STORE_MAP[KHATA_KEY], "data", data.khatabook);
+      if (data.networth) await setDBItem(STORE_MAP[NW_KEY], "data", data.networth);
+      if (data.nw_activity) await setDBItem(STORE_MAP[NW_ACTIVITY_KEY], "data", data.nw_activity);
+      if (data.settings) await setDBItem(STORE_MAP[SETTINGS_KEY], "data", data.settings);
       location.reload();
     } catch (e) {
       alert("Invalid backup file");
