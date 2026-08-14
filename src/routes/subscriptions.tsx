@@ -197,13 +197,18 @@ function SubRow({
       <li className="space-y-2 rounded-2xl border border-border/50 bg-muted/30 p-4">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-background/50 border border-border/40">
-            {iconUrl ? (
-              <img src={iconUrl} alt={sub.name} className="h-6 w-6 object-contain grayscale-[0.3]" />
+            {customIcon && !customIcon.startsWith('http') ? (
+              <span className="text-xl">{customIcon}</span>
+            ) : getIcon(name, customIcon) ? (
+              <img src={getIcon(name, customIcon)!} alt={name} className="h-6 w-6 object-contain grayscale-[0.3]" />
             ) : (
               <CreditCard className="h-5 w-5 text-muted-foreground/50" />
             )}
           </div>
-          <Input value={name} onChange={(e) => setName(e.target.value)} className="h-8 flex-1" />
+          <div className="flex-1 flex gap-2">
+            <Input value={name} onChange={(e) => setName(e.target.value)} className="h-8 flex-[2]" placeholder="Name" />
+            <Input value={customIcon} onChange={(e) => setCustomIcon(e.target.value)} className="h-8 flex-1" placeholder="Emoji" />
+          </div>
           <Button
             size="icon"
             variant="ghost"
@@ -211,7 +216,7 @@ function SubRow({
             onClick={() => {
               const p = parseFloat(price);
               if (name.trim() && !Number.isNaN(p)) {
-                onUpdate({ name: name.trim(), price: p, cycle, startDate });
+                onUpdate({ name: name.trim(), price: p, cycle, startDate, customIcon: customIcon.trim() || undefined });
                 setEditing(false);
               }
             }}
@@ -255,7 +260,9 @@ function SubRow({
   return (
     <li className="flex items-center gap-3 rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-background/50 border border-border/40">
-        {iconUrl ? (
+        {sub.customIcon && !sub.customIcon.startsWith('http') ? (
+          <span className="text-xl">{sub.customIcon}</span>
+        ) : iconUrl ? (
           <img src={iconUrl} alt={sub.name} className="h-6 w-6 object-contain grayscale-[0.3]" />
         ) : (
           <CreditCard className="h-5 w-5 text-muted-foreground/50" />
@@ -304,12 +311,14 @@ function NewSubDialog({
   const [price, setPrice] = useState("");
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
   const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
+  const [customIcon, setCustomIcon] = useState("");
 
   const reset = () => {
     setName("");
     setPrice("");
     setCycle("monthly");
     setStartDate(new Date().toISOString().split("T")[0]);
+    setCustomIcon("");
   };
 
   return (
@@ -332,6 +341,14 @@ function NewSubDialog({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Service name"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs uppercase tracking-widest text-muted-foreground">Custom Icon / Emoji (Optional)</Label>
+            <Input
+              value={customIcon}
+              onChange={(e) => setCustomIcon(e.target.value)}
+              placeholder="e.g. 🍿 or https://..."
             />
           </div>
           <div className="flex gap-3">
@@ -372,7 +389,7 @@ function NewSubDialog({
             onClick={() => {
               const p = parseFloat(price);
               if (name.trim() && !Number.isNaN(p)) {
-                onSave({ name: name.trim(), price: p, cycle, startDate });
+                onSave({ name: name.trim(), price: p, cycle, startDate, customIcon: customIcon.trim() || undefined });
                 reset();
               }
             }}
