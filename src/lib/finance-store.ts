@@ -19,7 +19,6 @@ export type Subscription = {
   price: number;
   cycle: BillingCycle;
   startDate?: string; // ISO date string YYYY-MM-DD
-  category?: string;
 };
 
 export type Settings = {

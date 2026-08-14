@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Trash2, Pencil, Check, X, CreditCard, Tag, Filter } from "lucide-react";
+import { Trash2, Pencil, Check, X, CreditCard } from "lucide-react";
 import {
   useSubscriptions,
   useSettings,
@@ -51,24 +51,10 @@ function SubscriptionsPage() {
   const { subs, add, update, remove, hydrated } = useSubscriptions();
   const { settings } = useSettings();
   const [adding, setAdding] = useState(false);
-  const [filterCategory, setFilterCategory] = useState<string>("all");
-
-  const categories = useMemo(() => {
-    const cats = new Set<string>();
-    subs.forEach(s => {
-      if (s.category) cats.add(s.category);
-    });
-    return Array.from(cats).sort();
-  }, [subs]);
-
-  const filteredSubs = useMemo(() => {
-    if (filterCategory === "all") return subs;
-    return subs.filter(s => s.category === filterCategory);
-  }, [subs, filterCategory]);
 
   const total = useMemo(
-    () => filteredSubs.reduce((sum, s) => sum + monthlyEquivalent(s), 0),
-    [filteredSubs],
+    () => subs.reduce((sum, s) => sum + monthlyEquivalent(s), 0),
+    [subs],
   );
 
   if (!hydrated) return <div className="p-6 text-muted-foreground">Loading…</div>;
@@ -122,36 +108,8 @@ function SubscriptionsPage() {
       </header>
 
       <main className="px-6 pb-16 pt-4">
-        {categories.length > 0 && (
-          <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
-            <button
-              onClick={() => setFilterCategory("all")}
-              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest transition-all ${
-                filterCategory === "all"
-                  ? "bg-foreground text-background"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
-            >
-              All
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setFilterCategory(cat)}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest transition-all ${
-                  filterCategory === cat
-                    ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        )}
-
         <ul className="space-y-2">
-          {filteredSubs.map((s) => (
+          {subs.map((s) => (
             <SubRow
               key={s.id}
               sub={s}
@@ -160,14 +118,6 @@ function SubscriptionsPage() {
               onRemove={() => remove(s.id)}
             />
           ))}
-          {filteredSubs.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
-              <div className="mb-3 rounded-full bg-muted/30 p-4">
-                <Filter className="h-6 w-6 opacity-20" />
-              </div>
-              <p className="text-xs font-medium uppercase tracking-widest">No subscriptions found</p>
-            </div>
-          )}
         </ul>
       </main>
 
@@ -204,7 +154,6 @@ function SubRow({
   const [price, setPrice] = useState(String(sub.price));
   const [cycle, setCycle] = useState<BillingCycle>(sub.cycle);
   const [startDate, setStartDate] = useState(sub.startDate || new Date().toISOString().split("T")[0]);
-  const [category, setCategory] = useState(sub.category || "");
 
   const monthly = monthlyEquivalent(sub);
   
@@ -262,7 +211,7 @@ function SubRow({
             onClick={() => {
               const p = parseFloat(price);
               if (name.trim() && !Number.isNaN(p)) {
-                onUpdate({ name: name.trim(), price: p, cycle, startDate, category: category.trim() || undefined });
+                onUpdate({ name: name.trim(), price: p, cycle, startDate });
                 setEditing(false);
               }
             }}
@@ -297,12 +246,6 @@ function SubRow({
             onChange={(e) => setStartDate(e.target.value)}
             className="h-8 w-auto flex-1 text-xs"
           />
-          <Input
-            placeholder="Category (e.g. Music, Utilities)"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="h-8 flex-[1.5] text-xs"
-          />
         </div>
       </li>
     );
@@ -321,7 +264,7 @@ function SubRow({
       <button onClick={() => setEditing(true)} className="min-h-11 min-w-0 flex-1 text-left">
         <p className="truncate text-[16px] font-semibold leading-tight tracking-tight">{sub.name}</p>
         <p className="mt-0.5 text-[11px] text-muted-foreground/60">
-          {formatMoney(sub.price, currency)} · {CYCLE_LABEL[sub.cycle]} {sub.category && ` · ${sub.category}`}
+          {formatMoney(sub.price, currency)} · {CYCLE_LABEL[sub.cycle]}
         </p>
       </button>
       <div className="flex items-center gap-2 pl-3">
@@ -361,14 +304,12 @@ function NewSubDialog({
   const [price, setPrice] = useState("");
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
   const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
-  const [category, setCategory] = useState("");
 
   const reset = () => {
     setName("");
     setPrice("");
     setCycle("monthly");
     setStartDate(new Date().toISOString().split("T")[0]);
-    setCategory("");
   };
 
   return (
@@ -424,14 +365,6 @@ function NewSubDialog({
               onChange={(e) => setStartDate(e.target.value)}
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs uppercase tracking-widest text-muted-foreground">Category (Optional)</Label>
-            <Input
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="e.g. Streaming, Utilities, Music"
-            />
-          </div>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
@@ -439,7 +372,7 @@ function NewSubDialog({
             onClick={() => {
               const p = parseFloat(price);
               if (name.trim() && !Number.isNaN(p)) {
-                onSave({ name: name.trim(), price: p, cycle, startDate, category: category.trim() || undefined });
+                onSave({ name: name.trim(), price: p, cycle, startDate });
                 reset();
               }
             }}
