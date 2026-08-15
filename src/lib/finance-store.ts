@@ -444,15 +444,6 @@ export function useSalary() {
 
   const toggleCategory = (cid: string) =>
     updateMonth((m) => {
-      const cat = m.categories.find((c) => c.id === cid);
-      if (cat) {
-        const key = `cat_collapsed_${cid}`;
-        if (cat.collapsed) {
-          localStorage.removeItem(key);
-        } else {
-          localStorage.setItem(key, "true");
-        }
-      }
       return {
         ...m,
         categories: m.categories.map((c) =>
