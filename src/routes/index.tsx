@@ -123,7 +123,7 @@ function SalaryPage() {
   return (
     <div className="bg-background">
       <div className="mx-4 pt-6 pb-0">
-        <header className="rounded-2xl border border-border/40 bg-card px-5 py-4 shadow-sm">
+        <header className="rounded-2xl border border-border/40 bg-card px-5 py-4 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
           <div className="flex items-start justify-between gap-4">
             <PeriodPicker
               year={s.year}
