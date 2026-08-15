@@ -269,7 +269,7 @@ function NetWorthPage() {
       {/* Monthly Update Dialog */}
       <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
         <DialogContent className="max-w-sm p-0 overflow-hidden rounded-3xl border-none">
-          <div className="bg-primary/5 px-6 pt-8 pb-6">
+          <div className="bg-primary/5 px-6 pt-8 pb-6 dark:bg-primary/10">
             <DialogHeader>
                 <DialogTitle className="text-xl font-bold">Monthly Update</DialogTitle>
                 <DialogDescription className="text-xs font-semibold uppercase tracking-widest text-primary/60 mt-1">
@@ -278,7 +278,7 @@ function NetWorthPage() {
             </DialogHeader>
           </div>
           
-          <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+          <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar dark:bg-background/95">
             {pendingEntries.map(({ asset, entry }) => (
                 <div key={entry.id} className="group relative rounded-2xl border border-border/40 bg-card p-4 transition-all">
                     <div className="flex items-center justify-between mb-3">
