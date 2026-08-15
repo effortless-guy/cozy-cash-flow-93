@@ -321,14 +321,14 @@ function NetWorthPage() {
       {/* Add Asset Dialog */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="max-w-sm p-0 overflow-hidden rounded-3xl border-none">
-          <div className="bg-muted/30 px-6 pt-8 pb-6">
+          <div className="bg-muted/30 px-6 pt-8 pb-6 dark:bg-muted/10">
             <DialogHeader>
                 <DialogTitle className="text-xl font-bold">New Asset</DialogTitle>
                 <DialogDescription className="text-[10px] font-bold uppercase tracking-widest opacity-40 mt-1">Classification & Initial Value</DialogDescription>
             </DialogHeader>
           </div>
           
-          <div className="p-6 space-y-5">
+          <div className="p-6 space-y-5 dark:bg-background/95">
             <div className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Asset Type</Label>
                 <Select 
