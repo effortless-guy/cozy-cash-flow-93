@@ -17,6 +17,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BottomTabs } from "../components/BottomTabs";
 import { useSettings } from "../lib/finance-store";
 import { AppLockOverlay } from "../components/AppLockOverlay";
+import { PWAInstallBanner } from "../components/PWAInstallBanner";
 
 function NotFoundComponent() {
   return (
@@ -164,6 +165,7 @@ function AppShell() {
       </div>
       <BottomTabs />
       <AppLockOverlay />
+      <PWAInstallBanner />
     </div>
   );
 }
