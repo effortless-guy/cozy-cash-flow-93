@@ -154,7 +154,7 @@ function SalaryPage() {
               <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/80">
                 Spend
               </p>
-              <p className="num text-lg font-bold tracking-tight text-blue-600/90">
+              <p className="num text-lg font-bold tracking-tight text-blue-600 dark:text-blue-400">
                 {formatMoney(monthTotal, settings.currency)}
               </p>
             </div>
@@ -164,7 +164,7 @@ function SalaryPage() {
                 Remaining
               </p>
               <p className={`num text-lg font-bold tracking-tight ${
-                income === undefined ? "text-muted-foreground/50" : "text-emerald-600/90"
+                income === undefined ? "text-muted-foreground/50" : "text-emerald-600 dark:text-emerald-400"
               }`}>
                 {income === undefined
                   ? "--"
