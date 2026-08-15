@@ -1,36 +1,43 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+import * as db from './db';
 import { useSalary, useKhatabook, useNetWorth } from './finance-store';
 
-// Mock the DB module to be deterministic
-vi.mock('./db', () => ({
-  getDBItem: vi.fn().mockResolvedValue(null),
-  setDBItem: vi.fn().mockResolvedValue(undefined),
-  migrateFromLocalStorage: vi.fn().mockResolvedValue(undefined),
-  STORE_MAP: {
-    'pft.salary.v1': 'salary',
-    'pft.subs.v1': 'subscriptions',
-    'pft.settings.v1': 'settings',
-    'pft.khatabook.v1': 'khatabook',
-    'pft.networth.v1': 'networth',
-    'pft.nw_activity.v1': 'nw_activity',
-  }
-}));
+// Mock the DB module
+vi.mock('./db', async () => {
+  const actual = await vi.importActual<typeof import('./db')>('./db');
+  return {
+    ...actual,
+    getDBItem: vi.fn(),
+    setDBItem: vi.fn(),
+    migrateFromLocalStorage: vi.fn().mockResolvedValue(undefined),
+  };
+});
 
 describe('Finance Store Logic', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    localStorage.clear();
+    vi.mocked(db.getDBItem).mockResolvedValue(null);
+    vi.mocked(db.setDBItem).mockResolvedValue(undefined);
   });
+
+  const waitForHydration = async (result: { current: { hydrated: boolean } }) => {
+    // Poll for hydration with a timeout
+    const start = Date.now();
+    while (!result.current.hydrated && Date.now() - start < 1000) {
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+      });
+    }
+    if (!result.current.hydrated) {
+      throw new Error('Hydration timed out');
+    }
+  };
 
   describe('useSalary', () => {
     it('calculates totals correctly', async () => {
       const { result } = renderHook(() => useSalary());
-      
-      // Wait for hydration (simulated)
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
+      await waitForHydration(result);
 
       act(() => {
         result.current.addCategory('Test Category');
@@ -55,10 +62,7 @@ describe('Finance Store Logic', () => {
   describe('useKhatabook', () => {
     it('manages people and entries correctly', async () => {
       const { result } = renderHook(() => useKhatabook());
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
+      await waitForHydration(result);
 
       act(() => {
         result.current.addPerson('John Doe');
@@ -85,10 +89,7 @@ describe('Finance Store Logic', () => {
   describe('useNetWorth', () => {
     it('initializes default assets and updates values', async () => {
       const { result } = renderHook(() => useNetWorth());
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
+      await waitForHydration(result);
 
       // Should have default assets
       expect(result.current.assets.length).toBeGreaterThan(0);
@@ -104,8 +105,9 @@ describe('Finance Store Logic', () => {
         });
       });
 
-      const updatedStocks = result.current.assets.find(a => a.type === 'Stocks');
+      const updatedStocks = result.current.assets.find(a => a.id === stocks!.id);
       expect(updatedStocks?.entries.length).toBe(1);
     });
   });
 });
+
