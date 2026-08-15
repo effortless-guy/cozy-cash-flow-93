@@ -395,9 +395,9 @@ function NetWorthPage() {
       <Dialog open={!!manageOpen} onOpenChange={(open) => !open && setManageOpen(null)}>
         {manageOpen && (
             <DialogContent className="max-w-sm p-0 overflow-hidden rounded-3xl border-none">
-                <div className="bg-muted/30 px-6 pt-8 pb-6">
+                <div className="bg-muted/30 px-6 pt-8 pb-6 dark:bg-muted/10">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="flex size-12 items-center justify-center rounded-2xl bg-background border border-border/20 shadow-sm">
+                        <div className="flex size-12 items-center justify-center rounded-2xl bg-background border border-border/20 shadow-sm dark:bg-card">
                             {(() => {
                                 const Icon = TYPE_ICONS[manageOpen.type] || TYPE_ICONS["Other"];
                                 return <Icon className="h-6 w-6 opacity-80" />;
@@ -467,7 +467,7 @@ function NetWorthPage() {
                         <div className="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
                             {manageOpen.entries.length > 0 ? (
                                 manageOpen.entries.slice().reverse().map(e => (
-                                    <div key={e.id} className="flex items-center justify-between rounded-xl border border-border/20 px-3 py-2 text-xs">
+                                    <div key={e.id} className="flex items-center justify-between rounded-xl border border-border/20 px-3 py-2 text-xs dark:bg-card/30">
                                         <div className="flex flex-col">
                                             <span className="font-semibold">{formatMoney(e.amount, settings.currency)}</span>
                                             <span className="text-[10px] opacity-40">{e.date}</span>
