@@ -432,7 +432,7 @@ function NetWorthPage() {
                     </div>
                 </div>
 
-                <div className="p-6 space-y-3">
+                <div className="p-6 space-y-3 dark:bg-background/95">
                     <button className="flex w-full items-center justify-between rounded-2xl bg-muted/20 p-4 transition-all active:scale-[0.98] active:bg-muted/40" onClick={() => {
                         const newName = prompt("Rename asset:", manageOpen.name);
                         if (newName) updateAsset(manageOpen.id, { name: newName });
