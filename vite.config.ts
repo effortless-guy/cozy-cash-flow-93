@@ -11,9 +11,9 @@ export default defineConfig({
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
         manifest: {
-          name: 'Ledger — Personal Finance Tracker',
-          short_name: 'Ledger',
-          description: 'A calm, precise personal finance tracker for monthly salary, transactions and subscriptions.',
+          name: 'MoneyStory — Personal Finance Tracker',
+          short_name: 'MoneyStory',
+          description: 'A calm, precise personal finance tracker for monthly money, transactions and subscriptions.',
           theme_color: '#fafafa',
           background_color: '#fafafa',
           display: 'standalone',
@@ -23,18 +23,23 @@ export default defineConfig({
           icons: [
             {
               src: 'favicon.ico',
-              sizes: '64x64 32x32 24x24 16x16',
+              sizes: '32x32',
               type: 'image/x-icon',
             },
             {
-              src: 'favicon.ico',
+              src: 'icon-192.png',
               sizes: '192x192',
-              type: 'image/x-icon',
+              type: 'image/png',
             },
             {
-              src: 'favicon.ico',
+              src: 'icon-512.png',
               sizes: '512x512',
-              type: 'image/x-icon',
+              type: 'image/png',
+            },
+            {
+              src: 'apple-touch-icon.png',
+              sizes: '180x180',
+              type: 'image/png',
             }
           ],
         },

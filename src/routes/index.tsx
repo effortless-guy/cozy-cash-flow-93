@@ -38,9 +38,9 @@ import { getCategoryIcon } from "../lib/category-icons";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Salary — Ledger" },
+      { title: "Money — MoneyStory" },
       { name: "description", content: "Track monthly income and expenses by category." },
-      { property: "og:title", content: "Salary — Ledger" },
+      { property: "og:title", content: "Money — MoneyStory" },
       { property: "og:description", content: "Track monthly income and expenses by category." },
     ],
   }),
@@ -52,8 +52,8 @@ function SalaryPage() {
   const { settings } = useSettings();
   const [addCatOpen, setAddCatOpen] = useState(false);
   const [newCatName, setNewCatName] = useState("");
-  const [salaryOpen, setSalaryOpen] = useState(false);
-  const [salaryInput, setSalaryInput] = useState("");
+  const [incomeOpen, setIncomeOpen] = useState(false);
+  const [incomeInput, setIncomeInput] = useState("");
   
   // Local state for collapsed categories
   const [localCollapsed, setLocalCollapsed] = useState<Record<string, boolean>>({});
@@ -139,11 +139,11 @@ function SalaryPage() {
             />
             <button
               type="button"
-              onClick={() => setSalaryOpen(true)}
+              onClick={() => setIncomeOpen(true)}
               className="flex items-center gap-1.5 text-right transition-opacity hover:opacity-70 shrink-0 mt-1"
             >
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {income === undefined ? "Set Salary" : formatMoney(income, settings.currency)}
+                {income === undefined ? "Set Money" : formatMoney(income, settings.currency)}
               </span>
               <Pencil className="h-3 w-3 text-muted-foreground/50" />
             </button>
@@ -196,7 +196,7 @@ function SalaryPage() {
             const monthName = MONTH_NAMES[idx] ?? s.month;
             const income = s.currentMonth.income;
             
-            let text = `Ledger - Salary Export\n`;
+            let text = `MoneyStory - Money Export\n`;
             text += `Period: ${monthName} ${s.year}\n`;
             text += `--------------------------------\n`;
             text += `Income: ${income !== undefined ? formatMoney(income, settings.currency) : "Not set"}\n`;
@@ -220,7 +220,7 @@ function SalaryPage() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `${monthName}_${s.year}_salary.txt`;
+            a.download = `${monthName}_${s.year}_money.txt`;
             a.click();
             URL.revokeObjectURL(url);
           }}
@@ -234,15 +234,15 @@ function SalaryPage() {
       </div>
 
       <Dialog
-        open={salaryOpen}
+        open={incomeOpen}
         onOpenChange={(v) => {
-          if (v) setSalaryInput(income === undefined ? "" : String(income));
-          setSalaryOpen(v);
+          if (v) setIncomeInput(income === undefined ? "" : String(income));
+          setIncomeOpen(v);
         }}
       >
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Monthly salary</DialogTitle>
+            <DialogTitle>Monthly budget</DialogTitle>
           </DialogHeader>
           <div className="space-y-1.5">
             <Label className="text-xs uppercase tracking-widest text-muted-foreground">
@@ -251,8 +251,8 @@ function SalaryPage() {
             <Input
               autoFocus
               inputMode="decimal"
-              value={salaryInput}
-              onChange={(e) => setSalaryInput(e.target.value)}
+              value={incomeInput}
+              onChange={(e) => setIncomeInput(e.target.value)}
               placeholder="0.00"
             />
           </div>
@@ -261,16 +261,16 @@ function SalaryPage() {
               variant="ghost"
               onClick={() => {
                 s.setIncome(undefined);
-                setSalaryOpen(false);
+                setIncomeOpen(false);
               }}
             >
               Clear
             </Button>
             <Button
               onClick={() => {
-                const v = parseFloat(salaryInput);
+                const v = parseFloat(incomeInput);
                 s.setIncome(Number.isNaN(v) ? undefined : v);
-                setSalaryOpen(false);
+                setIncomeOpen(false);
               }}
             >
               Save

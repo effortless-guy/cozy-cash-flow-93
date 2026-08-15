@@ -38,12 +38,12 @@ import { Fab } from "../components/Fab";
 export const Route = createFileRoute("/khatabook")({
   head: () => ({
     meta: [
-      { title: "Khatabook — Ledger" },
+      { title: "Khatabook — MoneyStory" },
       {
         name: "description",
         content: "Track money you lent and borrowed, person by person.",
       },
-      { property: "og:title", content: "Khatabook — Ledger" },
+      { property: "og:title", content: "Khatabook — MoneyStory" },
       {
         property: "og:description",
         content: "Track money you lent and borrowed, person by person.",

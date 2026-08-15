@@ -14,7 +14,7 @@ import { Switch } from "../components/ui/switch";
 export const Route = createFileRoute("/networth")({
   head: () => ({
     meta: [
-      { title: "Net Worth — Ledger" },
+      { title: "Net Worth — MoneyStory" },
       { name: "description", content: "Track your total assets and financial growth." },
     ],
   }),

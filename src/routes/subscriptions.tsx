@@ -31,9 +31,9 @@ import { Fab } from "../components/Fab";
 export const Route = createFileRoute("/subscriptions")({
   head: () => ({
     meta: [
-      { title: "Subscriptions — Ledger" },
+      { title: "Subscriptions — MoneyStory" },
       { name: "description", content: "Track subscriptions with monthly-normalized costs." },
-      { property: "og:title", content: "Subscriptions — Ledger" },
+      { property: "og:title", content: "Subscriptions — MoneyStory" },
       { property: "og:description", content: "Track subscriptions with monthly-normalized costs." },
     ],
   }),

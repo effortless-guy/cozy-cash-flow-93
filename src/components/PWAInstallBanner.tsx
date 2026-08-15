@@ -85,7 +85,7 @@ export function PWAInstallBanner() {
           </div>
           
           <div className="flex flex-1 flex-col min-w-0">
-            <span className="text-sm font-semibold truncate">Ledger</span>
+            <span className="text-sm font-semibold truncate">MoneyStory</span>
             <span className="text-xs text-muted-foreground truncate">Install for offline access</span>
           </div>
 
