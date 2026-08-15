@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 // @ts-ignore - plugin handles this at build time
 import { registerSW } from 'virtual:pwa-register';
 
@@ -18,6 +18,7 @@ import { BottomTabs } from "../components/BottomTabs";
 import { useSettings } from "../lib/finance-store";
 import { AppLockOverlay } from "../components/AppLockOverlay";
 import { PWAInstallBanner } from "../components/PWAInstallBanner";
+import { OfflineReadyIndicator } from "../components/OfflineReadyIndicator";
 
 function NotFoundComponent() {
   return (
@@ -133,7 +134,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [isOfflineReady, setIsOfflineReady] = useState(false);
 
+  // Need to use a state that can be passed down or a custom event
   useEffect(() => {
     if (typeof window !== 'undefined') {
       registerSW({
@@ -144,6 +147,7 @@ function RootComponent() {
         },
         onOfflineReady() {
           console.log('App ready for offline use');
+          window.dispatchEvent(new CustomEvent('sw-offline-ready'));
         },
       });
     }
@@ -166,6 +170,7 @@ function AppShell() {
       <BottomTabs />
       <AppLockOverlay />
       <PWAInstallBanner />
+      <OfflineReadyIndicator />
     </div>
   );
 }
