@@ -282,7 +282,7 @@ function CategoryBlock({
         : "border-border/40 bg-card"
     } overflow-hidden`}>
       <div 
-        onClick={(e) => {
+        onClick={() => {
           if (!editing) api.toggleCategory(category.id);
         }}
         className={`flex cursor-pointer items-center justify-between gap-3 px-4 transition-all duration-300 ${

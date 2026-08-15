@@ -383,14 +383,7 @@ export function useSalary() {
   const currentYear = data.years[year];
   const months = currentYear ? Object.keys(currentYear.months).sort() : [];
   const currentMonth: MonthData = useMemo(() => {
-    const raw = currentYear?.months[month] ?? emptyMonth();
-    return {
-      ...raw,
-      categories: raw.categories?.map(c => ({
-        ...c,
-        collapsed: localStorage.getItem(`cat_collapsed_${c.id}`) === "true"
-      }))
-    };
+    return currentYear?.months[month] ?? emptyMonth();
   }, [currentYear, month]);
 
   const ensureYearMonth = useCallback(
