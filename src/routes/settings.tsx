@@ -318,7 +318,7 @@ function Section({ title, description, children }: { title: string; description?
           <span className="text-[10px] text-muted-foreground/60 italic">{description}</span>
         )}
       </div>
-      <div className="divide-y divide-border/60 rounded-xl border border-border bg-card">
+      <div className="divide-y divide-border/60 rounded-xl border border-border bg-card ring-1 ring-black/5 dark:ring-white/5">
         {children}
       </div>
     </section>
