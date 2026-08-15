@@ -121,7 +121,7 @@ function KhatabookPage() {
               {formatMoney(receive, settings.currency)}
             </p>
           </div>
-          <div className="rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-sm flex flex-col items-end text-right ring-1 ring-black/5 dark:ring-white/5">
+          <div className="rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-sm flex flex-col items-end text-right ring-1 ring-black/5 dark:ring-white/5 dark:bg-card/40">
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
               You owe
             </p>

@@ -145,7 +145,7 @@ function NetWorthPage() {
             </Button>
           )}
         </div>
-        <div className="mt-4 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+        <div className="mt-4 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-sm ring-1 ring-black/5 dark:ring-white/5 dark:bg-card/40">
           <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">Total Net Worth</p>
           <div className="flex items-baseline justify-between mt-1">
             <p className="text-3xl font-bold tabular-nums tracking-tight text-foreground">
@@ -157,7 +157,7 @@ function NetWorthPage() {
       
       <main className="px-6 space-y-8 pt-2">
         {chartData.length > 1 && (
-          <section className="rounded-2xl border border-border/40 bg-card p-4 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+          <section className="rounded-2xl border border-border/40 bg-card p-4 shadow-sm ring-1 ring-black/5 dark:ring-white/5 dark:bg-card/40">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">Trend</h2>
               <BarChart3 className="h-3.5 w-3.5 opacity-20" />
