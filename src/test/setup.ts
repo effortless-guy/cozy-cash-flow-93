@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import { vi } from 'vitest'
 
 // Mock IndexedDB
 class IDBRequestMock extends EventTarget {
@@ -23,7 +24,7 @@ global.indexedDB = indexedDBMock as unknown as IDBFactory;
 // Mock window.matchMedia for theme tests
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
