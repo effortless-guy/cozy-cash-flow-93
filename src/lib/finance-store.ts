@@ -69,33 +69,42 @@ const emptyMonth = (): MonthData => ({ categories: [] });
 function usePersisted<T>(key: string, initial: () => T) {
   const [hydrated, setHydrated] = useState(false);
   const [state, setState] = useState<T>(initial);
-  const storeName = STORE_MAP[key];
+  const storeName = STORE_MAP[key] || key.split('.')[0]; // Fallback for dynamic keys like UI_KEY.viewKey
   const isInitialMount = useRef(true);
 
+  // We need to track the latest state in a ref to avoid stale closures in effects
+  const stateRef = useRef(state);
   useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
+  useEffect(() => {
+    let active = true;
     async function init() {
       if (typeof window === "undefined") return;
       
       await migrateFromLocalStorage();
       const val = await getDBItem<T>(storeName, "data");
       
+      if (!active) return;
+
       if (val !== null) {
         setState(val);
       } else {
         const initVal = initial();
         setState(initVal);
-        // Save initial values to DB if it's the first time
         await setDBItem(storeName, "data", initVal);
       }
       setHydrated(true);
     }
     init();
-  }, [storeName, initial]);
+    return () => { active = false; };
+  }, [storeName]); // Removed 'initial' from deps to avoid re-runs if initial function isn't memoized
 
   useEffect(() => {
     if (hydrated && !isInitialMount.current) {
       const timeoutId = setTimeout(() => {
-        setDBItem(storeName, "data", state).catch(console.error);
+        setDBItem(storeName, "data", stateRef.current).catch(console.error);
       }, 500);
       return () => clearTimeout(timeoutId);
     }
