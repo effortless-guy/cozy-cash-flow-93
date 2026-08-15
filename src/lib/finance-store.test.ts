@@ -4,15 +4,22 @@ import * as db from './db';
 import { useSalary, useKhatabook, useNetWorth } from './finance-store';
 
 // Mock the DB module
-vi.mock('./db', async () => {
-  const actual = await vi.importActual<typeof import('./db')>('./db');
+vi.mock('./db', () => {
   return {
-    ...actual,
-    getDBItem: vi.fn(),
-    setDBItem: vi.fn(),
+    getDBItem: vi.fn().mockResolvedValue(null),
+    setDBItem: vi.fn().mockResolvedValue(undefined),
     migrateFromLocalStorage: vi.fn().mockResolvedValue(undefined),
+    STORE_MAP: {
+      "pft.salary.v1": "salary",
+      "pft.subs.v1": "subscriptions",
+      "pft.settings.v1": "settings",
+      "pft.khatabook.v1": "khatabook",
+      "pft.networth.v1": "networth",
+      "pft.nw_activity.v1": "nw_activity"
+    }
   };
 });
+
 
 describe('Finance Store Logic', () => {
   beforeEach(() => {
