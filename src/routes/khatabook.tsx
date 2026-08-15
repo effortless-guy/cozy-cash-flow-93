@@ -88,8 +88,9 @@ function KhatabookPage() {
       handleSync();
     };
   }, [localCollapsed, k.setPeopleState]);
-
-
+  const togglePersonLocal = (id: string) => {
+    setLocalCollapsed(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const { receive, owe } = useMemo(() => {
     let receive = 0;
