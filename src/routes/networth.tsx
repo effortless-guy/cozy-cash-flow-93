@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo, useEffect, memo } from "react";
-import { Plus, ChevronRight, TrendingUp, TrendingDown, Landmark, PieChart, Coins, Briefcase, Home, Wallet as WalletIcon, HelpCircle, Pencil, Archive, History, Check, X, Edit2, ChevronDown, List, LucideIcon } from "lucide-react";
+import { Plus, ChevronRight, TrendingUp, TrendingDown, Landmark, PieChart, Coins, Briefcase, Home, Wallet as WalletIcon, HelpCircle, Pencil, Archive, History, Check, X, Edit2, ChevronDown, List, LucideIcon, BarChart3 } from "lucide-react";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { useNetWorth, formatMoney, useSettings, type AssetType, useNetWorthRecurring, type NetWorthAsset, type AssetEntry } from "../lib/finance-store";
 import { Fab } from "../components/Fab";
 import { Button } from "../components/ui/button";
@@ -90,6 +91,46 @@ function NetWorthPage() {
     });
     return list;
   }, [assets]);
+  
+  const chartData = useMemo(() => {
+    // Collect all unique dates from all assets' entries
+    const datePoints = new Set<string>();
+    assets.forEach(asset => {
+      asset.entries.forEach(e => {
+        if (!e.isPending) datePoints.add(e.date);
+      });
+    });
+    
+    // Also include today's state
+    const today = new Date().toISOString().slice(0, 10);
+    datePoints.add(today);
+    
+    const sortedDates = Array.from(datePoints).sort();
+    
+    // For each date, calculate the total net worth at that point in time
+    return sortedDates.map(date => {
+      let totalOnDate = 0;
+      assets.forEach(asset => {
+        // Find the most recent entry for this asset that is on or before this date
+        const entry = asset.entries
+          .filter(e => !e.isPending && e.date <= date)
+          .sort((a, b) => b.date.localeCompare(a.date))[0];
+        
+        if (entry) {
+          totalOnDate += entry.amount;
+        } else if (date === today) {
+          // If no history but it's today, use current value
+          totalOnDate += asset.currentValue;
+        }
+      });
+      
+      return {
+        date,
+        formattedDate: new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+        value: totalOnDate,
+      };
+    });
+  }, [assets]);
 
   if (!hydrated) return <div className="p-6 text-muted-foreground">Loading...</div>;
 
@@ -115,6 +156,61 @@ function NetWorthPage() {
       </header>
       
       <main className="px-6 space-y-8 pt-2">
+        {chartData.length > 1 && (
+          <section className="rounded-2xl border border-border/40 bg-card p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">Trend</h2>
+              <BarChart3 className="h-3.5 w-3.5 opacity-20" />
+            </div>
+            <div className="h-[160px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.15}/>
+                      <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--color-border)" opacity={0.3} />
+                  <XAxis 
+                    dataKey="formattedDate" 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)', opacity: 0.5, fontWeight: 600 }}
+                    minTickGap={30}
+                  />
+                  <YAxis hide domain={['auto', 'auto']} />
+                  <Tooltip 
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="rounded-xl border border-border/40 bg-background/95 p-2 shadow-xl backdrop-blur-sm">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                              {payload[0].payload.formattedDate}
+                            </p>
+                            <p className="text-sm font-bold text-foreground mt-0.5">
+                              {formatMoney(payload[0].value as number, settings.currency)}
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke="var(--color-primary)" 
+                    strokeWidth={2}
+                    fillOpacity={1} 
+                    fill="url(#colorValue)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+        )}
+
         <section>
           <div className="flex items-center justify-between mb-4 px-1">
             <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">Portfolio</h2>
