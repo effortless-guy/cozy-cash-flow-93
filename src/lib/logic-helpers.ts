@@ -1,0 +1,39 @@
+import { Transaction } from "./finance-store";
+
+/**
+ * Calculates the total amount for a list of transactions.
+ * Only includes checked/completed transactions if they are provided, 
+ * otherwise sums all transactions.
+ */
+export const calculateTransactionTotal = (transactions: Transaction[]) => {
+  if (!transactions || transactions.length === 0) return 0;
+  
+  // If any transaction has a 'completed' status, we only sum those.
+  // Otherwise, we sum everything (e.g., in a draft state).
+  const hasStatus = transactions.some(t => t.completed !== undefined);
+  
+  if (hasStatus) {
+    return transactions
+      .filter(t => t.completed)
+      .reduce((sum, t) => sum + t.amount, 0);
+  }
+  
+  return transactions.reduce((sum, t) => sum + t.amount, 0);
+};
+
+/**
+ * Calculates the balance for a person in Khatabook.
+ * Lent is positive, Borrowed is negative.
+ */
+export const calculateKhatabookBalance = (entries: { amount: number, type: 'lent' | 'borrowed' }[]) => {
+  return entries.reduce((total, e) => total + (e.type === "lent" ? e.amount : -e.amount), 0);
+};
+
+/**
+ * Aggregates net worth from a list of assets.
+ */
+export const calculateTotalNetWorth = (assets: { currentValue: number, archived?: boolean }[]) => {
+  return assets
+    .filter(a => !a.archived)
+    .reduce((sum, a) => sum + a.currentValue, 0);
+};
