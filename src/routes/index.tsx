@@ -353,13 +353,12 @@ function CategoryBlock({
           if (!editing) onToggle();
         }}
         className={`flex cursor-pointer items-center justify-between gap-3 px-4 transition-all duration-300 ${
-          isCollapsed ? "h-[46px] border-b-0" : "h-14 border-b"
+          isCollapsed ? "h-[52px] border-b-0" : "h-14 border-b"
         } ${
-
           isCompleted ? "border-emerald-100/50 bg-emerald-100/10" : "border-border/20 bg-transparent"
         }`}
       >
-        <div className="group flex h-full min-w-0 flex-1 items-center gap-3 text-left">
+        <div className="flex min-w-0 flex-1 items-center gap-3 text-left">
           <div className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/20 bg-white text-foreground shadow-sm">
             <Icon className="h-4 w-4" strokeWidth={1.5} />
           </div>
