@@ -240,7 +240,7 @@ function NetWorthPage() {
           </div>
         </section>
 
-        <section className="bg-muted/20 -mx-6 px-6 py-8">
+        <section className="bg-muted/20 -mx-6 px-6 py-8 dark:bg-muted/5">
           <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">Recent Activity</h2>
           <div className="space-y-4">
             {activity.length > 0 ? (
