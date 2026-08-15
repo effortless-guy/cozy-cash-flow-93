@@ -123,7 +123,7 @@ function SalaryPage() {
   return (
     <div className="bg-background">
       <div className="mx-4 pt-6 pb-0">
-        <header className="rounded-2xl border border-border/40 bg-card px-5 py-4 shadow-sm">
+        <header className="rounded-2xl border border-border/40 bg-card px-5 py-4 shadow-sm ring-1 ring-black/5 dark:ring-white/5 dark:bg-card/40">
           <div className="flex items-start justify-between gap-4">
             <PeriodPicker
               year={s.year}
@@ -154,7 +154,7 @@ function SalaryPage() {
               <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/80">
                 Spend
               </p>
-              <p className="num text-lg font-bold tracking-tight text-blue-600/90">
+              <p className="num text-lg font-bold tracking-tight text-blue-600 dark:text-blue-400">
                 {formatMoney(monthTotal, settings.currency)}
               </p>
             </div>
@@ -164,7 +164,7 @@ function SalaryPage() {
                 Remaining
               </p>
               <p className={`num text-lg font-bold tracking-tight ${
-                income === undefined ? "text-muted-foreground/50" : "text-emerald-600/90"
+                income === undefined ? "text-muted-foreground/50" : "text-emerald-600 dark:text-emerald-400"
               }`}>
                 {income === undefined
                   ? "--"
@@ -343,10 +343,10 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className={`space-y-0 rounded-2xl border transition-all duration-300 ${
+    <section className={`space-y-0 rounded-2xl border transition-all duration-300 ring-1 ring-black/5 dark:ring-white/5 ${
       isCompleted 
-        ? "border-emerald-200/60 bg-emerald-50/30" 
-        : "border-border/40 bg-card"
+        ? "border-emerald-200/60 bg-emerald-50/30 dark:bg-emerald-500/5 dark:border-emerald-500/20" 
+        : "border-border/40 bg-card dark:bg-card/40"
     } overflow-hidden`}>
       <div 
         onClick={() => {

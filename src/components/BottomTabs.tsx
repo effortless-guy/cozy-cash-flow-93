@@ -14,7 +14,7 @@ export function BottomTabs() {
   const { auth, logout } = useAuth();
   
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/85 backdrop-blur-md">
+    <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-border/60 bg-background/85 backdrop-blur-md dark:bg-black/40">
       <div className="mx-auto flex max-w-md items-center justify-between px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {tabs.map((t) => {
           const Icon = t.icon;

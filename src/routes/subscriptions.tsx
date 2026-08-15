@@ -274,7 +274,7 @@ function SubRow({
 
 
   return (
-    <li className="flex items-center gap-3 rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
+    <li className="flex items-center gap-3 rounded-2xl border border-border/50 bg-muted/30 px-4 py-3 ring-1 ring-black/5 dark:ring-white/5 dark:bg-muted/10">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-background/50 border border-border/40">
         {sub.customIcon && !sub.customIcon.startsWith('http') ? (
           <span className="text-xl">{sub.customIcon}</span>

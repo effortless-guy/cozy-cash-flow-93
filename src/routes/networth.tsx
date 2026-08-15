@@ -145,7 +145,7 @@ function NetWorthPage() {
             </Button>
           )}
         </div>
-        <div className="mt-4 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-sm">
+        <div className="mt-4 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-sm ring-1 ring-black/5 dark:ring-white/5 dark:bg-card/40">
           <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">Total Net Worth</p>
           <div className="flex items-baseline justify-between mt-1">
             <p className="text-3xl font-bold tabular-nums tracking-tight text-foreground">
@@ -157,7 +157,7 @@ function NetWorthPage() {
       
       <main className="px-6 space-y-8 pt-2">
         {chartData.length > 1 && (
-          <section className="rounded-2xl border border-border/40 bg-card p-4 shadow-sm">
+          <section className="rounded-2xl border border-border/40 bg-card p-4 shadow-sm ring-1 ring-black/5 dark:ring-white/5 dark:bg-card/40">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">Trend</h2>
               <BarChart3 className="h-3.5 w-3.5 opacity-20" />
@@ -167,16 +167,16 @@ function NetWorthPage() {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="oklch(0.182 0 0)" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="oklch(0.182 0 0)" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.15}/>
+                      <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="oklch(0.937 0 0)" opacity={0.3} />
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
                   <XAxis 
                     dataKey="formattedDate" 
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fontSize: 10, fill: 'oklch(0.551 0.023 264)', opacity: 0.5, fontWeight: 600 }}
+                    tick={{ fontSize: 10, fill: 'var(--muted-foreground)', opacity: 0.5, fontWeight: 600 }}
                     minTickGap={30}
                   />
                   <YAxis hide domain={['auto', 'auto']} />
@@ -184,7 +184,7 @@ function NetWorthPage() {
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="rounded-xl border border-border/40 bg-background/95 p-2 shadow-xl backdrop-blur-sm">
+                          <div className="rounded-xl border border-border/40 bg-card p-2 shadow-xl backdrop-blur-sm">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
                               {payload[0].payload.formattedDate}
                             </p>
@@ -200,7 +200,7 @@ function NetWorthPage() {
                   <Area 
                     type="monotone" 
                     dataKey="value" 
-                    stroke="oklch(0.182 0 0)" 
+                    stroke="var(--primary)" 
                     strokeWidth={2}
                     fillOpacity={1} 
                     fill="url(#colorValue)" 
@@ -240,7 +240,7 @@ function NetWorthPage() {
           </div>
         </section>
 
-        <section className="bg-muted/20 -mx-6 px-6 py-8">
+        <section className="bg-muted/20 -mx-6 px-6 py-8 dark:bg-muted/5">
           <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">Recent Activity</h2>
           <div className="space-y-4">
             {activity.length > 0 ? (
@@ -269,7 +269,7 @@ function NetWorthPage() {
       {/* Monthly Update Dialog */}
       <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
         <DialogContent className="max-w-sm p-0 overflow-hidden rounded-3xl border-none">
-          <div className="bg-primary/5 px-6 pt-8 pb-6">
+          <div className="bg-primary/5 px-6 pt-8 pb-6 dark:bg-primary/10">
             <DialogHeader>
                 <DialogTitle className="text-xl font-bold">Monthly Update</DialogTitle>
                 <DialogDescription className="text-xs font-semibold uppercase tracking-widest text-primary/60 mt-1">
@@ -278,7 +278,7 @@ function NetWorthPage() {
             </DialogHeader>
           </div>
           
-          <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+          <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar dark:bg-background/95">
             {pendingEntries.map(({ asset, entry }) => (
                 <div key={entry.id} className="group relative rounded-2xl border border-border/40 bg-card p-4 transition-all">
                     <div className="flex items-center justify-between mb-3">
@@ -298,7 +298,7 @@ function NetWorthPage() {
                             <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-destructive hover:bg-destructive/5" onClick={() => skipRecurring(asset.id, entry.id)}>
                                 <X className="h-5 w-5 opacity-40" />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-emerald-600 hover:bg-emerald-50/50" onClick={() => {
+                            <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50/50" onClick={() => {
                                 const val = parseFloat((document.getElementById(`pending-${entry.id}`) as HTMLInputElement).value);
                                 if (!isNaN(val)) confirmRecurring(asset.id, entry.id, val);
                             }}>
@@ -310,7 +310,7 @@ function NetWorthPage() {
             ))}
           </div>
           
-          <div className="p-6 pt-2">
+          <div className="p-6 pt-2 dark:bg-background/95 border-t border-border/10">
             <Button className="w-full h-12 rounded-2xl font-bold tracking-tight shadow-lg shadow-primary/10" onClick={() => setUpdateOpen(false)}>
               Done for {new Date().toLocaleDateString(undefined, { month: 'short' })}
             </Button>
@@ -321,14 +321,14 @@ function NetWorthPage() {
       {/* Add Asset Dialog */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="max-w-sm p-0 overflow-hidden rounded-3xl border-none">
-          <div className="bg-muted/30 px-6 pt-8 pb-6">
+          <div className="bg-muted/30 px-6 pt-8 pb-6 dark:bg-muted/10">
             <DialogHeader>
                 <DialogTitle className="text-xl font-bold">New Asset</DialogTitle>
                 <DialogDescription className="text-[10px] font-bold uppercase tracking-widest opacity-40 mt-1">Classification & Initial Value</DialogDescription>
             </DialogHeader>
           </div>
           
-          <div className="p-6 space-y-5">
+          <div className="p-6 space-y-5 dark:bg-background/95">
             <div className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Asset Type</Label>
                 <Select 
@@ -366,7 +366,7 @@ function NetWorthPage() {
             </div>
           </div>
           
-          <div className="p-6 pt-0 flex gap-3">
+          <div className="p-6 pt-0 flex gap-3 dark:bg-background/95">
             <Button variant="ghost" className="flex-1 h-12 rounded-2xl font-bold text-muted-foreground" onClick={() => setAddOpen(false)}>Cancel</Button>
             <Button className="flex-1 h-12 rounded-2xl font-bold shadow-lg shadow-primary/10" onClick={() => {
               const val = parseFloat(formData.currentValue);
@@ -395,9 +395,9 @@ function NetWorthPage() {
       <Dialog open={!!manageOpen} onOpenChange={(open) => !open && setManageOpen(null)}>
         {manageOpen && (
             <DialogContent className="max-w-sm p-0 overflow-hidden rounded-3xl border-none">
-                <div className="bg-muted/30 px-6 pt-8 pb-6">
+                <div className="bg-muted/30 px-6 pt-8 pb-6 dark:bg-muted/10">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="flex size-12 items-center justify-center rounded-2xl bg-background border border-border/20 shadow-sm">
+                        <div className="flex size-12 items-center justify-center rounded-2xl bg-background border border-border/20 shadow-sm dark:bg-card">
                             {(() => {
                                 const Icon = TYPE_ICONS[manageOpen.type] || TYPE_ICONS["Other"];
                                 return <Icon className="h-6 w-6 opacity-80" />;
@@ -432,7 +432,7 @@ function NetWorthPage() {
                     </div>
                 </div>
 
-                <div className="p-6 space-y-3">
+                <div className="p-6 space-y-3 dark:bg-background/95">
                     <button className="flex w-full items-center justify-between rounded-2xl bg-muted/20 p-4 transition-all active:scale-[0.98] active:bg-muted/40" onClick={() => {
                         const newName = prompt("Rename asset:", manageOpen.name);
                         if (newName) updateAsset(manageOpen.id, { name: newName });
@@ -467,7 +467,7 @@ function NetWorthPage() {
                         <div className="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
                             {manageOpen.entries.length > 0 ? (
                                 manageOpen.entries.slice().reverse().map(e => (
-                                    <div key={e.id} className="flex items-center justify-between rounded-xl border border-border/20 px-3 py-2 text-xs">
+                                    <div key={e.id} className="flex items-center justify-between rounded-xl border border-border/20 px-3 py-2 text-xs dark:bg-card/30">
                                         <div className="flex flex-col">
                                             <span className="font-semibold">{formatMoney(e.amount, settings.currency)}</span>
                                             <span className="text-[10px] opacity-40">{e.date}</span>
@@ -526,10 +526,10 @@ const AssetCard = memo(({
   return (
     <div 
       onClick={onClick} 
-      className="group relative flex flex-col justify-between rounded-2xl border border-border/40 bg-card p-4 transition-all active:scale-[0.98] hover:bg-muted/30 cursor-pointer"
+      className="group relative flex flex-col justify-between rounded-2xl border border-border/40 bg-card p-4 transition-all active:scale-[0.98] hover:bg-muted/30 cursor-pointer ring-1 ring-black/5 dark:ring-white/5 dark:bg-card/40"
     >
       <div className="flex items-center justify-between mb-4">
-        <div className="flex size-9 items-center justify-center rounded-xl bg-background border border-border/20 shadow-sm relative">
+        <div className="flex size-9 items-center justify-center rounded-xl bg-background border border-border/20 shadow-sm relative dark:bg-card">
           <Icon className="h-4 w-4 opacity-70" strokeWidth={2.5} />
           {hasPending && <div className="absolute -top-1 -right-1 size-2 rounded-full bg-primary" />}
         </div>
