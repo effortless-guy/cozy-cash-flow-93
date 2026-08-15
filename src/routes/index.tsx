@@ -143,7 +143,7 @@ function SalaryPage() {
               className="flex items-center gap-1.5 text-right transition-opacity hover:opacity-70 shrink-0 mt-1"
             >
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {income === undefined ? "Set Salary" : formatMoney(income, settings.currency)}
+                {income === undefined ? "Set Money" : formatMoney(income, settings.currency)}
               </span>
               <Pencil className="h-3 w-3 text-muted-foreground/50" />
             </button>
@@ -220,7 +220,7 @@ function SalaryPage() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `${monthName}_${s.year}_salary.txt`;
+            a.download = `${monthName}_${s.year}_money.txt`;
             a.click();
             URL.revokeObjectURL(url);
           }}
@@ -242,7 +242,7 @@ function SalaryPage() {
       >
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Monthly salary</DialogTitle>
+            <DialogTitle>Monthly budget</DialogTitle>
           </DialogHeader>
           <div className="space-y-1.5">
             <Label className="text-xs uppercase tracking-widest text-muted-foreground">

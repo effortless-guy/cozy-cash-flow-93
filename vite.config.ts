@@ -23,18 +23,23 @@ export default defineConfig({
           icons: [
             {
               src: 'favicon.ico',
-              sizes: '64x64 32x32 24x24 16x16',
+              sizes: '32x32',
               type: 'image/x-icon',
             },
             {
-              src: 'favicon.ico',
+              src: 'icon-192.png',
               sizes: '192x192',
-              type: 'image/x-icon',
+              type: 'image/png',
             },
             {
-              src: 'favicon.ico',
+              src: 'icon-512.png',
               sizes: '512x512',
-              type: 'image/x-icon',
+              type: 'image/png',
+            },
+            {
+              src: 'apple-touch-icon.png',
+              sizes: '180x180',
+              type: 'image/png',
             }
           ],
         },

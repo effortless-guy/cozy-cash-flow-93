@@ -111,7 +111,7 @@ function SettingsPage() {
         </Section>
 
         <Section title="App">
-          <Row label="Notifications" description="Monthly rollover & subscription reminders">
+          <Row label="Notifications" description="Monthly budget rollover & subscription reminders">
             <Switch
               checked={settings.notifications}
               onCheckedChange={(checked) =>
