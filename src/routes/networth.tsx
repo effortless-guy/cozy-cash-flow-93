@@ -167,16 +167,16 @@ function NetWorthPage() {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="oklch(0.182 0 0)" stopOpacity={0.15}/>
+                      <stop offset="95%" stopColor="oklch(0.182 0 0)" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--color-border)" opacity={0.3} />
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="oklch(0.937 0 0)" opacity={0.3} />
                   <XAxis 
                     dataKey="formattedDate" 
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)', opacity: 0.5, fontWeight: 600 }}
+                    tick={{ fontSize: 10, fill: 'oklch(0.551 0.023 264)', opacity: 0.5, fontWeight: 600 }}
                     minTickGap={30}
                   />
                   <YAxis hide domain={['auto', 'auto']} />
@@ -200,7 +200,7 @@ function NetWorthPage() {
                   <Area 
                     type="monotone" 
                     dataKey="value" 
-                    stroke="var(--color-primary)" 
+                    stroke="oklch(0.182 0 0)" 
                     strokeWidth={2}
                     fillOpacity={1} 
                     fill="url(#colorValue)" 
