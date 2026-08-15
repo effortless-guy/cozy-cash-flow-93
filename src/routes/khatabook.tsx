@@ -239,7 +239,7 @@ function PersonBlock({
 
 
   return (
-    <section className="space-y-0 rounded-2xl border border-border/40 bg-card overflow-hidden shadow-none transition-all ring-1 ring-black/5 dark:ring-white/5">
+    <section className="space-y-0 rounded-2xl border border-border/40 bg-card overflow-hidden shadow-none transition-all ring-1 ring-black/5 dark:ring-white/5 dark:bg-card/40">
       <div 
         onClick={() => {
           if (!editing) onToggle();

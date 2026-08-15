@@ -345,8 +345,8 @@ function CategoryBlock({
   return (
     <section className={`space-y-0 rounded-2xl border transition-all duration-300 ring-1 ring-black/5 dark:ring-white/5 ${
       isCompleted 
-        ? "border-emerald-200/60 bg-emerald-50/30" 
-        : "border-border/40 bg-card"
+        ? "border-emerald-200/60 bg-emerald-50/30 dark:bg-emerald-500/5 dark:border-emerald-500/20" 
+        : "border-border/40 bg-card dark:bg-card/40"
     } overflow-hidden`}>
       <div 
         onClick={() => {
