@@ -19,9 +19,9 @@ import { useState } from "react";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — Ledger" },
+      { title: "Settings — MoneyStory" },
       { name: "description", content: "Customize currency, theme, language and notifications." },
-      { property: "og:title", content: "Settings — Ledger" },
+      { property: "og:title", content: "Settings — MoneyStory" },
       { property: "og:description", content: "Customize currency, theme, language and notifications." },
     ],
   }),
@@ -300,7 +300,7 @@ function SettingsPage() {
         </Section>
 
         <p className="text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-          Ledger · v1.0
+          MoneyStory · v1.0
         </p>
       </main>
     </div>

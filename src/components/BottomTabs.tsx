@@ -3,7 +3,7 @@ import { Wallet, Repeat, BookUser, Settings as SettingsIcon, LogOut } from "luci
 import { useAuth } from "../lib/auth-store";
 
 const tabs = [
-  { to: "/", label: "Salary", icon: Wallet, exact: true },
+  { to: "/", label: "Money", icon: Wallet, exact: true },
   { to: "/subscriptions", label: "Subs", icon: Repeat, exact: false },
   { to: "/khatabook", label: "Khatabook", icon: BookUser, exact: false },
   { to: "/networth", label: "Net Worth", icon: Wallet, exact: false },

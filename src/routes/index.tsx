@@ -38,9 +38,9 @@ import { getCategoryIcon } from "../lib/category-icons";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Salary — Ledger" },
+      { title: "Money — MoneyStory" },
       { name: "description", content: "Track monthly income and expenses by category." },
-      { property: "og:title", content: "Salary — Ledger" },
+      { property: "og:title", content: "Money — MoneyStory" },
       { property: "og:description", content: "Track monthly income and expenses by category." },
     ],
   }),
@@ -196,7 +196,7 @@ function SalaryPage() {
             const monthName = MONTH_NAMES[idx] ?? s.month;
             const income = s.currentMonth.income;
             
-            let text = `Ledger - Salary Export\n`;
+            let text = `MoneyStory - Money Export\n`;
             text += `Period: ${monthName} ${s.year}\n`;
             text += `--------------------------------\n`;
             text += `Income: ${income !== undefined ? formatMoney(income, settings.currency) : "Not set"}\n`;
