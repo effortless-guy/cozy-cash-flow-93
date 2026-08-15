@@ -239,15 +239,16 @@ function PersonBlock({
 
 
   return (
-    <section className="space-y-3 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-none transition-all">
+    <section className="space-y-0 rounded-2xl border border-border/40 bg-card overflow-hidden shadow-none transition-all">
       <div 
         onClick={() => {
           if (!editing) onToggle();
         }}
-
-        className="flex min-h-11 cursor-pointer items-center justify-between gap-3"
+        className={`flex cursor-pointer items-center justify-between gap-3 px-4 transition-all duration-300 ${
+          isCollapsed ? "h-[52px] border-b-0" : "h-14 border-b"
+        } border-border/20 bg-transparent`}
       >
-        <div className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left">
+        <div className="flex min-w-0 flex-1 items-center gap-3 text-left">
           <div className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-border/30 bg-background text-foreground shadow-sm">
             {iconType === "female" ? (
               <UserRound className="h-[18px] w-[18px] opacity-70" strokeWidth={1.5} />
@@ -344,8 +345,7 @@ function PersonBlock({
           isCollapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
         }`}
       >
-
-        <div className="overflow-hidden">
+        <div className="overflow-hidden px-4 pb-3 pt-1">
           <ul className="space-y-1">
             {person.entries.map((e) => (
               <li key={e.id}>
