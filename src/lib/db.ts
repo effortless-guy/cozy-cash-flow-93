@@ -6,11 +6,24 @@ const DB_NAME = "LedgerDB";
 const DB_VERSION = 1;
 const STORES = ["salary", "subscriptions", "khatabook", "networth", "nw_activity", "settings", "metadata", "auth"];
 
+let dbInstance: IDBDatabase | null = null;
+let dbPromise: Promise<IDBDatabase> | null = null;
+
 export async function openDB(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
+  if (dbInstance) return dbInstance;
+  if (dbPromise) return dbPromise;
+
+  dbPromise = new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => {
+      dbPromise = null;
+      reject(request.error);
+    };
+    request.onsuccess = () => {
+      dbInstance = request.result;
+      dbPromise = null;
+      resolve(dbInstance);
+    };
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       STORES.forEach(store => {
@@ -20,6 +33,8 @@ export async function openDB(): Promise<IDBDatabase> {
       });
     };
   });
+
+  return dbPromise;
 }
 
 export async function getDBItem<T>(storeName: string, key: string): Promise<T | null> {
