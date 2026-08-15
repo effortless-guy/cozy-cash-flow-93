@@ -44,10 +44,10 @@ const TYPE_ICONS: Record<string, any> = {
 };
 
 function NetWorthPage() {
-  const { assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity } = useNetWorth();
-  const nwApi = useMemo(() => ({ assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity }), [assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity]);
+  const { assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset } = useNetWorth();
+  const nwApi = useMemo(() => ({ assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset }), [assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset]);
   
-  useNetWorthRecurring({ assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity });
+  useNetWorthRecurring(nwApi);
 
   const { settings } = useSettings();
   const [addOpen, setAddOpen] = useState(false);
@@ -339,7 +339,7 @@ function NetWorthPage() {
                 <div className="p-6 space-y-3">
                     <button className="flex w-full items-center justify-between rounded-2xl bg-muted/20 p-4 transition-all active:scale-[0.98] active:bg-muted/40" onClick={() => {
                         const newName = prompt("Rename asset:", manageOpen.name);
-                        if (newName) nw.updateAsset(manageOpen.id, { name: newName });
+                        if (newName) updateAsset(manageOpen.id, { name: newName });
                     }}>
                         <div className="flex items-center gap-3">
                             <Pencil className="h-4 w-4 opacity-60" />
@@ -351,7 +351,7 @@ function NetWorthPage() {
                     <button className="flex w-full items-center justify-between rounded-2xl bg-muted/20 p-4 transition-all active:scale-[0.98] active:bg-muted/40" onClick={() => {
                         const amt = prompt("Recurring amount (₹):", manageOpen.recurringAmount?.toString() || "");
                         if (amt !== null) {
-                            nw.updateAsset(manageOpen.id, { 
+                            updateAsset(manageOpen.id, { 
                                 recurringAmount: amt === "" ? undefined : parseFloat(amt),
                                 recurringDay: manageOpen.recurringDay || 1
                             });
@@ -379,7 +379,7 @@ function NetWorthPage() {
                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Button variant="ghost" size="icon" className="size-6 rounded-lg" onClick={() => {
                                                 const newAmt = prompt("Edit amount:", e.amount.toString());
-                                                if (newAmt !== null) nw.updateEntry(manageOpen.id, e.id, { amount: parseFloat(newAmt) });
+                                                if (newAmt !== null) updateEntry(manageOpen.id, e.id, { amount: parseFloat(newAmt) });
                                             }}>
                                                 <Pencil className="size-3 opacity-40" />
                                             </Button>
@@ -395,7 +395,7 @@ function NetWorthPage() {
                     <div className="pt-4 flex gap-3">
                         <Button variant="outline" className="flex-1 rounded-2xl border-border/40 text-xs font-bold text-destructive hover:bg-destructive/5" onClick={() => {
                             if (confirm(`Archive ${manageOpen.name}? Historical data will be preserved.`)) {
-                                nw.archiveAsset(manageOpen.id);
+                                archiveAsset(manageOpen.id);
                                 setManageOpen(null);
                             }
                         }}>
