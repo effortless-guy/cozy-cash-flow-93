@@ -199,7 +199,7 @@ function PersonBlock({
   return (
     <section className="space-y-3 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-none transition-all">
       <div 
-        onClick={(e) => {
+        onClick={() => {
           if (!editing) api.togglePerson(person.id);
         }}
         className="flex min-h-11 cursor-pointer items-center justify-between gap-3"

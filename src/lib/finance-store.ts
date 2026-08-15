@@ -95,10 +95,8 @@ function usePersisted<T>(key: string, initial: () => T) {
 
   useEffect(() => {
     if (hydrated && !isInitialMount.current) {
-      const timeoutId = setTimeout(() => {
-        setDBItem(storeName, "data", state).catch(console.error);
-      }, 50);
-      return () => clearTimeout(timeoutId);
+      setDBItem(storeName, "data", state).catch(console.error);
+      return;
     }
     if (hydrated) {
       isInitialMount.current = false;
@@ -383,14 +381,7 @@ export function useSalary() {
   const currentYear = data.years[year];
   const months = currentYear ? Object.keys(currentYear.months).sort() : [];
   const currentMonth: MonthData = useMemo(() => {
-    const raw = currentYear?.months[month] ?? emptyMonth();
-    return {
-      ...raw,
-      categories: raw.categories?.map(c => ({
-        ...c,
-        collapsed: localStorage.getItem(`cat_collapsed_${c.id}`) === "true"
-      }))
-    };
+    return currentYear?.months[month] ?? emptyMonth();
   }, [currentYear, month]);
 
   const ensureYearMonth = useCallback(
@@ -451,15 +442,6 @@ export function useSalary() {
 
   const toggleCategory = (cid: string) =>
     updateMonth((m) => {
-      const cat = m.categories.find((c) => c.id === cid);
-      if (cat) {
-        const key = `cat_collapsed_${cid}`;
-        if (cat.collapsed) {
-          localStorage.removeItem(key);
-        } else {
-          localStorage.setItem(key, "true");
-        }
-      }
       return {
         ...m,
         categories: m.categories.map((c) =>
