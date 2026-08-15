@@ -52,8 +52,8 @@ function SalaryPage() {
   const { settings } = useSettings();
   const [addCatOpen, setAddCatOpen] = useState(false);
   const [newCatName, setNewCatName] = useState("");
-  const [salaryOpen, setSalaryOpen] = useState(false);
-  const [salaryInput, setSalaryInput] = useState("");
+  const [incomeOpen, setIncomeOpen] = useState(false);
+  const [incomeInput, setIncomeInput] = useState("");
   
   // Local state for collapsed categories
   const [localCollapsed, setLocalCollapsed] = useState<Record<string, boolean>>({});
@@ -139,7 +139,7 @@ function SalaryPage() {
             />
             <button
               type="button"
-              onClick={() => setSalaryOpen(true)}
+              onClick={() => setIncomeOpen(true)}
               className="flex items-center gap-1.5 text-right transition-opacity hover:opacity-70 shrink-0 mt-1"
             >
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -234,10 +234,10 @@ function SalaryPage() {
       </div>
 
       <Dialog
-        open={salaryOpen}
+        open={incomeOpen}
         onOpenChange={(v) => {
-          if (v) setSalaryInput(income === undefined ? "" : String(income));
-          setSalaryOpen(v);
+          if (v) setIncomeInput(income === undefined ? "" : String(income));
+          setIncomeOpen(v);
         }}
       >
         <DialogContent className="max-w-sm">
@@ -251,8 +251,8 @@ function SalaryPage() {
             <Input
               autoFocus
               inputMode="decimal"
-              value={salaryInput}
-              onChange={(e) => setSalaryInput(e.target.value)}
+              value={incomeInput}
+              onChange={(e) => setIncomeInput(e.target.value)}
               placeholder="0.00"
             />
           </div>
@@ -261,16 +261,16 @@ function SalaryPage() {
               variant="ghost"
               onClick={() => {
                 s.setIncome(undefined);
-                setSalaryOpen(false);
+                setIncomeOpen(false);
               }}
             >
               Clear
             </Button>
             <Button
               onClick={() => {
-                const v = parseFloat(salaryInput);
+                const v = parseFloat(incomeInput);
                 s.setIncome(Number.isNaN(v) ? undefined : v);
-                setSalaryOpen(false);
+                setIncomeOpen(false);
               }}
             >
               Save
