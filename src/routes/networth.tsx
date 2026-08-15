@@ -298,7 +298,7 @@ function NetWorthPage() {
                             <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-destructive hover:bg-destructive/5" onClick={() => skipRecurring(asset.id, entry.id)}>
                                 <X className="h-5 w-5 opacity-40" />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-emerald-600 hover:bg-emerald-50/50" onClick={() => {
+                            <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50/50" onClick={() => {
                                 const val = parseFloat((document.getElementById(`pending-${entry.id}`) as HTMLInputElement).value);
                                 if (!isNaN(val)) confirmRecurring(asset.id, entry.id, val);
                             }}>
@@ -310,7 +310,7 @@ function NetWorthPage() {
             ))}
           </div>
           
-          <div className="p-6 pt-2">
+          <div className="p-6 pt-2 dark:bg-background/95 border-t border-border/10">
             <Button className="w-full h-12 rounded-2xl font-bold tracking-tight shadow-lg shadow-primary/10" onClick={() => setUpdateOpen(false)}>
               Done for {new Date().toLocaleDateString(undefined, { month: 'short' })}
             </Button>
