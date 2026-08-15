@@ -95,10 +95,8 @@ function usePersisted<T>(key: string, initial: () => T) {
 
   useEffect(() => {
     if (hydrated && !isInitialMount.current) {
-      const timeoutId = setTimeout(() => {
-        setDBItem(storeName, "data", state).catch(console.error);
-      }, 50);
-      return () => clearTimeout(timeoutId);
+      setDBItem(storeName, "data", state).catch(console.error);
+      return;
     }
     if (hydrated) {
       isInitialMount.current = false;
