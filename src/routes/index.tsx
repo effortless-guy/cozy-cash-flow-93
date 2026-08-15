@@ -343,7 +343,7 @@ function CategoryBlock({
   const [txAmount, setTxAmount] = useState("");
 
   return (
-    <section className={`space-y-0 rounded-2xl border transition-all duration-300 ${
+    <section className={`space-y-0 rounded-2xl border transition-all duration-300 ring-1 ring-black/5 dark:ring-white/5 ${
       isCompleted 
         ? "border-emerald-200/60 bg-emerald-50/30" 
         : "border-border/40 bg-card"
