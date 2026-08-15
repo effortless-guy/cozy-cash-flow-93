@@ -534,7 +534,7 @@ export function useSalary() {
     addCategory,
     renameCategory,
     deleteCategory,
-    toggleCategory,
+    setMonthData,
     addTransaction,
     updateTransaction,
     deleteTransaction,
