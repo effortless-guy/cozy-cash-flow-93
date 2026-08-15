@@ -5,7 +5,7 @@ export type Transaction = { id: string; name: string; amount: number; completed?
 export type Category = {
   id: string;
   name: string;
-  collapsed?: boolean;
+  // UI state removed from core data
   transactions: Transaction[];
 };
 export type MonthData = { categories: Category[]; income?: number };
@@ -59,7 +59,6 @@ const defaultMonth = (): MonthData => ({
     {
       id: uid(),
       name: "Transport",
-      collapsed: true,
       transactions: [{ id: uid(), name: "Fuel", amount: 320 }],
     },
   ],
@@ -112,6 +111,7 @@ const SALARY_KEY = "pft.salary.v1";
 const SUBS_KEY = "pft.subs.v1";
 const SETTINGS_KEY = "pft.settings.v1";
 const KHATA_KEY = "pft.khatabook.v1";
+const UI_KEY = "pft.ui_settings.v1";
 
 export type LedgerEntry = {
   id: string;
@@ -124,7 +124,7 @@ export type LedgerEntry = {
 export type Person = {
   id: string;
   name: string;
-  collapsed?: boolean;
+  // UI state removed
   entries: LedgerEntry[];
 };
 
@@ -305,7 +305,6 @@ export function useKhatabook() {
     {
       id: uid(),
       name: "Priya Sharma",
-      collapsed: true,
       entries: [
         { id: uid(), note: "Cab fare", amount: 30, type: "borrowed", date: new Date().toISOString().slice(0, 10) },
       ],
@@ -318,10 +317,10 @@ export function useKhatabook() {
     setPeople((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
   const deletePerson = (id: string) =>
     setPeople((prev) => prev.filter((p) => p.id !== id));
-  const togglePerson = (id: string) =>
-    setPeople((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, collapsed: !p.collapsed } : p)),
-    );
+  const togglePerson = (id: string) => {
+    // This is now handled by useUIState in the component
+    console.warn("togglePerson in useKhatabook is deprecated. Use useUIState instead.");
+  };
   const addEntry = (pid: string, entry: Omit<LedgerEntry, "id">) =>
     setPeople((prev) =>
       prev.map((p) =>
