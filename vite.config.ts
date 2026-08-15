@@ -9,7 +9,7 @@ export default defineConfig({
     plugins: [
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+        includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'splash/*.png'],
         manifest: {
           name: 'MoneyStory — Personal Finance Tracker',
           short_name: 'MoneyStory',
@@ -40,6 +40,18 @@ export default defineConfig({
               src: 'apple-touch-icon.png',
               sizes: '180x180',
               type: 'image/png',
+            },
+            {
+              src: 'icon-maskable-192.png',
+              sizes: '192x192',
+              type: 'image/png',
+              purpose: 'maskable',
+            },
+            {
+              src: 'icon-maskable-512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable',
             }
           ],
         },
