@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { ChevronDown, Plus, Trash2, Pencil, Check, X, FolderPlus, Copy, Download } from "lucide-react";
 import {
   useSalary,
   useSettings,
+  useUIState,
   formatMoney,
   MONTH_NAMES,
   type Category,
@@ -55,56 +56,7 @@ function SalaryPage() {
   const [incomeOpen, setIncomeOpen] = useState(false);
   const [incomeInput, setIncomeInput] = useState("");
   
-  // Local state for collapsed categories
-  const [localCollapsed, setLocalCollapsed] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    if (s.hydrated && s.currentMonth.categories) {
-      const initial: Record<string, boolean> = {};
-      s.currentMonth.categories.forEach(c => {
-        initial[c.id] = c.collapsed ?? false;
-      });
-      setLocalCollapsed(initial);
-    }
-  }, [s.hydrated, s.year, s.month]);
-
-  // Persist when requested by navigation event
-  useEffect(() => {
-    const handleSync = () => {
-      s.setMonthData((m: MonthData) => ({
-        ...m,
-        categories: m.categories.map(c => ({
-          ...c,
-          collapsed: localCollapsed[c.id] ?? c.collapsed
-        }))
-      }));
-    };
-
-    window.addEventListener('sync-salary-collapsed', handleSync);
-    return () => {
-      window.removeEventListener('sync-salary-collapsed', handleSync);
-      // Also sync on actual unmount
-      handleSync();
-    };
-  }, [localCollapsed, s.setMonthData]);
-
-
-  const toggleCategoryLocal = (id: string) => {
-    setLocalCollapsed(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const syncAndLeave = () => {
-    s.setMonthData((m: MonthData) => ({
-      ...m,
-      categories: m.categories.map(c => ({
-        ...c,
-        collapsed: localCollapsed[c.id] ?? c.collapsed
-      }))
-    }));
-  };
-
-  // We'll call syncAndLeave when navigating away if possible, 
-  // but for simplicity here we just use local state for the UI.
+  const ui = useUIState(`salary.${s.year}.${s.month}`);
 
   const income = s.currentMonth.income;
 
@@ -182,8 +134,8 @@ function SalaryPage() {
             category={c} 
             currency={settings.currency} 
             api={s} 
-            isCollapsed={localCollapsed[c.id] ?? false}
-            onToggle={() => toggleCategoryLocal(c.id)}
+            isCollapsed={ui.isCollapsed(c.id)}
+            onToggle={() => ui.toggle(c.id)}
           />
         ))}
       </main>

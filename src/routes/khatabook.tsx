@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { ChevronDown, Pencil, Check, Trash2, User, UserRound } from "lucide-react";
 
 import {
   useKhatabook,
   useSettings,
+  useUIState,
   formatMoney,
   personBalance,
   type Person,
@@ -59,38 +60,7 @@ function KhatabookPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [newName, setNewName] = useState("");
   
-  // Local state for collapsed people
-  const [localCollapsed, setLocalCollapsed] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    if (k.hydrated) {
-      const initial: Record<string, boolean> = {};
-      k.people.forEach(p => {
-        initial[p.id] = p.collapsed ?? false;
-      });
-      setLocalCollapsed(initial);
-    }
-  }, [k.hydrated]);
-
-  // Persist when requested by navigation event
-  useEffect(() => {
-    const handleSync = () => {
-      k.setPeopleState((people: Person[]) => people.map(p => ({
-        ...p,
-        collapsed: localCollapsed[p.id] ?? p.collapsed
-      })));
-    };
-
-    window.addEventListener('sync-khatabook-collapsed', handleSync);
-    return () => {
-      window.removeEventListener('sync-khatabook-collapsed', handleSync);
-      // Also sync on actual unmount
-      handleSync();
-    };
-  }, [localCollapsed, k.setPeopleState]);
-  const togglePersonLocal = (id: string) => {
-    setLocalCollapsed(prev => ({ ...prev, [id]: !prev[id] }));
-  };
+  const ui = useUIState('khatabook');
 
   const { receive, owe } = useMemo(() => {
     let receive = 0;
@@ -145,8 +115,8 @@ function KhatabookPage() {
             person={p}
             currency={settings.currency}
             api={k}
-            isCollapsed={localCollapsed[p.id] ?? false}
-            onToggle={() => togglePersonLocal(p.id)}
+            isCollapsed={ui.isCollapsed(p.id)}
+            onToggle={() => ui.toggle(p.id)}
           />
         ))}
 

@@ -663,3 +663,17 @@ export const MONTH_NAMES = [
   "November",
   "December",
 ];
+
+export function useUIState(viewKey: string) {
+  const [state, setState, hydrated] = usePersisted<Record<string, boolean>>(
+    `${UI_KEY}.${viewKey}`,
+    () => ({})
+  );
+
+  const isCollapsed = (id: string) => state[id] ?? false;
+  const toggle = (id: string) => {
+    setState(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  return { isCollapsed, toggle, hydrated };
+}

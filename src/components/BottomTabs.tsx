@@ -24,9 +24,7 @@ export function BottomTabs() {
               to={t.to}
               activeOptions={{ exact: t.exact }}
               onClick={() => {
-                // Trigger sync events when moving between tabs
-                window.dispatchEvent(new CustomEvent('sync-salary-collapsed'));
-                window.dispatchEvent(new CustomEvent('sync-khatabook-collapsed'));
+                // UI state is now auto-persisted via useUIState
               }}
               className="group relative flex flex-1 flex-col items-center gap-1.5 text-muted-foreground data-[status=active]:text-foreground"
             >
