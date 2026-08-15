@@ -72,16 +72,23 @@ function KhatabookPage() {
     }
   }, [k.hydrated]);
 
-  const togglePersonLocal = (id: string) => {
-    setLocalCollapsed(prev => ({ ...prev, [id]: !prev[id] }));
-  };
+  // Persist when requested by navigation event
+  useEffect(() => {
+    const handleSync = () => {
+      k.setPeopleState((people: Person[]) => people.map(p => ({
+        ...p,
+        collapsed: localCollapsed[p.id] ?? p.collapsed
+      })));
+    };
 
-  const syncAndLeave = () => {
-    k.setPeopleState((people: Person[]) => people.map(p => ({
-      ...p,
-      collapsed: localCollapsed[p.id] ?? p.collapsed
-    })));
-  };
+    window.addEventListener('sync-khatabook-collapsed', handleSync);
+    return () => {
+      window.removeEventListener('sync-khatabook-collapsed', handleSync);
+      // Also sync on actual unmount
+      handleSync();
+    };
+  }, [localCollapsed, k.setPeopleState]);
+
 
 
   const { receive, owe } = useMemo(() => {

@@ -68,13 +68,26 @@ function SalaryPage() {
     }
   }, [s.hydrated, s.year, s.month]);
 
-  // Persist on unmount or tab change
+  // Persist when requested by navigation event
   useEffect(() => {
-    return () => {
-      // Note: This relies on s.setMonthData being stable and available.
-      // In a real app we might use a ref for the latest state.
+    const handleSync = () => {
+      s.setMonthData((m: MonthData) => ({
+        ...m,
+        categories: m.categories.map(c => ({
+          ...c,
+          collapsed: localCollapsed[c.id] ?? c.collapsed
+        }))
+      }));
     };
-  }, []);
+
+    window.addEventListener('sync-salary-collapsed', handleSync);
+    return () => {
+      window.removeEventListener('sync-salary-collapsed', handleSync);
+      // Also sync on actual unmount
+      handleSync();
+    };
+  }, [localCollapsed, s.setMonthData]);
+
 
   const toggleCategoryLocal = (id: string) => {
     setLocalCollapsed(prev => ({ ...prev, [id]: !prev[id] }));
