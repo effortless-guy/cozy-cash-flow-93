@@ -167,16 +167,16 @@ function NetWorthPage() {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="oklch(0.182 0 0)" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="oklch(0.182 0 0)" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.15}/>
+                      <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="oklch(0.937 0 0)" opacity={0.3} />
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
                   <XAxis 
                     dataKey="formattedDate" 
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fontSize: 10, fill: 'oklch(0.551 0.023 264)', opacity: 0.5, fontWeight: 600 }}
+                    tick={{ fontSize: 10, fill: 'var(--muted-foreground)', opacity: 0.5, fontWeight: 600 }}
                     minTickGap={30}
                   />
                   <YAxis hide domain={['auto', 'auto']} />
@@ -184,7 +184,7 @@ function NetWorthPage() {
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="rounded-xl border border-border/40 bg-background/95 p-2 shadow-xl backdrop-blur-sm">
+                          <div className="rounded-xl border border-border/40 bg-card p-2 shadow-xl backdrop-blur-sm">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
                               {payload[0].payload.formattedDate}
                             </p>
@@ -200,7 +200,7 @@ function NetWorthPage() {
                   <Area 
                     type="monotone" 
                     dataKey="value" 
-                    stroke="oklch(0.182 0 0)" 
+                    stroke="var(--primary)" 
                     strokeWidth={2}
                     fillOpacity={1} 
                     fill="url(#colorValue)" 
