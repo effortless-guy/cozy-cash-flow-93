@@ -38,19 +38,17 @@ export function PWAInstallBanner() {
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // iOS Safari doesn't support beforeinstallprompt
-    // Show banner after a short delay if it's iOS and not dismissed/installed
+    let timer: number | null = null;
     if (ios) {
-      const timer = setTimeout(() => {
+      timer = window.setTimeout(() => {
         setIsVisible(true);
       }, 3000);
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener("beforeinstallprompt", handler);
-      };
     }
 
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      if (timer) clearTimeout(timer);
+    };
   }, []);
 
   const handleInstall = async () => {

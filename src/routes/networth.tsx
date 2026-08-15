@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo, useEffect } from "react";
-import { Plus, ChevronRight, TrendingUp, TrendingDown, Landmark, PieChart, Coins, Briefcase, Home, Wallet as WalletIcon, HelpCircle, Pencil, Archive, History, Check, X, Edit2, ChevronDown, List } from "lucide-react";
+import { useState, useMemo, useEffect, memo } from "react";
+import { Plus, ChevronRight, TrendingUp, TrendingDown, Landmark, PieChart, Coins, Briefcase, Home, Wallet as WalletIcon, HelpCircle, Pencil, Archive, History, Check, X, Edit2, ChevronDown, List, LucideIcon } from "lucide-react";
 import { useNetWorth, formatMoney, useSettings, type AssetType, useNetWorthRecurring, type NetWorthAsset, type AssetEntry } from "../lib/finance-store";
 import { Fab } from "../components/Fab";
 import { Button } from "../components/ui/button";
@@ -44,8 +44,10 @@ const TYPE_ICONS: Record<string, any> = {
 };
 
 function NetWorthPage() {
-  const nw = useNetWorth();
-  useNetWorthRecurring(nw);
+  const { assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset, deleteEntry } = useNetWorth();
+  const nwApi = useMemo(() => ({ assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset, deleteEntry }), [assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset, deleteEntry]);
+  
+  useNetWorthRecurring(nwApi);
 
   const { settings } = useSettings();
   const [addOpen, setAddOpen] = useState(false);
@@ -63,26 +65,33 @@ function NetWorthPage() {
   // Sync manageOpen with latest data from store
   useEffect(() => {
     if (manageOpen) {
-      const updated = nw.assets.find(a => a.id === manageOpen.id);
+      const updated = assets.find(a => a.id === manageOpen.id);
       if (updated) setManageOpen(updated);
       else setManageOpen(null);
     }
-  }, [nw.assets]);
+  }, [assets]);
 
-  const visibleAssets = nw.assets.filter(a => !a.archived).sort((a, b) => a.name.localeCompare(b.name));
-  const total = visibleAssets.reduce((sum, a) => sum + a.currentValue, 0);
+  const visibleAssets = useMemo(() => 
+    assets.filter(a => !a.archived).sort((a, b) => a.name.localeCompare(b.name)),
+    [assets]
+  );
+  
+  const total = useMemo(() => 
+    visibleAssets.reduce((sum, a) => sum + a.currentValue, 0),
+    [visibleAssets]
+  );
 
   const pendingEntries = useMemo(() => {
     const list: { asset: NetWorthAsset; entry: AssetEntry }[] = [];
-    nw.assets.forEach(asset => {
+    assets.forEach(asset => {
       asset.entries.forEach(entry => {
         if (entry.isPending) list.push({ asset, entry });
       });
     });
     return list;
-  }, [nw.assets]);
+  }, [assets]);
 
-  if (!nw.hydrated) return <div className="p-6 text-muted-foreground">Loading...</div>;
+  if (!hydrated) return <div className="p-6 text-muted-foreground">Loading...</div>;
 
   return (
     <div className="pb-24">
@@ -116,26 +125,15 @@ function NetWorthPage() {
             </div>
           </div>
           <div className={`grid gap-4 ${settings.nwColumns === 4 ? 'grid-cols-4' : settings.nwColumns === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-            {visibleAssets.map(a => {
-              const Icon = TYPE_ICONS[a.type] || TYPE_ICONS["Other"];
-              const hasPending = a.entries.some(e => e.isPending);
-              return (
-                <div key={a.id} onClick={() => setManageOpen(a)} className="group relative flex flex-col justify-between rounded-2xl border border-border/40 bg-card p-4 transition-all active:scale-[0.98] hover:bg-muted/30 cursor-pointer">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-background border border-border/20 shadow-sm relative">
-                      <Icon className="h-4 w-4 opacity-70" strokeWidth={2.5} />
-                      {hasPending && <div className="absolute -top-1 -right-1 size-2 rounded-full bg-primary" />}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="truncate text-[11px] font-bold uppercase tracking-widest text-muted-foreground/50 leading-tight mb-1">{a.name}</p>
-                    <p className="text-[16px] font-bold tabular-nums tracking-tight">
-                        {settings.hideNWBalances ? "••••" : formatMoney(a.currentValue, settings.currency)}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+            {visibleAssets.map(a => (
+              <AssetCard 
+                key={a.id} 
+                asset={a} 
+                currency={settings.currency} 
+                hideBalance={settings.hideNWBalances} 
+                onClick={() => setManageOpen(a)} 
+              />
+            ))}
             
             {visibleAssets.length === 0 && (
               <div className="col-span-full py-12 text-center">
@@ -149,8 +147,8 @@ function NetWorthPage() {
         <section className="bg-muted/20 -mx-6 px-6 py-8">
           <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-6">Recent Activity</h2>
           <div className="space-y-4">
-            {nw.activity.length > 0 ? (
-                nw.activity.slice(0, 5).map(act => (
+            {activity.length > 0 ? (
+                activity.slice(0, 5).map(act => (
                     <div key={act.id} className="flex items-start justify-between gap-4 group">
                         <div className="flex flex-col">
                             <span className="text-sm font-medium text-foreground/80">{act.action}</span>
@@ -201,12 +199,12 @@ function NetWorthPage() {
                             />
                         </div>
                         <div className="flex gap-2">
-                            <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-destructive hover:bg-destructive/5" onClick={() => nw.skipRecurring(asset.id, entry.id)}>
+                            <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-destructive hover:bg-destructive/5" onClick={() => skipRecurring(asset.id, entry.id)}>
                                 <X className="h-5 w-5 opacity-40" />
                             </Button>
                             <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl text-emerald-600 hover:bg-emerald-50/50" onClick={() => {
                                 const val = parseFloat((document.getElementById(`pending-${entry.id}`) as HTMLInputElement).value);
-                                if (!isNaN(val)) nw.confirmRecurring(asset.id, entry.id, val);
+                                if (!isNaN(val)) confirmRecurring(asset.id, entry.id, val);
                             }}>
                                 <Check className="h-5 w-5" />
                             </Button>
@@ -282,7 +280,7 @@ function NetWorthPage() {
                 if (formData.type === "Savings") assetName = "Savings Account";
                 else if (formData.type === "Emergency Fund") assetName = "Emergency Fund";
 
-                nw.addAsset({
+                addAsset({
                   name: assetName,
                   type: formData.type,
                   currentValue: val,
@@ -327,8 +325,8 @@ function NetWorthPage() {
                             if (newVal !== null) {
                                 const val = parseFloat(newVal);
                                 if (!isNaN(val)) {
-                                    nw.updateAsset(manageOpen.id, { currentValue: val });
-                                    nw.addActivity(`${manageOpen.name} value updated`);
+                                    updateAsset(manageOpen.id, { currentValue: val });
+                                    addActivity(`${manageOpen.name} value updated`);
                                     setManageOpen(prev => prev ? { ...prev, currentValue: val } : null);
                                 }
                             }
@@ -341,7 +339,7 @@ function NetWorthPage() {
                 <div className="p-6 space-y-3">
                     <button className="flex w-full items-center justify-between rounded-2xl bg-muted/20 p-4 transition-all active:scale-[0.98] active:bg-muted/40" onClick={() => {
                         const newName = prompt("Rename asset:", manageOpen.name);
-                        if (newName) nw.updateAsset(manageOpen.id, { name: newName });
+                        if (newName) updateAsset(manageOpen.id, { name: newName });
                     }}>
                         <div className="flex items-center gap-3">
                             <Pencil className="h-4 w-4 opacity-60" />
@@ -353,7 +351,7 @@ function NetWorthPage() {
                     <button className="flex w-full items-center justify-between rounded-2xl bg-muted/20 p-4 transition-all active:scale-[0.98] active:bg-muted/40" onClick={() => {
                         const amt = prompt("Recurring amount (₹):", manageOpen.recurringAmount?.toString() || "");
                         if (amt !== null) {
-                            nw.updateAsset(manageOpen.id, { 
+                            updateAsset(manageOpen.id, { 
                                 recurringAmount: amt === "" ? undefined : parseFloat(amt),
                                 recurringDay: manageOpen.recurringDay || 1
                             });
@@ -381,7 +379,7 @@ function NetWorthPage() {
                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Button variant="ghost" size="icon" className="size-6 rounded-lg" onClick={() => {
                                                 const newAmt = prompt("Edit amount:", e.amount.toString());
-                                                if (newAmt !== null) nw.updateEntry(manageOpen.id, e.id, { amount: parseFloat(newAmt) });
+                                                if (newAmt !== null) updateEntry(manageOpen.id, e.id, { amount: parseFloat(newAmt) });
                                             }}>
                                                 <Pencil className="size-3 opacity-40" />
                                             </Button>
@@ -397,7 +395,7 @@ function NetWorthPage() {
                     <div className="pt-4 flex gap-3">
                         <Button variant="outline" className="flex-1 rounded-2xl border-border/40 text-xs font-bold text-destructive hover:bg-destructive/5" onClick={() => {
                             if (confirm(`Archive ${manageOpen.name}? Historical data will be preserved.`)) {
-                                nw.archiveAsset(manageOpen.id);
+                                archiveAsset(manageOpen.id);
                                 setManageOpen(null);
                             }
                         }}>
@@ -414,3 +412,40 @@ function NetWorthPage() {
     </div>
   );
 }
+
+const AssetCard = memo(({ 
+  asset, 
+  currency, 
+  hideBalance, 
+  onClick 
+}: { 
+  asset: NetWorthAsset; 
+  currency: string; 
+  hideBalance?: boolean; 
+  onClick: () => void 
+}) => {
+  const Icon = TYPE_ICONS[asset.type] || TYPE_ICONS["Other"];
+  const hasPending = asset.entries.some(e => e.isPending);
+  
+  return (
+    <div 
+      onClick={onClick} 
+      className="group relative flex flex-col justify-between rounded-2xl border border-border/40 bg-card p-4 transition-all active:scale-[0.98] hover:bg-muted/30 cursor-pointer"
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex size-9 items-center justify-center rounded-xl bg-background border border-border/20 shadow-sm relative">
+          <Icon className="h-4 w-4 opacity-70" strokeWidth={2.5} />
+          {hasPending && <div className="absolute -top-1 -right-1 size-2 rounded-full bg-primary" />}
+        </div>
+      </div>
+      <div>
+        <p className="truncate text-[11px] font-bold uppercase tracking-widest text-muted-foreground/50 leading-tight mb-1">{asset.name}</p>
+        <p className="text-[16px] font-bold tabular-nums tracking-tight">
+            {hideBalance ? "••••" : formatMoney(asset.currentValue, currency)}
+        </p>
+      </div>
+    </div>
+  );
+});
+
+AssetCard.displayName = "AssetCard";
