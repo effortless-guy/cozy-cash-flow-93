@@ -4,22 +4,19 @@ import * as db from './db';
 import { useSalary, useKhatabook, useNetWorth } from './finance-store';
 
 // Mock the DB module
-vi.mock('./db', () => {
-  return {
-    getDBItem: vi.fn().mockResolvedValue(null),
-    setDBItem: vi.fn().mockResolvedValue(undefined),
-    migrateFromLocalStorage: vi.fn().mockResolvedValue(undefined),
-    STORE_MAP: {
-      "pft.salary.v1": "salary",
-      "pft.subs.v1": "subscriptions",
-      "pft.settings.v1": "settings",
-      "pft.khatabook.v1": "khatabook",
-      "pft.networth.v1": "networth",
-      "pft.nw_activity.v1": "nw_activity"
-    }
-  };
-});
-
+vi.mock('./db', () => ({
+  getDBItem: vi.fn(),
+  setDBItem: vi.fn(),
+  migrateFromLocalStorage: vi.fn().mockResolvedValue(undefined),
+  STORE_MAP: {
+    "pft.salary.v1": "salary",
+    "pft.subs.v1": "subscriptions",
+    "pft.settings.v1": "settings",
+    "pft.khatabook.v1": "khatabook",
+    "pft.networth.v1": "networth",
+    "pft.nw_activity.v1": "nw_activity"
+  }
+}));
 
 describe('Finance Store Logic', () => {
   beforeEach(() => {
@@ -28,63 +25,58 @@ describe('Finance Store Logic', () => {
     vi.mocked(db.setDBItem).mockResolvedValue(undefined);
   });
 
-  const waitForHydration = async (result: { current: { hydrated: boolean } }) => {
-    // If already hydrated, return immediately
-    if (result.current.hydrated) return;
-
-    // Use a robust polling mechanism that triggers re-renders if needed
-    const start = Date.now();
-    while (!result.current.hydrated && Date.now() - start < 2000) {
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 50));
-      });
-    }
-    
-    if (!result.current.hydrated) {
-      console.log('Final state before timeout:', result.current);
-      throw new Error('Hydration timed out');
-    }
-  };
-
   describe('useSalary', () => {
     it('calculates totals correctly', async () => {
-      const { result } = renderHook(() => useSalary());
-      await waitForHydration(result);
-
-      act(() => {
-        result.current.addCategory('Test Category');
+      let resultObj: any;
+      await act(async () => {
+        const { result } = renderHook(() => useSalary());
+        resultObj = result;
+        // The store hydrates in a useEffect after mount
+        await new Promise(resolve => setTimeout(resolve, 100));
       });
 
-      const categories = result.current.currentMonth.categories;
+      expect(resultObj.current.hydrated).toBe(true);
+
+      act(() => {
+        resultObj.current.addCategory('Test Category');
+      });
+
+      const categories = resultObj.current.currentMonth.categories;
       const categoryId = categories[categories.length - 1].id;
 
       act(() => {
-        result.current.addTransaction(categoryId, 'Item 1', 100);
-        result.current.addTransaction(categoryId, 'Item 2', 50);
+        resultObj.current.addTransaction(categoryId, 'Item 1', 100);
+        resultObj.current.addTransaction(categoryId, 'Item 2', 50);
       });
 
-      const updatedCategories = result.current.currentMonth.categories;
-      const category = updatedCategories.find(c => c.id === categoryId);
+      const updatedCategories = resultObj.current.currentMonth.categories;
+      const category = updatedCategories.find((c: any) => c.id === categoryId);
       
-      const total = category?.transactions.reduce((sum, t) => sum + t.amount, 0);
+      const total = category?.transactions.reduce((sum: number, t: any) => sum + t.amount, 0);
       expect(total).toBe(150);
     });
   });
 
   describe('useKhatabook', () => {
     it('manages people and entries correctly', async () => {
-      const { result } = renderHook(() => useKhatabook());
-      await waitForHydration(result);
-
-      act(() => {
-        result.current.addPerson('John Doe');
+      let resultObj: any;
+      await act(async () => {
+        const { result } = renderHook(() => useKhatabook());
+        resultObj = result;
+        await new Promise(resolve => setTimeout(resolve, 100));
       });
 
-      const person = result.current.people.find(p => p.name === 'John Doe');
+      expect(resultObj.current.hydrated).toBe(true);
+
+      act(() => {
+        resultObj.current.addPerson('John Doe');
+      });
+
+      const person = resultObj.current.people.find((p: any) => p.name === 'John Doe');
       expect(person).toBeDefined();
 
       act(() => {
-        result.current.addEntry(person!.id, {
+        resultObj.current.addEntry(person!.id, {
           note: 'Lent money',
           amount: 500,
           type: 'lent',
@@ -92,7 +84,7 @@ describe('Finance Store Logic', () => {
         });
       });
 
-      const updatedPerson = result.current.people.find(p => p.name === 'John Doe');
+      const updatedPerson = resultObj.current.people.find((p: any) => p.name === 'John Doe');
       expect(updatedPerson?.entries.length).toBe(1);
       expect(updatedPerson?.entries[0].amount).toBe(500);
     });
@@ -100,27 +92,31 @@ describe('Finance Store Logic', () => {
 
   describe('useNetWorth', () => {
     it('initializes default assets and updates values', async () => {
-      const { result } = renderHook(() => useNetWorth());
-      await waitForHydration(result);
+      let resultObj: any;
+      await act(async () => {
+        const { result } = renderHook(() => useNetWorth());
+        resultObj = result;
+        await new Promise(resolve => setTimeout(resolve, 100));
+      });
+
+      expect(resultObj.current.hydrated).toBe(true);
 
       // Should have default assets
-      expect(result.current.assets.length).toBeGreaterThan(0);
+      expect(resultObj.current.assets.length).toBeGreaterThan(0);
       
-      const stocks = result.current.assets.find(a => a.type === 'Stocks');
+      const stocks = resultObj.current.assets.find((a: any) => a.type === 'Stocks');
       expect(stocks).toBeDefined();
 
       act(() => {
-        result.current.addEntry(stocks!.id, {
+        resultObj.current.addEntry(stocks!.id, {
           amount: 1000,
           date: '2026-08-15',
           note: 'Bought shares'
         });
       });
 
-      const updatedStocks = result.current.assets.find(a => a.id === stocks!.id);
+      const updatedStocks = resultObj.current.assets.find((a: any) => a.id === stocks!.id);
       expect(updatedStocks?.entries.length).toBe(1);
     });
   });
 });
-
-
