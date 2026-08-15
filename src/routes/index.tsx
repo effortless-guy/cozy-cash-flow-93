@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ChevronDown, Plus, Trash2, Pencil, Check, X, FolderPlus, Copy, Download } from "lucide-react";
 import {
   useSalary,
@@ -7,6 +7,7 @@ import {
   formatMoney,
   MONTH_NAMES,
   type Category,
+  type MonthData,
 } from "../lib/finance-store";
 import {
   Popover,
@@ -53,7 +54,60 @@ function SalaryPage() {
   const [newCatName, setNewCatName] = useState("");
   const [salaryOpen, setSalaryOpen] = useState(false);
   const [salaryInput, setSalaryInput] = useState("");
+  
+  // Local state for collapsed categories
+  const [localCollapsed, setLocalCollapsed] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (s.hydrated && s.currentMonth.categories) {
+      const initial: Record<string, boolean> = {};
+      s.currentMonth.categories.forEach(c => {
+        initial[c.id] = c.collapsed ?? false;
+      });
+      setLocalCollapsed(initial);
+    }
+  }, [s.hydrated, s.year, s.month]);
+
+  // Persist when requested by navigation event
+  useEffect(() => {
+    const handleSync = () => {
+      s.setMonthData((m: MonthData) => ({
+        ...m,
+        categories: m.categories.map(c => ({
+          ...c,
+          collapsed: localCollapsed[c.id] ?? c.collapsed
+        }))
+      }));
+    };
+
+    window.addEventListener('sync-salary-collapsed', handleSync);
+    return () => {
+      window.removeEventListener('sync-salary-collapsed', handleSync);
+      // Also sync on actual unmount
+      handleSync();
+    };
+  }, [localCollapsed, s.setMonthData]);
+
+
+  const toggleCategoryLocal = (id: string) => {
+    setLocalCollapsed(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const syncAndLeave = () => {
+    s.setMonthData((m: MonthData) => ({
+      ...m,
+      categories: m.categories.map(c => ({
+        ...c,
+        collapsed: localCollapsed[c.id] ?? c.collapsed
+      }))
+    }));
+  };
+
+  // We'll call syncAndLeave when navigating away if possible, 
+  // but for simplicity here we just use local state for the UI.
+
   const income = s.currentMonth.income;
+
 
   const monthTotal = useMemo(
     () =>
@@ -123,9 +177,17 @@ function SalaryPage() {
 
       <main className="space-y-2 px-4 pb-16 pt-2">
         {s.currentMonth.categories?.map((c) => (
-          <CategoryBlock key={c.id} category={c} currency={settings.currency} api={s} />
+          <CategoryBlock 
+            key={c.id} 
+            category={c} 
+            currency={settings.currency} 
+            api={s} 
+            isCollapsed={localCollapsed[c.id] ?? false}
+            onToggle={() => toggleCategoryLocal(c.id)}
+          />
         ))}
       </main>
+
 
       <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-5 z-40 flex flex-col items-center gap-3">
         <button 
@@ -261,11 +323,16 @@ function CategoryBlock({
   category,
   currency,
   api,
+  isCollapsed,
+  onToggle,
 }: {
   category: Category;
   currency: string;
   api: ReturnType<typeof useSalary>;
+  isCollapsed: boolean;
+  onToggle: () => void;
 }) {
+
   const total = category.transactions.reduce((a, t) => a + (t.completed ? t.amount : 0), 0);
   const isCompleted = category.transactions.length > 0 && category.transactions.every(t => t.completed);
   const Icon = getCategoryIcon(category.name);
@@ -283,11 +350,12 @@ function CategoryBlock({
     } overflow-hidden`}>
       <div 
         onClick={() => {
-          if (!editing) api.toggleCategory(category.id);
+          if (!editing) onToggle();
         }}
         className={`flex cursor-pointer items-center justify-between gap-3 px-4 transition-all duration-300 ${
-          category.collapsed ? "h-[46px] border-b-0" : "h-14 border-b"
+          isCollapsed ? "h-[46px] border-b-0" : "h-14 border-b"
         } ${
+
           isCompleted ? "border-emerald-100/50 bg-emerald-100/10" : "border-border/20 bg-transparent"
         }`}
       >
@@ -357,9 +425,10 @@ function CategoryBlock({
 
       <div
         className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-out ${
-          category.collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
+          isCollapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
         }`}
       >
+
         <div className="overflow-hidden px-4 pb-3 pt-1">
           <div className="space-y-0.5">
           {category.transactions.map((t) => (

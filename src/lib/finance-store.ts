@@ -341,13 +341,17 @@ export function useKhatabook() {
       ),
     );
 
+  const setPeopleState = (next: Person[] | ((prev: Person[]) => Person[])) => {
+    setPeople(next);
+  };
+
   return {
     people,
     hydrated,
     addPerson,
     renamePerson,
     deletePerson,
-    togglePerson,
+    setPeopleState,
     addEntry,
     updateEntry,
     deleteEntry,
@@ -440,15 +444,10 @@ export function useSalary() {
       categories: m.categories.filter((c) => c.id !== cid),
     }));
 
-  const toggleCategory = (cid: string) =>
-    updateMonth((m) => {
-      return {
-        ...m,
-        categories: m.categories.map((c) =>
-          c.id === cid ? { ...c, collapsed: !c.collapsed } : c,
-        ),
-      };
-    });
+  const setMonthData = (next: MonthData | ((prev: MonthData) => MonthData)) => {
+    updateMonth(typeof next === 'function' ? next : () => next);
+  };
+
 
   const addTransaction = (cid: string, name: string, amount: number) =>
     updateMonth((m) => ({
@@ -535,7 +534,7 @@ export function useSalary() {
     addCategory,
     renameCategory,
     deleteCategory,
-    toggleCategory,
+    setMonthData,
     addTransaction,
     updateTransaction,
     deleteTransaction,

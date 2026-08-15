@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ChevronDown, Pencil, Check, Trash2, User, UserRound } from "lucide-react";
 
 import {
@@ -10,6 +10,7 @@ import {
   type Person,
   type LedgerEntry,
 } from "../lib/finance-store";
+
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -57,6 +58,39 @@ function KhatabookPage() {
   const { settings } = useSettings();
   const [addOpen, setAddOpen] = useState(false);
   const [newName, setNewName] = useState("");
+  
+  // Local state for collapsed people
+  const [localCollapsed, setLocalCollapsed] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (k.hydrated) {
+      const initial: Record<string, boolean> = {};
+      k.people.forEach(p => {
+        initial[p.id] = p.collapsed ?? false;
+      });
+      setLocalCollapsed(initial);
+    }
+  }, [k.hydrated]);
+
+  // Persist when requested by navigation event
+  useEffect(() => {
+    const handleSync = () => {
+      k.setPeopleState((people: Person[]) => people.map(p => ({
+        ...p,
+        collapsed: localCollapsed[p.id] ?? p.collapsed
+      })));
+    };
+
+    window.addEventListener('sync-khatabook-collapsed', handleSync);
+    return () => {
+      window.removeEventListener('sync-khatabook-collapsed', handleSync);
+      // Also sync on actual unmount
+      handleSync();
+    };
+  }, [localCollapsed, k.setPeopleState]);
+  const togglePersonLocal = (id: string) => {
+    setLocalCollapsed(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const { receive, owe } = useMemo(() => {
     let receive = 0;
@@ -111,8 +145,11 @@ function KhatabookPage() {
             person={p}
             currency={settings.currency}
             api={k}
+            isCollapsed={localCollapsed[p.id] ?? false}
+            onToggle={() => togglePersonLocal(p.id)}
           />
         ))}
+
       </main>
 
       <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-5 z-40">
@@ -167,11 +204,16 @@ function PersonBlock({
   person,
   currency,
   api,
+  isCollapsed,
+  onToggle,
 }: {
   person: Person;
   currency: string;
   api: ReturnType<typeof useKhatabook>;
+  isCollapsed: boolean;
+  onToggle: () => void;
 }) {
+
   const balance = personBalance(person);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(person.name);
@@ -200,8 +242,9 @@ function PersonBlock({
     <section className="space-y-3 rounded-2xl border border-border/40 bg-card px-4 py-3.5 shadow-none transition-all">
       <div 
         onClick={() => {
-          if (!editing) api.togglePerson(person.id);
+          if (!editing) onToggle();
         }}
+
         className="flex min-h-11 cursor-pointer items-center justify-between gap-3"
       >
         <div className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left">
@@ -298,9 +341,10 @@ function PersonBlock({
 
       <div
         className={`grid transition-all duration-300 ease-out ${
-          person.collapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
+          isCollapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
         }`}
       >
+
         <div className="overflow-hidden">
           <ul className="space-y-1">
             {person.entries.map((e) => (

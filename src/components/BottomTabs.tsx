@@ -23,6 +23,11 @@ export function BottomTabs() {
               key={t.to}
               to={t.to}
               activeOptions={{ exact: t.exact }}
+              onClick={() => {
+                // Trigger sync events when moving between tabs
+                window.dispatchEvent(new CustomEvent('sync-salary-collapsed'));
+                window.dispatchEvent(new CustomEvent('sync-khatabook-collapsed'));
+              }}
               className="group relative flex flex-1 flex-col items-center gap-1.5 text-muted-foreground data-[status=active]:text-foreground"
             >
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-foreground scale-x-0 group-data-[status=active]:scale-x-100 transition-transform duration-200" />
@@ -33,6 +38,7 @@ export function BottomTabs() {
             </Link>
           );
         })}
+
         {auth?.isEnabled && (
           <button
             onClick={logout}
