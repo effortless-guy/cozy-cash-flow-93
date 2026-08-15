@@ -5,7 +5,7 @@ export type Transaction = { id: string; name: string; amount: number; completed?
 export type Category = {
   id: string;
   name: string;
-  collapsed?: boolean;
+  // UI state removed from core data
   transactions: Transaction[];
 };
 export type MonthData = { categories: Category[]; income?: number };
@@ -59,7 +59,6 @@ const defaultMonth = (): MonthData => ({
     {
       id: uid(),
       name: "Transport",
-      collapsed: true,
       transactions: [{ id: uid(), name: "Fuel", amount: 320 }],
     },
   ],
@@ -70,33 +69,42 @@ const emptyMonth = (): MonthData => ({ categories: [] });
 function usePersisted<T>(key: string, initial: () => T) {
   const [hydrated, setHydrated] = useState(false);
   const [state, setState] = useState<T>(initial);
-  const storeName = STORE_MAP[key];
+  const storeName = STORE_MAP[key] || key.split('.')[0]; // Fallback for dynamic keys like UI_KEY.viewKey
   const isInitialMount = useRef(true);
 
+  // We need to track the latest state in a ref to avoid stale closures in effects
+  const stateRef = useRef(state);
   useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
+  useEffect(() => {
+    let active = true;
     async function init() {
       if (typeof window === "undefined") return;
       
       await migrateFromLocalStorage();
       const val = await getDBItem<T>(storeName, "data");
       
+      if (!active) return;
+
       if (val !== null) {
         setState(val);
       } else {
         const initVal = initial();
         setState(initVal);
-        // Save initial values to DB if it's the first time
         await setDBItem(storeName, "data", initVal);
       }
       setHydrated(true);
     }
     init();
-  }, [storeName, initial]);
+    return () => { active = false; };
+  }, [storeName]); // Removed 'initial' from deps to avoid re-runs if initial function isn't memoized
 
   useEffect(() => {
     if (hydrated && !isInitialMount.current) {
       const timeoutId = setTimeout(() => {
-        setDBItem(storeName, "data", state).catch(console.error);
+        setDBItem(storeName, "data", stateRef.current).catch(console.error);
       }, 500);
       return () => clearTimeout(timeoutId);
     }
@@ -112,6 +120,7 @@ const SALARY_KEY = "pft.salary.v1";
 const SUBS_KEY = "pft.subs.v1";
 const SETTINGS_KEY = "pft.settings.v1";
 const KHATA_KEY = "pft.khatabook.v1";
+const UI_KEY = "pft.ui_settings.v1";
 
 export type LedgerEntry = {
   id: string;
@@ -124,7 +133,7 @@ export type LedgerEntry = {
 export type Person = {
   id: string;
   name: string;
-  collapsed?: boolean;
+  // UI state removed
   entries: LedgerEntry[];
 };
 
@@ -305,7 +314,6 @@ export function useKhatabook() {
     {
       id: uid(),
       name: "Priya Sharma",
-      collapsed: true,
       entries: [
         { id: uid(), note: "Cab fare", amount: 30, type: "borrowed", date: new Date().toISOString().slice(0, 10) },
       ],
@@ -318,10 +326,10 @@ export function useKhatabook() {
     setPeople((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
   const deletePerson = (id: string) =>
     setPeople((prev) => prev.filter((p) => p.id !== id));
-  const togglePerson = (id: string) =>
-    setPeople((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, collapsed: !p.collapsed } : p)),
-    );
+  const togglePerson = (id: string) => {
+    // This is now handled by useUIState in the component
+    console.warn("togglePerson in useKhatabook is deprecated. Use useUIState instead.");
+  };
   const addEntry = (pid: string, entry: Omit<LedgerEntry, "id">) =>
     setPeople((prev) =>
       prev.map((p) =>
@@ -664,3 +672,17 @@ export const MONTH_NAMES = [
   "November",
   "December",
 ];
+
+export function useUIState(viewKey: string) {
+  const [state, setState, hydrated] = usePersisted<Record<string, boolean>>(
+    `${UI_KEY}.${viewKey}`,
+    () => ({})
+  );
+
+  const isCollapsed = (id: string) => state[id] ?? false;
+  const toggle = (id: string) => {
+    setState(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  return { isCollapsed, toggle, hydrated };
+}
