@@ -366,7 +366,7 @@ function NetWorthPage() {
             </div>
           </div>
           
-          <div className="p-6 pt-0 flex gap-3">
+          <div className="p-6 pt-0 flex gap-3 dark:bg-background/95">
             <Button variant="ghost" className="flex-1 h-12 rounded-2xl font-bold text-muted-foreground" onClick={() => setAddOpen(false)}>Cancel</Button>
             <Button className="flex-1 h-12 rounded-2xl font-bold shadow-lg shadow-primary/10" onClick={() => {
               const val = parseFloat(formData.currentValue);
