@@ -526,10 +526,10 @@ const AssetCard = memo(({
   return (
     <div 
       onClick={onClick} 
-      className="group relative flex flex-col justify-between rounded-2xl border border-border/40 bg-card p-4 transition-all active:scale-[0.98] hover:bg-muted/30 cursor-pointer"
+      className="group relative flex flex-col justify-between rounded-2xl border border-border/40 bg-card p-4 transition-all active:scale-[0.98] hover:bg-muted/30 cursor-pointer ring-1 ring-black/5 dark:ring-white/5 dark:bg-card/40"
     >
       <div className="flex items-center justify-between mb-4">
-        <div className="flex size-9 items-center justify-center rounded-xl bg-background border border-border/20 shadow-sm relative">
+        <div className="flex size-9 items-center justify-center rounded-xl bg-background border border-border/20 shadow-sm relative dark:bg-card">
           <Icon className="h-4 w-4 opacity-70" strokeWidth={2.5} />
           {hasPending && <div className="absolute -top-1 -right-1 size-2 rounded-full bg-primary" />}
         </div>
