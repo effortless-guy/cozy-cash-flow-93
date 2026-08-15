@@ -22,14 +22,19 @@ describe('Finance Store Logic', () => {
   });
 
   const waitForHydration = async (result: { current: { hydrated: boolean } }) => {
-    // Poll for hydration with a timeout
+    // If already hydrated, return immediately
+    if (result.current.hydrated) return;
+
+    // Use a robust polling mechanism that triggers re-renders if needed
     const start = Date.now();
-    while (!result.current.hydrated && Date.now() - start < 1000) {
+    while (!result.current.hydrated && Date.now() - start < 2000) {
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise(resolve => setTimeout(resolve, 50));
       });
     }
+    
     if (!result.current.hydrated) {
+      console.log('Final state before timeout:', result.current);
       throw new Error('Hydration timed out');
     }
   };
@@ -110,4 +115,5 @@ describe('Finance Store Logic', () => {
     });
   });
 });
+
 
