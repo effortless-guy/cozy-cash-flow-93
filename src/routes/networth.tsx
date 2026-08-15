@@ -44,8 +44,8 @@ const TYPE_ICONS: Record<string, any> = {
 };
 
 function NetWorthPage() {
-  const { assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset } = useNetWorth();
-  const nwApi = useMemo(() => ({ assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset }), [assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset]);
+  const { assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset, deleteEntry } = useNetWorth();
+  const nwApi = useMemo(() => ({ assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset, deleteEntry }), [assets, activity, hydrated, addAsset, updateAsset, addEntry, confirmRecurring, skipRecurring, addActivity, updateEntry, archiveAsset, deleteEntry]);
   
   useNetWorthRecurring(nwApi);
 
