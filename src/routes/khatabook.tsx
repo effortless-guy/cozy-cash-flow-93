@@ -345,8 +345,7 @@ function PersonBlock({
           isCollapsed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"
         }`}
       >
-
-        <div className="overflow-hidden">
+        <div className="overflow-hidden px-4 pb-3 pt-1">
           <ul className="space-y-1">
             {person.entries.map((e) => (
               <li key={e.id}>
