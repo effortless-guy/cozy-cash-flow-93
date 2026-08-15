@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 // @ts-ignore - plugin handles this at build time
 import { registerSW } from 'virtual:pwa-register';
 
@@ -134,7 +134,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const [isOfflineReady, setIsOfflineReady] = useEffect.useState?.(false) ?? [false, () => {}]; // fallback if accessed before import, but we are inside component
+  const [isOfflineReady, setIsOfflineReady] = useState(false);
 
   // Need to use a state that can be passed down or a custom event
   useEffect(() => {
