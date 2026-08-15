@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import * as db from './db';
-import { useSalary, useKhatabook, useNetWorth } from './finance-store';
+import { useSalary, useKhatabook } from './finance-store';
 
 // Robust mock for the DB module
 vi.mock('./db', () => ({
@@ -28,32 +28,31 @@ describe('Finance Store Logic', () => {
     it('calculates totals correctly', async () => {
       const { result } = renderHook(() => useSalary());
 
-      // Manually trigger hydration if useEffect is stuck in test environment
-      // though typically act() + await should handle it.
+      // Instead of act(async () => await new Promise...), we just act() synchronously
+      // to let React handle the immediate effects.
+      // If the hook is stuck in hydration, it means getDBItem never resolved.
+      // But we mock it with mockResolvedValue.
+
+      // We'll give it a moment to resolve the promise from getDBItem
       await act(async () => {
-        // Wait for the internal useEffect of usePersisted to complete
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await Promise.resolve();
       });
 
-      // If it still isn't hydrated, the test will fail here anyway
-      // But we can force it for logic verification if needed by looking at current month
-      
       act(() => {
         result.current.addCategory('Test Category');
       });
 
       const categories = result.current.currentMonth.categories;
-      const categoryId = categories[categories.length - 1].id;
+      const category = categories.find((c: any) => c.name === 'Test Category');
+      expect(category).toBeDefined();
 
       act(() => {
-        result.current.addTransaction(categoryId, 'Item 1', 100);
-        result.current.addTransaction(categoryId, 'Item 2', 50);
+        result.current.addTransaction(category!.id, 'Item 1', 100);
+        result.current.addTransaction(category!.id, 'Item 2', 50);
       });
 
-      const updatedCategories = result.current.currentMonth.categories;
-      const category = updatedCategories.find((c: any) => c.id === categoryId);
-      
-      const total = category?.transactions.reduce((sum: number, t: any) => sum + t.amount, 0);
+      const updatedCategory = result.current.currentMonth.categories.find((c: any) => c.id === category!.id);
+      const total = updatedCategory?.transactions.reduce((sum: number, t: any) => sum + t.amount, 0);
       expect(total).toBe(150);
     });
   });
@@ -62,7 +61,7 @@ describe('Finance Store Logic', () => {
     it('manages people and entries correctly', async () => {
       const { result } = renderHook(() => useKhatabook());
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await Promise.resolve();
       });
 
       act(() => {
