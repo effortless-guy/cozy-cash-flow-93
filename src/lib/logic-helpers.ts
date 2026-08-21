@@ -37,3 +37,15 @@ export const calculateTotalNetWorth = (assets: { currentValue: number, archived?
     .filter(a => !a.archived)
     .reduce((sum, a) => sum + a.currentValue, 0);
 };
+
+/**
+ * Validates a backup object structure.
+ */
+export const validateBackup = (backup: any): boolean => {
+  if (!backup || typeof backup !== 'object') return false;
+  if (!backup.data || typeof backup.data !== 'object') return false;
+  
+  // Minimal requirement: at least one core finance store should be present
+  const coreStores = ['salary', 'subscriptions', 'khatabook', 'networth', 'settings'];
+  return coreStores.some(store => backup.data[store] !== undefined);
+};
