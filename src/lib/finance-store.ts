@@ -69,7 +69,7 @@ const emptyMonth = (): MonthData => ({ categories: [] });
 function usePersisted<T>(key: string, initial: () => T) {
   const [hydrated, setHydrated] = useState(false);
   const [state, setState] = useState<T>(initial);
-  const storeName = STORE_MAP[key] || key.split('.')[0]; // Fallback for dynamic keys like UI_KEY.viewKey
+  const storeName = STORE_MAP[key] || key.split('.')[0] || "ui_settings"; // Default to ui_settings for UI keys
   const isInitialMount = useRef(true);
 
   // We need to track the latest state in a ref to avoid stale closures in effects
