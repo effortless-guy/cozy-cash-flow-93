@@ -552,7 +552,7 @@ function PeriodPicker({
       <PopoverTrigger asChild>
         <button className="group flex items-center gap-2 text-left">
           <h1 className="text-2xl font-semibold leading-none tracking-tight">
-            {monthLabel}{"'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Remove Notificatiopn option froms ettings"}
+            {monthLabel}{" "}
             <span className="text-muted-foreground/70">{year}</span>
           </h1>
           <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
