@@ -20,9 +20,9 @@ export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
       { title: "Settings — MoneyStory" },
-      { name: "description", content: "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" },
+      { name: "description", content: "Customize currency, theme, language and notifications." },
       { property: "og:title", content: "Settings — MoneyStory" },
-      { property: "og:description", content: "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" },
+      { property: "og:description", content: "Customize currency, theme, language and notifications." },
     ],
   }),
   component: SettingsPage,
@@ -69,12 +69,12 @@ function SettingsPage() {
   return (
     <div>
       <header className="sticky top-0 z-10 bg-background/85 px-6 pt-10 pb-8 backdrop-blur-md">
-        <h1 className="text-3xl font-semibold leading-none tracking-tight">'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that</h1>
+        <h1 className="text-3xl font-semibold leading-none tracking-tight">Settings</h1>
       </header>
 
       <main className="space-y-6 px-6 pb-16 pt-0">
-        <Section title="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that">
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that">
+        <Section title="Display">
+          <Row label="Currency">
             <Select
               value={settings.currency}
               onValueChange={(v) => setSettings({ ...settings, currency: v })}
@@ -87,7 +87,7 @@ function SettingsPage() {
               </SelectContent>
             </Select>
           </Row>
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that">
+          <Row label="Theme">
             <div className="flex items-center gap-3">
               {settings.theme === "dark" ? (
                 <Moon className="h-4 w-4 text-muted-foreground" />
@@ -102,7 +102,7 @@ function SettingsPage() {
               />
             </div>
           </Row>
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that">
+          <Row label="Language">
             <Select
               value={settings.language}
               onValueChange={(v) => setSettings({ ...settings, language: v })}
@@ -117,8 +117,8 @@ function SettingsPage() {
           </Row>
         </Section>
 
-        <Section title="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that">
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" description="Monthly budget rollover & subscription reminders">
+        <Section title="App">
+          <Row label="Notifications" description="Monthly budget rollover & subscription reminders">
             <Switch
               checked={settings.notifications}
               onCheckedChange={(checked) =>
@@ -128,8 +128,8 @@ function SettingsPage() {
           </Row>
         </Section>
 
-        <Section title="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that">
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" description="Require PIN to open the app">
+        <Section title="Security">
+          <Row label="App Lock" description="Require PIN to open the app">
             <Switch
               checked={auth.isEnabled}
               onCheckedChange={(checked) => {
@@ -226,8 +226,8 @@ function SettingsPage() {
           )}
         </Section>
 
-        <Section title="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that">
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" description="Display weekly total in Subscriptions header">
+        <Section title="Subscriptions">
+          <Row label="Show weekly total" description="Display weekly total in Subscriptions header">
             <Switch
               checked={settings.showWeeklyTotal !== false}
               onCheckedChange={(checked) =>
@@ -235,7 +235,7 @@ function SettingsPage() {
               }
             />
           </Row>
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" description="Display yearly total in Subscriptions header">
+          <Row label="Show yearly total" description="Display yearly total in Subscriptions header">
             <Switch
               checked={settings.showYearlyTotal !== false}
               onCheckedChange={(checked) =>
@@ -245,8 +245,8 @@ function SettingsPage() {
           </Row>
         </Section>
 
-        <Section title="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that">
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" description="Number of columns for asset cards">
+        <Section title="Net Worth">
+          <Row label="Grid Columns" description="Number of columns for asset cards">
             <div className="flex gap-2">
               {[2, 3, 4].map(cols => (
                 <button
@@ -259,7 +259,7 @@ function SettingsPage() {
               ))}
             </div>
           </Row>
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" description="Mask balances on Net Worth dashboard">
+          <Row label="Hide Balance" description="Mask balances on Net Worth dashboard">
             <Switch
               checked={!!settings.hideNWBalances}
               onCheckedChange={(checked) =>
@@ -269,8 +269,8 @@ function SettingsPage() {
           </Row>
         </Section>
 
-        <Section title="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" description="Local-first storage: all data stays on your device.">
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" description="Export complete data to a versioned JSON file">
+        <Section title="Data & Privacy" description="Local-first storage: all data stays on your device.">
+          <Row label="Backup Now" description="Export complete data to a versioned JSON file">
             <Dialog open={isBackupDialogOpen} onOpenChange={setIsBackupDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="w-32 gap-2">
@@ -319,7 +319,7 @@ function SettingsPage() {
             </Dialog>
           </Row>
           
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" description="Upload a previously exported backup file">
+          <Row label="Restore Backup" description="Upload a previously exported backup file">
              <div className="relative w-32">
                 <input 
                     type="file" 
@@ -386,7 +386,7 @@ function SettingsPage() {
             </DialogContent>
           </Dialog>
 
-          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that">
+          <Row label="Last Backup">
             <span className="text-xs text-muted-foreground">
               {lastBackup ? new Date(lastBackup).toLocaleDateString() : "Never"}
             </span>
@@ -412,7 +412,7 @@ function SettingsPage() {
         </Section>
 
         <p className="text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-          '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that
+          MoneyStory · v1.0
         </p>
       </main>
     </div>
