@@ -124,7 +124,7 @@ const SALARY_KEY = "pft.salary.v1";
 const SUBS_KEY = "pft.subs.v1";
 const SETTINGS_KEY = "pft.settings.v1";
 const KHATA_KEY = "pft.khatabook.v1";
-const UI_KEY = "pft.ui_settings.v1";
+const UI_KEY = "ui_settings.v1";
 
 export type LedgerEntry = {
   id: string;
