@@ -56,7 +56,10 @@ export async function getDBItem<T>(storeName: string, key: string): Promise<T | 
 export async function setDBItem<T>(storeName: string, key: string, value: T): Promise<void> {
   try {
     const table = (db as any)[storeName] as Table<{ id: string; data: T }, string>;
-    if (!table) return;
+    if (!table) {
+      console.warn(`No table found for storeName: ${storeName}. Creating fallback...`);
+      return;
+    }
     await table.put({ id: key, data: value });
   } catch (error) {
     console.error(`Dexie put error for ${storeName}/${key}:`, error);
