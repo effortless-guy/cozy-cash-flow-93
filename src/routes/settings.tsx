@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Moon, Sun, Download, Upload, Lock, Shield, Key } from "lucide-react";
+import { Moon, Sun, Download, Upload, Lock, Shield, Key, Eye, EyeOff } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useAuth } from "../lib/auth-store";
@@ -55,6 +55,13 @@ function SettingsPage() {
   const { exportData, importData, lastBackup } = useDataManagement();
   const { auth, enableLock, disableLock, changePin } = useAuth();
   const [pinInput, setPinInput] = useState("");
+  const [backupPassword, setBackupPassword] = useState("");
+  const [restorePassword, setRestorePassword] = useState("");
+  const [showBackupPassword, setShowBackupPassword] = useState(false);
+  const [showRestorePassword, setShowRestorePassword] = useState(false);
+  const [pendingRestoreFile, setPendingRestoreFile] = useState<File | null>(null);
+  const [isBackupDialogOpen, setIsBackupDialogOpen] = useState(false);
+  const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false);
   const [isChangingPin, setIsChangingPin] = useState(false);
   
   if (!hydrated || !auth) return <div className="p-6 text-muted-foreground">Loading…</div>;
@@ -264,9 +271,52 @@ function SettingsPage() {
 
         <Section title="Data & Privacy" description="Local-first storage: all data stays on your device.">
           <Row label="Backup Now" description="Export complete data to a versioned JSON file">
-             <Button variant="outline" size="sm" className="w-32 gap-2" onClick={exportData}>
-                <Download className="h-4 w-4" /> Backup
-             </Button>
+            <Dialog open={isBackupDialogOpen} onOpenChange={setIsBackupDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="w-32 gap-2">
+                  <Download className="h-4 w-4" /> Backup
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Backup Data</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
+                    Optional: Protect your backup with a password. If set, this backup will be encrypted using AES-256 (XSalsa20-Poly1305) locally in your browser.
+                    <p className="mt-2 font-semibold text-destructive">
+                      Warning: If you lose this password, the backup cannot be recovered.
+                    </p>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      type={showBackupPassword ? "text" : "password"}
+                      placeholder="Optional password"
+                      value={backupPassword}
+                      onChange={(e) => setBackupPassword(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowBackupPassword(!showBackupPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showBackupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button 
+                    onClick={async () => {
+                      await exportData(backupPassword || undefined);
+                      setBackupPassword("");
+                      setIsBackupDialogOpen(false);
+                    }}
+                  >
+                    Download Backup
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </Row>
           
           <Row label="Restore Backup" description="Upload a previously exported backup file">
@@ -275,9 +325,15 @@ function SettingsPage() {
                     type="file" 
                     className="absolute inset-0 cursor-pointer opacity-0" 
                     accept=".json"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                         const file = e.target.files?.[0];
-                        if (file) importData(file);
+                        if (!file) return;
+                        
+                        const result = await importData(file);
+                        if (result?.needsPassword) {
+                          setPendingRestoreFile(file);
+                          setIsRestoreDialogOpen(true);
+                        }
                     }}
                 />
                 <Button variant="outline" size="sm" className="w-full gap-2 pointer-events-none">
@@ -285,6 +341,50 @@ function SettingsPage() {
                 </Button>
              </div>
           </Row>
+
+          <Dialog open={isRestoreDialogOpen} onOpenChange={setIsRestoreDialogOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Encrypted Backup</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <p className="text-sm text-muted-foreground">
+                  This backup is encrypted. Please enter the password used to create it.
+                </p>
+                <div className="relative">
+                  <Input
+                    type={showRestorePassword ? "text" : "password"}
+                    placeholder="Enter password"
+                    value={restorePassword}
+                    onChange={(e) => setRestorePassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRestorePassword(!showRestorePassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showRestorePassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button 
+                  onClick={async () => {
+                    if (pendingRestoreFile) {
+                      const result = await importData(pendingRestoreFile, restorePassword);
+                      if (result?.success) {
+                        setIsRestoreDialogOpen(false);
+                        setRestorePassword("");
+                        setPendingRestoreFile(null);
+                      }
+                    }
+                  }}
+                >
+                  Decrypt & Restore
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
           <Row label="Last Backup">
             <span className="text-xs text-muted-foreground">
