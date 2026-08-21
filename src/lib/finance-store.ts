@@ -618,26 +618,35 @@ export function useSettings() {
 export function useDataManagement() {
   const [lastBackup, setLastBackup, hydrated] = usePersisted<string | null>("backup_metadata.last_backup", () => null);
 
-  const exportData = async () => {
+  const exportData = async (password?: string) => {
     try {
-      const backup = {
-        version: 2,
-        timestamp: new Date().toISOString(),
-        data: {
-          salary: await getDBItem(STORE_MAP[SALARY_KEY], "data"),
-          subscriptions: await getDBItem(STORE_MAP[SUBS_KEY], "data"),
-          khatabook: await getDBItem(STORE_MAP[KHATA_KEY], "data"),
-          networth: await getDBItem(STORE_MAP[NW_KEY], "data"),
-          nw_activity: await getDBItem(STORE_MAP[NW_ACTIVITY_KEY], "data"),
-          settings: await getDBItem(STORE_MAP[SETTINGS_KEY], "data"),
-        }
+      const data = {
+        salary: await getDBItem(STORE_MAP[SALARY_KEY], "data"),
+        subscriptions: await getDBItem(STORE_MAP[SUBS_KEY], "data"),
+        khatabook: await getDBItem(STORE_MAP[KHATA_KEY], "data"),
+        networth: await getDBItem(STORE_MAP[NW_KEY], "data"),
+        nw_activity: await getDBItem(STORE_MAP[NW_ACTIVITY_KEY], "data"),
+        settings: await getDBItem(STORE_MAP[SETTINGS_KEY], "data"),
       };
+
+      let finalBackup: any = {
+        version: 3,
+        timestamp: new Date().toISOString(),
+        encrypted: !!password,
+        data: password ? null : data,
+        payload: null
+      };
+
+      if (password) {
+        const { encryptData } = await import("./encryption");
+        finalBackup.payload = await encryptData(JSON.stringify(data), password);
+      }
       
-      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const blob = new Blob([JSON.stringify(finalBackup, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `money-story-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `money-story-backup-${new Date().toISOString().slice(0, 10)}${password ? '.enc' : ''}.json`;
       a.click();
       URL.revokeObjectURL(url);
       
@@ -650,23 +659,40 @@ export function useDataManagement() {
     }
   };
 
-  const importData = async (file: File) => {
+  const importData = async (file: File, password?: string) => {
     const text = await file.text();
     try {
-      const backup = JSON.parse(text);
+      let backup = JSON.parse(text);
       
+      // Handle legacy backups (v1/v2) that aren't wrapped in new format
+      if (!backup.version) {
+        backup = { version: 1, data: backup };
+      }
+
+      if (backup.encrypted && !password) {
+        return { needsPassword: true };
+      }
+
+      let dataToRestore = backup.data;
+
+      if (backup.encrypted && password) {
+        const { decryptData } = await import("./encryption");
+        const decrypted = await decryptData(backup.payload, password);
+        dataToRestore = JSON.parse(decrypted);
+      }
+
       // Validation
-      if (!backup.data || (!backup.data.salary && !backup.data.settings)) {
+      if (!dataToRestore || (!dataToRestore.salary && !dataToRestore.settings)) {
         throw new Error("Invalid backup format");
       }
 
       const confirmed = confirm("Are you sure you want to restore this backup? This will overwrite your current data. A safety backup will be downloaded first.");
-      if (!confirmed) return;
+      if (!confirmed) return { success: false };
 
-      // Safety backup
+      // Safety backup (unencrypted)
       await exportData();
 
-      const { data } = backup;
+      const data = dataToRestore;
       if (data.salary) await setDBItem(STORE_MAP[SALARY_KEY], "data", data.salary);
       if (data.subscriptions) await setDBItem(STORE_MAP[SUBS_KEY], "data", data.subscriptions);
       if (data.khatabook) await setDBItem(STORE_MAP[KHATA_KEY], "data", data.khatabook);
@@ -675,8 +701,10 @@ export function useDataManagement() {
       if (data.settings) await setDBItem(STORE_MAP[SETTINGS_KEY], "data", data.settings);
       
       location.reload();
+      return { success: true };
     } catch (e) {
       alert("Restore failed: " + (e instanceof Error ? e.message : "Invalid backup file"));
+      return { success: false };
     }
   };
 

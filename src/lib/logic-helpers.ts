@@ -43,9 +43,16 @@ export const calculateTotalNetWorth = (assets: { currentValue: number, archived?
  */
 export const validateBackup = (backup: any): boolean => {
   if (!backup || typeof backup !== 'object') return false;
-  if (!backup.data || typeof backup.data !== 'object') return false;
+
+  // Encrypted backup v3
+  if (backup.version === 3 && backup.encrypted) {
+    return typeof backup.payload === 'string';
+  }
+
+  const data = backup.data || backup;
+  if (!data || typeof data !== 'object') return false;
   
   // Minimal requirement: at least one core finance store should be present
   const coreStores = ['salary', 'subscriptions', 'khatabook', 'networth', 'settings'];
-  return coreStores.some(store => backup.data[store] !== undefined);
+  return coreStores.some(store => data[store] !== undefined);
 };
