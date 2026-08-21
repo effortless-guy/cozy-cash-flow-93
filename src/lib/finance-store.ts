@@ -103,8 +103,12 @@ function usePersisted<T>(key: string, initial: () => T) {
 
   useEffect(() => {
     if (hydrated && !isInitialMount.current) {
-      const timeoutId = setTimeout(() => {
-        setDBItem(storeName, "data", stateRef.current).catch(console.error);
+      const timeoutId = setTimeout(async () => {
+        try {
+          await setDBItem(storeName, "data", stateRef.current);
+        } catch (error) {
+          console.error(`Failed to persist ${storeName}:`, error);
+        }
       }, 500);
       return () => clearTimeout(timeoutId);
     }
