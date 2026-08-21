@@ -616,41 +616,71 @@ export function useSettings() {
 }
 
 export function useDataManagement() {
+  const [lastBackup, setLastBackup, hydrated] = usePersisted<string | null>("backup_metadata.last_backup", () => null);
+
   const exportData = async () => {
-    const data = {
-      salary: await getDBItem(STORE_MAP[SALARY_KEY], "data"),
-      subscriptions: await getDBItem(STORE_MAP[SUBS_KEY], "data"),
-      khatabook: await getDBItem(STORE_MAP[KHATA_KEY], "data"),
-      networth: await getDBItem(STORE_MAP[NW_KEY], "data"),
-      nw_activity: await getDBItem(STORE_MAP[NW_ACTIVITY_KEY], "data"),
-      settings: await getDBItem(STORE_MAP[SETTINGS_KEY], "data"),
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `ledger_backup_${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const backup = {
+        version: 2,
+        timestamp: new Date().toISOString(),
+        data: {
+          salary: await getDBItem(STORE_MAP[SALARY_KEY], "data"),
+          subscriptions: await getDBItem(STORE_MAP[SUBS_KEY], "data"),
+          khatabook: await getDBItem(STORE_MAP[KHATA_KEY], "data"),
+          networth: await getDBItem(STORE_MAP[NW_KEY], "data"),
+          nw_activity: await getDBItem(STORE_MAP[NW_ACTIVITY_KEY], "data"),
+          settings: await getDBItem(STORE_MAP[SETTINGS_KEY], "data"),
+        }
+      };
+      
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `money-story-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      const now = new Date().toISOString();
+      setLastBackup(now);
+      return true;
+    } catch (error) {
+      console.error("Export failed:", error);
+      return false;
+    }
   };
 
   const importData = async (file: File) => {
     const text = await file.text();
     try {
-      const data = JSON.parse(text);
+      const backup = JSON.parse(text);
+      
+      // Validation
+      if (!backup.data || (!backup.data.salary && !backup.data.settings)) {
+        throw new Error("Invalid backup format");
+      }
+
+      const confirmed = confirm("Are you sure you want to restore this backup? This will overwrite your current data. A safety backup will be downloaded first.");
+      if (!confirmed) return;
+
+      // Safety backup
+      await exportData();
+
+      const { data } = backup;
       if (data.salary) await setDBItem(STORE_MAP[SALARY_KEY], "data", data.salary);
       if (data.subscriptions) await setDBItem(STORE_MAP[SUBS_KEY], "data", data.subscriptions);
       if (data.khatabook) await setDBItem(STORE_MAP[KHATA_KEY], "data", data.khatabook);
       if (data.networth) await setDBItem(STORE_MAP[NW_KEY], "data", data.networth);
       if (data.nw_activity) await setDBItem(STORE_MAP[NW_ACTIVITY_KEY], "data", data.nw_activity);
       if (data.settings) await setDBItem(STORE_MAP[SETTINGS_KEY], "data", data.settings);
+      
       location.reload();
     } catch (e) {
-      alert("Invalid backup file");
+      alert("Restore failed: " + (e instanceof Error ? e.message : "Invalid backup file"));
     }
   };
 
-  return { exportData, importData };
+  return { exportData, importData, lastBackup, hydrated };
 }
 
 export function formatMoney(amount: number, currency = "₹") {
