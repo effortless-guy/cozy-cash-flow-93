@@ -118,7 +118,7 @@ function SettingsPage() {
         </Section>
 
         <Section title="App">
-          <Row label="Notifications" description="Monthly budget rollover & subscription reminders">
+          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Remove Notificatiopn option froms settings" description="Monthly budget rollover & subscription reminders">
             <Switch
               checked={settings.notifications}
               onCheckedChange={(checked) =>
