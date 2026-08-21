@@ -20,6 +20,7 @@ import { AppLockOverlay } from "../components/AppLockOverlay";
 import { PWAInstallBanner } from "../components/PWAInstallBanner";
 import { OfflineReadyIndicator } from "../components/OfflineReadyIndicator";
 import { requestPersistentStorage } from "../lib/db";
+import { BackupReminder } from "../components/BackupReminder";
 
 function NotFoundComponent() {
   return (
@@ -186,6 +187,7 @@ function AppShell() {
       <AppLockOverlay />
       <PWAInstallBanner />
       <OfflineReadyIndicator />
+      <BackupReminder />
     </div>
   );
 }

@@ -52,7 +52,7 @@ const LANGUAGES = [
 
 function SettingsPage() {
   const { settings, setSettings, hydrated } = useSettings();
-  const { exportData, importData } = useDataManagement();
+  const { exportData, importData, lastBackup } = useDataManagement();
   const { auth, enableLock, disableLock, changePin } = useAuth();
   const [pinInput, setPinInput] = useState("");
   const [isChangingPin, setIsChangingPin] = useState(false);
@@ -262,15 +262,18 @@ function SettingsPage() {
           </Row>
         </Section>
 
-        <Section title="Data Management" description="Local-first storage: all data stays on your device.">
-          <div className="flex items-center gap-4 px-4 py-4">
-             <Button variant="outline" size="sm" className="flex-1 gap-2" onClick={exportData}>
-                <Download className="h-4 w-4" /> Export
+        <Section title="Data & Privacy" description="Local-first storage: all data stays on your device.">
+          <Row label="Backup Now" description="Export complete data to a versioned JSON file">
+             <Button variant="outline" size="sm" className="w-32 gap-2" onClick={exportData}>
+                <Download className="h-4 w-4" /> Backup
              </Button>
-             <div className="relative flex-1">
+          </Row>
+          
+          <Row label="Restore Backup" description="Upload a previously exported backup file">
+             <div className="relative w-32">
                 <input 
                     type="file" 
-                    className="absolute inset-0 opacity-0 cursor-pointer" 
+                    className="absolute inset-0 cursor-pointer opacity-0" 
                     accept=".json"
                     onChange={(e) => {
                         const file = e.target.files?.[0];
@@ -278,18 +281,27 @@ function SettingsPage() {
                     }}
                 />
                 <Button variant="outline" size="sm" className="w-full gap-2 pointer-events-none">
-                    <Upload className="h-4 w-4" /> Import
+                    <Upload className="h-4 w-4" /> Restore
                 </Button>
              </div>
-          </div>
+          </Row>
 
-          <div className="p-4 border-t border-border/60">
+          <Row label="Last Backup">
+            <span className="text-xs text-muted-foreground">
+              {lastBackup ? new Date(lastBackup).toLocaleDateString() : "Never"}
+            </span>
+          </Row>
+
+          <div className="border-t border-border/60 p-4">
             <button
               onClick={() => {
                 if (confirm("Reset all data? This will clear everything in IndexedDB and localStorage. This cannot be undone.")) {
                   localStorage.clear();
-                  indexedDB.deleteDatabase("LedgerDB");
-                  location.reload();
+                  import('dexie').then(Dexie => {
+                    Dexie.default.delete("MoneyStoryDB").then(() => {
+                      location.reload();
+                    });
+                  });
                 }
               }}
               className="text-sm font-medium text-destructive hover:underline"
