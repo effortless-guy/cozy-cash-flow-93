@@ -19,6 +19,7 @@ import { useSettings } from "../lib/finance-store";
 import { AppLockOverlay } from "../components/AppLockOverlay";
 import { PWAInstallBanner } from "../components/PWAInstallBanner";
 import { OfflineReadyIndicator } from "../components/OfflineReadyIndicator";
+import { requestPersistentStorage } from "../lib/db";
 
 function NotFoundComponent() {
   return (
@@ -163,6 +164,7 @@ function RootComponent() {
           window.dispatchEvent(new CustomEvent('sw-offline-ready'));
         },
       });
+      requestPersistentStorage();
     }
   }, []);
 

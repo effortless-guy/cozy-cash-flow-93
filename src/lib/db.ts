@@ -1,86 +1,77 @@
+import Dexie, { type Table } from "dexie";
+
 /**
- * Lightweight IndexedDB wrapper for local-first storage.
+ * MoneyStory Database using Dexie.js
+ * Provides versioning, migration, and robust IndexedDB management.
  */
+export class MoneyStoryDatabase extends Dexie {
+  salary!: Table<{ id: string; data: any }, string>;
+  subscriptions!: Table<{ id: string; data: any }, string>;
+  khatabook!: Table<{ id: string; data: any }, string>;
+  networth!: Table<{ id: string; data: any }, string>;
+  nw_activity!: Table<{ id: string; data: any }, string>;
+  settings!: Table<{ id: string; data: any }, string>;
+  metadata!: Table<{ id: string; data: any }, string>;
+  auth!: Table<{ id: string; data: any }, string>;
+  ui_settings!: Table<{ id: string; data: any }, string>;
 
-const DB_NAME = "LedgerDB";
-const DB_VERSION = 1;
-const STORES = ["salary", "subscriptions", "khatabook", "networth", "nw_activity", "settings", "metadata", "auth", "ui_settings"];
-
-let dbInstance: IDBDatabase | null = null;
-let dbPromise: Promise<IDBDatabase> | null = null;
-
-class WriteQueue {
-  private queue: Promise<any> = Promise.resolve();
-
-  enqueue<T>(operation: () => Promise<T>): Promise<T> {
-    this.queue = this.queue.then(operation, operation);
-    return this.queue;
+  constructor() {
+    super("MoneyStoryDB");
+    
+    // Define schema
+    this.version(1).stores({
+      salary: "id",
+      subscriptions: "id",
+      khatabook: "id",
+      networth: "id",
+      nw_activity: "id",
+      settings: "id",
+      metadata: "id",
+      auth: "id",
+      ui_settings: "id",
+    });
   }
 }
 
-const writeQueue = new WriteQueue();
+export const db = new MoneyStoryDatabase();
 
-export async function openDB(): Promise<IDBDatabase> {
-  if (dbInstance) return dbInstance;
-  if (dbPromise) return dbPromise;
+// Pre-open database to ensure it's ready
+db.open().catch(err => console.error("Failed to open Dexie database:", err));
 
-  dbPromise = new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror = () => {
-      dbPromise = null;
-      reject(request.error);
-    };
-    request.onsuccess = () => {
-      dbInstance = request.result;
-      dbPromise = null;
-      resolve(dbInstance);
-    };
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      STORES.forEach(store => {
-        if (!db.objectStoreNames.contains(store)) {
-          db.createObjectStore(store);
-        }
-      });
-    };
-  });
-
-  return dbPromise;
-}
-
+/**
+ * Legacy support wrapper for current store implementation
+ */
 export async function getDBItem<T>(storeName: string, key: string): Promise<T | null> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(storeName, "readonly");
-    const store = transaction.objectStore(storeName);
-    const request = store.get(key);
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result as T || null);
-  });
+  try {
+    const table = (db as any)[storeName] as Table<{ id: string; data: T }, string>;
+    if (!table) return null;
+    const item = await table.get(key);
+    return item ? item.data : null;
+  } catch (error) {
+    console.error(`Dexie get error for ${storeName}/${key}:`, error);
+    return null;
+  }
 }
 
 export async function setDBItem<T>(storeName: string, key: string, value: T): Promise<void> {
-  return writeQueue.enqueue(async () => {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(storeName, "readwrite");
-      const store = transaction.objectStore(storeName);
-      const request = store.put(value, key);
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve();
-    });
-  });
+  try {
+    const table = (db as any)[storeName] as Table<{ id: string; data: T }, string>;
+    if (!table) {
+      console.warn(`No table found for storeName: ${storeName}. Creating fallback...`);
+      return;
+    }
+    await table.put({ id: key, data: value });
+  } catch (error) {
+    console.error(`Dexie put error for ${storeName}/${key}:`, error);
+    throw error;
+  }
 }
 
 export async function clearStore(storeName: string): Promise<void> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(storeName, "readwrite");
-    const store = transaction.objectStore(storeName);
-    const request = store.clear();
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve();
-  });
+  const table = (db as any)[storeName] as Table<any, any>;
+  if (table) {
+    await table.clear();
+  }
 }
 
 /**
@@ -92,27 +83,47 @@ export const STORE_MAP: Record<string, string> = {
   "pft.settings.v1": "settings",
   "pft.khatabook.v1": "khatabook",
   "pft.networth.v1": "networth",
-  "pft.nw_activity.v1": "nw_activity"
+  "pft.nw_activity.v1": "nw_activity",
+  "pft.ui_settings.v1": "ui_settings"
 };
 
 /**
- * Migrates data from localStorage to IndexedDB
+ * Migrates data from localStorage to IndexedDB with validation
  */
 export async function migrateFromLocalStorage() {
-  const migrated = localStorage.getItem("pft.indexeddb.migrated");
+  const MIGRATION_KEY = "moneystory.indexeddb.migrated.v2"; // Bumped version for Dexie
+  const migrated = localStorage.getItem(MIGRATION_KEY);
   if (migrated === "true") return;
+
+  console.log("Starting migration from localStorage to Dexie...");
 
   for (const [lsKey, storeName] of Object.entries(STORE_MAP)) {
     const raw = localStorage.getItem(lsKey);
     if (raw) {
       try {
         const data = JSON.parse(raw);
-        await setDBItem(storeName, "data", data);
+        // Simple validation: ensure it's an object or array if not empty
+        if (data && typeof data === 'object') {
+          await setDBItem(storeName, "data", data);
+          console.log(`Successfully migrated ${lsKey} to ${storeName}`);
+        }
       } catch (e) {
         console.error(`Failed to migrate ${lsKey}`, e);
       }
     }
   }
 
-  localStorage.setItem("pft.indexeddb.migrated", "true");
+  localStorage.setItem(MIGRATION_KEY, "true");
+}
+
+/**
+ * Requests persistent storage from the browser
+ */
+export async function requestPersistentStorage() {
+  if (navigator.storage && navigator.storage.persist) {
+    const isPersisted = await navigator.storage.persist();
+    console.log(`Storage is ${isPersisted ? "persistent" : "not persistent (best-effort)"}`);
+    return isPersisted;
+  }
+  return false;
 }

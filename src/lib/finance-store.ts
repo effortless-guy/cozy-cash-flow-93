@@ -69,7 +69,7 @@ const emptyMonth = (): MonthData => ({ categories: [] });
 function usePersisted<T>(key: string, initial: () => T) {
   const [hydrated, setHydrated] = useState(false);
   const [state, setState] = useState<T>(initial);
-  const storeName = STORE_MAP[key] || key.split('.')[0]; // Fallback for dynamic keys like UI_KEY.viewKey
+  const storeName = STORE_MAP[key] || key.split('.')[0] || "ui_settings"; // Default to ui_settings for UI keys
   const isInitialMount = useRef(true);
 
   // We need to track the latest state in a ref to avoid stale closures in effects
@@ -103,8 +103,12 @@ function usePersisted<T>(key: string, initial: () => T) {
 
   useEffect(() => {
     if (hydrated && !isInitialMount.current) {
-      const timeoutId = setTimeout(() => {
-        setDBItem(storeName, "data", stateRef.current).catch(console.error);
+      const timeoutId = setTimeout(async () => {
+        try {
+          await setDBItem(storeName, "data", stateRef.current);
+        } catch (error) {
+          console.error(`Failed to persist ${storeName}:`, error);
+        }
       }, 500);
       return () => clearTimeout(timeoutId);
     }
@@ -120,7 +124,7 @@ const SALARY_KEY = "pft.salary.v1";
 const SUBS_KEY = "pft.subs.v1";
 const SETTINGS_KEY = "pft.settings.v1";
 const KHATA_KEY = "pft.khatabook.v1";
-const UI_KEY = "pft.ui_settings.v1";
+const UI_KEY = "ui_settings.v1";
 
 export type LedgerEntry = {
   id: string;
