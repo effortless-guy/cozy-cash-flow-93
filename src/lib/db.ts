@@ -14,11 +14,12 @@ export class MoneyStoryDatabase extends Dexie {
   metadata!: Table<{ id: string; data: any }, string>;
   auth!: Table<{ id: string; data: any }, string>;
   ui_settings!: Table<{ id: string; data: any }, string>;
+  backup_metadata!: Table<{ id: string; data: any }, string>;
 
   constructor() {
     super("MoneyStoryDB");
     
-    // Define schema
+    // Version 1: Initial schema
     this.version(1).stores({
       salary: "id",
       subscriptions: "id",
@@ -29,6 +30,11 @@ export class MoneyStoryDatabase extends Dexie {
       metadata: "id",
       auth: "id",
       ui_settings: "id",
+    });
+
+    // Version 2: Added backup_metadata for backup/restore reminders
+    this.version(2).stores({
+      backup_metadata: "id"
     });
   }
 }
