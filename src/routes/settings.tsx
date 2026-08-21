@@ -69,7 +69,7 @@ function SettingsPage() {
   return (
     <div>
       <header className="sticky top-0 z-10 bg-background/85 px-6 pt-10 pb-8 backdrop-blur-md">
-        <h1 className="text-3xl font-semibold leading-none tracking-tight">Settings</h1>
+        <h1 className="text-3xl font-semibold leading-none tracking-tight">'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that</h1>
       </header>
 
       <main className="space-y-6 px-6 pb-16 pt-0">
