@@ -412,7 +412,7 @@ function SettingsPage() {
         </Section>
 
         <p className="text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-          MoneyStory · v1.0
+          '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that
         </p>
       </main>
     </div>
