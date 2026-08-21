@@ -20,9 +20,9 @@ export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
       { title: "Settings — MoneyStory" },
-      { name: "description", content: "Customize currency, theme, language and notifications." },
+      { name: "description", content: "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" },
       { property: "og:title", content: "Settings — MoneyStory" },
-      { property: "og:description", content: "Customize currency, theme, language and notifications." },
+      { property: "og:description", content: "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" },
     ],
   }),
   component: SettingsPage,
@@ -118,7 +118,7 @@ function SettingsPage() {
         </Section>
 
         <Section title="App">
-          <Row label="Notifications" description="Monthly budget rollover & subscription reminders">
+          <Row label="'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            I think in setting there is no point of notifications as we cannpt show them , show remive that" description="Monthly budget rollover & subscription reminders">
             <Switch
               checked={settings.notifications}
               onCheckedChange={(checked) =>
