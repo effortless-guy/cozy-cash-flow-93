@@ -35,6 +35,9 @@ export class MoneyStoryDatabase extends Dexie {
 
 export const db = new MoneyStoryDatabase();
 
+// Pre-open database to ensure it's ready
+db.open().catch(err => console.error("Failed to open Dexie database:", err));
+
 /**
  * Legacy support wrapper for current store implementation
  */
@@ -106,10 +109,6 @@ export async function migrateFromLocalStorage() {
       }
     }
   }
-
-  // Also check if there's data in the OLD IndexedDB (LedgerDB) 
-  // and migrate it to MoneyStoryDB if needed.
-  // For now, we prioritize localStorage as the requested migration path.
 
   localStorage.setItem(MIGRATION_KEY, "true");
 }
